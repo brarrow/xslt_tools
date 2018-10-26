@@ -16,12 +16,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 
 public class FilesIO {
-    public static String path = "C:\\Users\\useri\\Documents\\Repos\\RefactorSimiDocuments\\Ambulatory\\Child\\cct=23958 Neurologist (1-17)\\xslt";
-    public static String pathAll = "C:\\Users\\useri\\Documents\\Repos\\RefactorSimiDocuments\\Ambulatory";
-    public static String repos = "C:\\Users\\useri\\Documents\\Repos\\SimiDocuments";
-    public static String refac = "C:\\Users\\useri\\Documents\\Repos\\RefactorSimiDocuments";
-    public static String inFileName = "openEHR-EHR-COMPOSITION.t_neurologist_examination(1-17).xslt";
-    public static String outFileName = "test.xslt";
+    public static String path;
+    public static String pathAll;
+    public static String inFileName;
+    public static String outFileName;
     public static String input;
     public static Path out;
 
@@ -75,7 +73,7 @@ public class FilesIO {
     }
 
     public static void readPathsFromTxt() throws Exception {
-        BufferedReader inp = new BufferedReader(new FileReader("paths.txt"));
+        BufferedReader inp = new BufferedReader(new FileReader("./paths.txt"));
         String line = inp.readLine();
         while (line != null) {
             if (line.startsWith("directory=")) {

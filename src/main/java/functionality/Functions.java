@@ -16,7 +16,7 @@ public class Functions {
             FilesIO.forAllXSLT(true);
         } else {
             if (Main.windows) {
-                FilesIO.input = FilesIO.path + "\\" + FilesIO.inFileName;
+                FilesIO.input = FilesIO.path + FilesIO.inFileName;
             } else {
                 FilesIO.input = FilesIO.path + FilesIO.inFileName;
             }
