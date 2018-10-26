@@ -8,17 +8,17 @@ import screenform.Processing;
 import java.io.File;
 
 public class Functions {
-    public static void getScreenForm() throws Exception {
-        if (!Main.windows) {
-            FilesIO.pathAll = "/home/brarrow/Projects/RefacSimiDocuments/Ambulatory";
-        }
+    public static void getScreenForm(boolean forAll) throws Exception {
+        Main.allFiles = forAll;
+        FilesIO.readPathsFromTxt();
+
         if (Main.allFiles) {
             FilesIO.forAllXSLT(true);
         } else {
             if (Main.windows) {
                 FilesIO.input = FilesIO.path + "\\" + FilesIO.inFileName;
             } else {
-                FilesIO.input = FilesIO.path + "/" + FilesIO.inFileName;
+                FilesIO.input = FilesIO.path + FilesIO.inFileName;
             }
             FilesIO.out = new File(new File(FilesIO.path).getPath() + "_screen").toPath();
             FilesIO.out.toFile().mkdir();

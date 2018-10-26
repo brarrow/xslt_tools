@@ -4,7 +4,9 @@ package screenform;
 import functionality.Functions;
 import main.Main;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
@@ -69,6 +71,23 @@ public class FilesIO {
             Files.walkFileTree(rootPath, simpleFileVisitor);
         } catch (IOException ioe) {
             ioe.printStackTrace();
+        }
+    }
+
+    public static void readPathsFromTxt() throws Exception {
+        BufferedReader inp = new BufferedReader(new FileReader("paths.txt"));
+        String line = inp.readLine();
+        while (line != null) {
+            if (line.startsWith("directory=")) {
+                pathAll = line.replace("directory=", "").trim();
+            }
+            if (line.startsWith("file=")) {
+                line = line.replace("file=", "").trim();
+                int posFileName = line.lastIndexOf("\\") + 1;
+                path = line.substring(0, posFileName);
+                inFileName = line.substring(posFileName);
+            }
+            line = inp.readLine();
         }
     }
 

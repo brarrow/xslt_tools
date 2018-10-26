@@ -1,0 +1,4 @@
+#path to directory with files
+directory= C:\Users\useri\Documents\Repos\RefactorSimiDocuments\Ambulatory
+#path to direct file
+file= C:\Users\useri\Documents\Repos\RefactorSimiDocuments\Ambulatory\Adult\cct=21976 Traumatologist\xslt\openEHR-EHR-COMPOSITION.t_traumatologist_examination.xslt
