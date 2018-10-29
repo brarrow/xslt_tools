@@ -23,13 +23,13 @@ public class JdomProcessing {
         sixth(FilesIO.out.toString()); //refactored
         eightTwoDouble(FilesIO.out.toString());
 
-        recomMythJDOM(FilesIO.out.toString()); //refactored
-        twentyTwoJDOM(FilesIO.out.toString()); //refactored
-        twenty_three(FilesIO.out.toString());
-        twenty_four(FilesIO.out.toString());
-        twenty_five(FilesIO.out.toString());
-        twenty_six(FilesIO.out.toString());
-        twenty_seven(FilesIO.out.toString());
+//        recomMythJDOM(FilesIO.out.toString()); //refactored
+//        twentyTwoJDOM(FilesIO.out.toString()); //refactored
+//        twenty_three(FilesIO.out.toString());
+//        twenty_four(FilesIO.out.toString());
+//        twenty_five(FilesIO.out.toString());
+//        twenty_six(FilesIO.out.toString());
+//        twenty_seven(FilesIO.out.toString());
 
     }
 
@@ -355,6 +355,7 @@ public class JdomProcessing {
         }
         List<Content> blocks;
         if (!filePath.contains("22954")) { //esli est' obs osm
+            ob = ob.getChild("td");
             List<Content> temp = ob.removeContent();
             ob.setContent(new Element("table").setAttribute("align", "center").setContent(new Element("tbody").setContent(temp)));
             blocks = ob.getChild("table").getChild("tbody").getContent();
