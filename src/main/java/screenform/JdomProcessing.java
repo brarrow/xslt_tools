@@ -4,72 +4,31 @@ import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import java.io.*;
-import java.nio.file.Files;
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.List;
 
-public class JdomProcessing {
-    public static int capltrimVal = 0;
-    public static List<Element> strongsForCapltrim = new ArrayList<>();
-
+public class JDOMProcessing {
     public static void processXSLT() throws Exception {
-        sixth(FilesIO.out.toString()); //refactored
-        eightTwoDouble(FilesIO.out.toString());
-
-//        recomMythJDOM(FilesIO.out.toString()); //refactored
-//        twentyTwoJDOM(FilesIO.out.toString()); //refactored
-//        twenty_three(FilesIO.out.toString());
-//        twenty_four(FilesIO.out.toString());
-//        twenty_five(FilesIO.out.toString());
-//        twenty_six(FilesIO.out.toString());
-//        twenty_seven(FilesIO.out.toString());
-
+        sixth(FilesIO.out.toString());
+        eight(FilesIO.out.toString());
+        recomMyth(FilesIO.out.toString());
+        twenty_two(FilesIO.out.toString());
+        twenty_three(FilesIO.out.toString());
+        twenty_four(FilesIO.out.toString());
+        twenty_five(FilesIO.out.toString());
+        twenty_six(FilesIO.out.toString());
+        twenty_seven(FilesIO.out.toString());
     }
 
-    public static String prettyFormat(String input) {
-        return prettyFormat(input, "2");
-    }
-
-    public static String prettyFormat(String input, String indent) {
-        Source xmlInput = new StreamSource(new StringReader(input));
-        StringWriter stringWriter = new StringWriter();
-        try {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", indent);
-            transformer.transform(xmlInput, new StreamResult(stringWriter));
-
-            String pretty = stringWriter.toString();
-            pretty = pretty.replace("\r\n", "\n");
-            return pretty;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void preprocess() throws Exception {
-        String doc = Files.readAllLines(new File(FilesIO.input).toPath()).toString();
-        String newText = prettyFormat(doc);
-        Files.write(new File(FilesIO.input).toPath(), newText.getBytes());
-    }
-
-    public static org.jdom2.Document useSAXParser(String fileName) throws JDOMException,
-            IOException {
+    private static org.jdom2.Document useSAXParser(String fileName) throws Exception {
         SAXBuilder saxBuilder = new SAXBuilder();
         return saxBuilder.build(new File(fileName));
     }
 
-
     //Move obsh diag and soput to begin
-    public static void sixth(String filePath) throws Exception {
+    private static void sixth(String filePath) throws Exception {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         forEachTd(root);
@@ -121,214 +80,8 @@ public class JdomProcessing {
         saveXSLT(doc);
     }
 
-    public static void eightGood(String filePath) throws Exception {
-        Document doc = useSAXParser(filePath);
-        forEachTd(doc.getRootElement());
-        Element root = doc.getRootElement();
-
-        forEachTr(root);
-        List<Element> listElement = root.getChildren().get(1).getChild("html").getChild("body").getChild("div").getChildren().get(0).getChildren().get(0).getChildren();//.get(1).getChildren().get(0).getChildren();//.get(2).getChild("tbody").getChildren();
-        Element obsOsm = new Element("j");
-        for (Element el : listElement) {
-            List<Attribute> buf = el.getAttributes();
-            for (Attribute atr : buf) {
-                if (atr.getValue().contains("*:Общий_осмотр")) obsOsm = el;
-            }
-        }
-
-        Element ob = null;
-        if (filePath.contains("14974")) {
-            ob = (Element) obsOsm.getChild("tr").getChild("td").getContent(3); //for surgeon
-        } else {
-            if (filePath.contains("22954")) {
-                ob = findElWithNameAndAttr(root, "test", "*:Жалобы_и_анамнез_заболевания//*:Жалобы_и_анамнез_заболевания//*:Подробности_истории_болезни", "if");
-            } else {
-                ob = obsOsm.getChild("tr").getChild("td");
-            }
-        }
-        List<Content> firstBlocks;
-        if (!filePath.contains("22954")) { //esli est' obs osm
-            List<Content> temp = ob.removeContent();
-            ob.setContent(new Element("table").setAttribute("align", "center").setContent(new Element("tbody").setContent(temp)));
-            firstBlocks = ob.getChild("table").getChild("tbody").getContent();
-        } else {
-            firstBlocks = ob.getChild("tr").getChild("td").getContent();
-        }
-        boolean first = true; // Первый блок без отступа
-        boolean hasSpan = false;
-
-        for (int firstIter = 0; firstIter < firstBlocks.size(); firstIter++) {
-            if (firstBlocks.get(firstIter) instanceof Element) {
-                List<Content> secondBlocks = ((Element) firstBlocks.get(firstIter)).getContent();
-
-                for (int secondIter = 0; secondIter < secondBlocks.size(); secondIter++) {
-                    if (secondBlocks.get(secondIter) instanceof Element) {
-                        List<Content> thirdBlocks = ((Element) secondBlocks.get(secondIter)).getContent();
-
-                        for (int thirdIter = 0; thirdIter < thirdBlocks.size(); thirdIter++) {
-                            if (thirdBlocks.get(thirdIter) instanceof Element) {
-                                forEachStrong((Element) thirdBlocks.get(thirdIter));
-                            }
-                        }
-                        forEachStrong((Element) secondBlocks.get(secondIter));
-                    }
-                }
-                forEachStrong((Element) firstBlocks.get(firstIter));
-            }
-        }
-        saveXSLT(doc);
-    }
-
-    public static void iteratingFindIf(Element root) {
-
-    }
-
-
-    //For each main punkt
-    public static void eightTwo(String filePath) throws Exception {
-        Document doc = useSAXParser(filePath);
-        forEachTd(doc.getRootElement());
-        Element root = doc.getRootElement();
-
-        forEachTr(root);
-        List<Element> listElement = root.getChildren().get(1).getChild("html").getChild("body").getChild("div").getChildren().get(0).getChildren().get(0).getChildren();//.get(1).getChildren().get(0).getChildren();//.get(2).getChild("tbody").getChildren();
-        Element obsOsm = new Element("j");
-        for (Element el : listElement) {
-            List<Attribute> buf = el.getAttributes();
-            for (Attribute atr : buf) {
-                if (atr.getValue().contains("*:Общий_осмотр")) obsOsm = el;
-            }
-        }
-
-        Element ob = null;
-        if (filePath.contains("14974")) {
-            ob = (Element) obsOsm.getChild("tr").getChild("td").getContent(3); //for surgeon
-        } else {
-            if (filePath.contains("22954")) {
-                ob = findElWithNameAndAttr(root, "test", "*:Жалобы_и_анамнез_заболевания//*:Жалобы_и_анамнез_заболевания//*:Подробности_истории_болезни", "if");
-            } else {
-                ob = obsOsm.getChild("tr").getChild("td");
-            }
-        }
-        List<Content> blocks;
-        if (!filePath.contains("22954")) { //esli est' obs osm
-            List<Content> temp = ob.removeContent();
-            ob.setContent(new Element("table").setAttribute("align", "center").setContent(new Element("tbody").setContent(temp)));
-            blocks = ob.getChild("table").getChild("tbody").getContent();
-        } else {
-            blocks = ob.getChild("tr").getChild("td").getContent();
-        }
-        boolean first = true; // Первый блок без отступа
-        boolean hasSpan = false; // Если наш стронг окружен спаном
-        for (int i = 0; i < blocks.size(); i++) {
-            Content buf = blocks.get(i);
-            if (buf instanceof Element) {
-                if (((Element) buf).getName() == "if") {
-                    // check for <span>. <strong>...
-                    Element checkSpan = (Element) blocks.get(i);
-                    if ((checkSpan.getChildren().get(0).getName() == "span") & (checkSpan.getChildren().get(0).getChild("strong") != null)) {
-                        Element span = (checkSpan.getChildren().get(0)).detach();
-                        checkSpan.getChildren().add(0, span.getChild("strong").detach());
-                        hasSpan = true;
-                    } else if (checkSpan.getChildren().get(0).getName() == "span") {
-                        checkSpan.getChildren().get(0).setName("strong");
-                    }
-                    Element tmpStrongEnd = ((Element) blocks.get(i));
-                    if (tmpStrongEnd.getChildren().get(tmpStrongEnd.getChildren().size() - 1).getName() == "if") {
-                        Element localTmp = tmpStrongEnd.getChildren().get(tmpStrongEnd.getChildren().size() - 1);
-                        try {
-                            while (!localTmp.getName().contains("strong")) {
-                                localTmp = localTmp.getChildren().get(0);
-                            }
-                            addMythInStrongAndBr(localTmp.getParentElement());
-                        } catch (Exception e) {
-                        }
-                    } else {
-                        List<Content> blocksSecond = ((Element) buf).getContent();
-                        for (int iSecond = 0; iSecond < blocksSecond.size(); iSecond++) {
-                            Content bufSecond = blocksSecond.get(iSecond);
-                            if (bufSecond instanceof Element) {
-                                if (((Element) bufSecond).getName() == "if") {
-                                    // check for <span>. <strong>...
-                                    Element checkSpanSecond = (Element) blocksSecond.get(iSecond);
-                                    if ((checkSpanSecond.getChildren().get(0).getChild("strong") != null)) {
-                                        Element span = (checkSpanSecond.getChildren().get(0)).detach();
-                                        checkSpanSecond.getChildren().add(0, span.getChild("strong").detach());
-                                        hasSpan = true;
-                                    }
-                                    Element tmpStrongEndSecond = ((Element) blocksSecond.get(iSecond));
-                                    if (tmpStrongEndSecond.getChildren().get(tmpStrongEndSecond.getChildren().size() - 1).getName() == "if") {
-                                        Element localTmp = tmpStrongEndSecond.getChildren().get(tmpStrongEndSecond.getChildren().size() - 1);
-                                        try {
-                                            while (!localTmp.getName().contains("strong")) {
-                                                localTmp = localTmp.getChildren().get(0);
-                                            }
-                                            addMythInStrongAndBr(localTmp.getParentElement());
-                                        } catch (Exception e) {
-                                        }
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-
-                    {
-                        List<Content> blocksSecond = ((Element) buf).getContent();
-                        for (int iSecond = 0; iSecond < blocksSecond.size(); iSecond++) {
-                            Content bufSecond = blocksSecond.get(iSecond);
-                            if (bufSecond instanceof Element) {
-                                if (((Element) bufSecond).getName() == "if") {
-                                    // check for <span>. <strong>...
-                                    Element checkSpanSecond = (Element) blocksSecond.get(iSecond);
-                                    if ((checkSpanSecond.getChildren().get(0).getChild("strong") != null)) {
-                                        Element span = (checkSpanSecond.getChildren().get(0)).detach();
-                                        checkSpanSecond.getChildren().add(0, span.getChild("strong").detach());
-                                        hasSpan = true;
-                                    }
-                                    Element tmpStrongEndSecond = ((Element) blocksSecond.get(iSecond));
-                                    if (tmpStrongEndSecond.getChildren().get(tmpStrongEndSecond.getChildren().size() - 1).getName() == "if") {
-                                        Element localTmp = tmpStrongEndSecond.getChildren().get(tmpStrongEndSecond.getChildren().size() - 1);
-                                        try {
-                                            while (!localTmp.getName().contains("strong")) {
-                                                localTmp = localTmp.getChildren().get(0);
-                                            }
-                                            addMythInStrongAndBr(localTmp.getParentElement());
-                                        } catch (Exception e) {
-                                        }
-                                    }
-
-                                }
-                            }
-                        }
-
-                    }
-
-
-                    List<Content> detach = ((Element) blocks.get(i)).removeContent();
-                    Element tr = new Element("tr");
-                    Element td = new Element("td");
-                    if (!first) {
-                        td.setAttribute("class", "myml");
-                    } else {
-                        first = false;
-                    }
-                    td.setContent(detach);
-                    tr.setContent(td);
-                    addMythInStrongAndBr(tr);
-                    ((Element) blocks.get(i)).setContent(tr);
-                }
-                if (((Element) buf).getName() == "table") {
-                    ob.addContent(0, buf.detach());
-                    i--;
-                }
-            }
-        }
-        saveXSLT(doc);
-        return;
-    }
-
-    public static void eightTwoDouble(String filePath) throws Exception {
+    //all main headers in <tr> <td class=myml>
+    private static void eight(String filePath) throws Exception {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         forEachTd(doc.getRootElement());
@@ -343,7 +96,7 @@ public class JdomProcessing {
             }
         }
 
-        Element ob = null;
+        Element ob;
         if (filePath.contains("14974") || filePath.contains("23958")) {
             ob = (Element) obsOsm.getChild("tr").getContent(3); //for surgeon
         } else {
@@ -353,47 +106,23 @@ public class JdomProcessing {
                 ob = obsOsm.getChild("tr");
             }
         }
-        List<Content> blocks;
+
         if (!filePath.contains("22954")) { //esli est' obs osm
             ob = ob.getChild("td");
             List<Content> temp = ob.removeContent();
             ob.setContent(new Element("table").setAttribute("align", "center").setContent(new Element("tbody").setContent(temp)));
-            blocks = ob.getChild("table").getChild("tbody").getContent();
-        } else {
-            blocks = ob.getContent();
         }
-        boolean first = true; // Первый блок без отступа
-        boolean hasSpan = false; // Если наш стронг окружен спаном
-
 
         forEachStrong(ob);
         forEachStrongFirst(ob);
-        //forEachStrongFirst(ob);
-
-        //withoutStrongsToCapltrim();
-
 
         saveXSLT(doc);
     }
 
-    //all main punkt from capital trim
-    public static void twenty_three(String filePath) throws Exception {
+    //all main headers from capital trim
+    private static void twenty_three(String filePath) throws Exception {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
-//        List<Element> elementsToCapltrim = getElsToCapltrim(root);
-//        elementsToCapltrim.size();
-//        for(Element el : elementsToCapltrim) {
-//            Element buf = el.getParentElement();
-//            while(buf.getName() != "call-template") {
-//                buf = buf.getParentElement();
-//
-//                if (buf == null) break;
-//            }
-//                String name = buf.getAttribute("name").getValue();
-//            if(!name.contains("capltrim")) {
-//                buf.setAttribute("name", name.replace("ltrim","capltrim"));
-//            }
-//        }
 
         for (Content el : root.getDescendants()) {
             if (el instanceof Element) {
@@ -419,7 +148,7 @@ public class JdomProcessing {
     }
 
     //add comment head
-    public static void twenty_four(String filePath) throws Exception {
+    private static void twenty_four(String filePath) throws Exception {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         Element comment = findElWithNameAndAttr(root, "test", "*:Общий_осмотр/*:Комментарий/", "if");
@@ -442,7 +171,8 @@ public class JdomProcessing {
         saveXSLT(doc);
     }
 
-    public static void twenty_five(String filePath) throws Exception {
+    //to get good and nice Arterial pressure
+    private static void twenty_five(String filePath) throws Exception {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         Element artDavl = findElWithNameAndAttr(root, "test",
@@ -465,7 +195,8 @@ public class JdomProcessing {
 
     }
 
-    public static void twenty_six(String filePath) throws Exception {
+    //to get good and nice local status
+    private static void twenty_six(String filePath) throws Exception {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         Element mestStat = findElWithNameAndAttr(root, "test", "*:Местный_статус/*:Местный_статус/*:data/*:", "if");
@@ -483,7 +214,8 @@ public class JdomProcessing {
         saveXSLT(doc);
     }
 
-    public static void twenty_seven(String filePath) throws Exception {
+    //Researches from capital char
+    private static void twenty_seven(String filePath) throws Exception {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
@@ -515,7 +247,8 @@ public class JdomProcessing {
         }
     }
 
-    public static void twentyTwoJDOM(String filePath) throws Exception {
+    //Move parameters from left table to main table
+    private static void twenty_two(String filePath) throws Exception {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         forEachTr(root);
@@ -580,7 +313,8 @@ public class JdomProcessing {
         saveXSLT(doc);
     }
 
-    public static void recomMythJDOM(String filePath) throws Exception {
+    //Next visit recommendations to good and nice condition
+    private static void recomMyth(String filePath) throws Exception {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         forEachTr(root);
@@ -611,14 +345,14 @@ public class JdomProcessing {
         }
         recomNextEl.getChildren().add(recomNextStrongPos + 1, new Element("br"));
 
-        recomNextStrongEl.setText(deleteAllNonCharecter(recomNextStrongEl.getValue()));
+        recomNextStrongEl.setText(Processing.deleteAllNonCharacter(recomNextStrongEl.getValue()));
         recomNextStrongEl.setAttribute("class", "myth");
 
         List<Content> toFindDot = recomNextStrongEl.getParentElement().getContent();
         for (int i = 0; i < toFindDot.size(); i++) {
             if (toFindDot.get(i).equals(recomNextStrongEl)) {
                 if (toFindDot.get(i + 1) instanceof Text) {
-                    ((Text) toFindDot.get(i + 1)).setText(deleteAllNonCharecter(((Text) toFindDot.get(i + 1)).getText()));
+                    ((Text) toFindDot.get(i + 1)).setText(Processing.deleteAllNonCharacter(((Text) toFindDot.get(i + 1)).getText()));
                 }
             }
         }
@@ -641,40 +375,7 @@ public class JdomProcessing {
         saveXSLT(doc);
     }
 
-    public static List<Element> getElsToCapltrim(Element root) {
-        List<Element> elements = new ArrayList<>();
-        for (Content el : root.getDescendants()) {
-            try {
-                if (((Element) el).getAttribute("name").toString().contains("string") & (((Element) el).getName().contains("with-param"))) {
-                    Element buf = (Element) el;
-                    if (buf.getAttribute("select").getValue().contains("noTag")) {
-                        elements.add((Element) el);
-                    } else {
-                        while (buf.getName() != "variable") {
-                            buf = buf.getParentElement();
-                        }
-                        String bufStr = "";
-                        if (buf.getAttribute("name").getValue().contains("vt")) {
-                            bufStr = buf.getAttribute("name").getValue().replace("vt", "").replaceAll("[0-9]", "");
-
-                        } else {
-                            bufStr = buf.getAttribute("name").getValue().replace("content", "").replaceAll("[0-9]", "");
-                        }
-                        if (bufStr.length() == 1) {
-                            elements.add((Element) el);
-                        }
-                        if (bufStr == "noTag") {
-                            elements.add((Element) el);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-            }
-        }
-        return elements;
-    }
-
-    public static Element findElWithNameAndCont(Element root, String contains, String name) {
+    private static Element findElWithNameAndCont(Element root, String contains, String name) {
         for (Content el : root.getDescendants()) {
             try {
                 if (el instanceof Text) {
@@ -691,7 +392,7 @@ public class JdomProcessing {
         return null;
     }
 
-    public static Element findElWithNameAndAttr(Element root, String attributeName, String attributeValue, String name) {
+    private static Element findElWithNameAndAttr(Element root, String attributeName, String attributeValue, String name) {
         for (Content el : root.getDescendants()) {
             try {
                 if (((Element) el).getAttribute(attributeName).getValue().contains(attributeValue) & (((Element) el).getName().contains(name))) {
@@ -703,13 +404,14 @@ public class JdomProcessing {
         return null;
     }
 
-    public static void saveXSLT(Document doc) throws Exception {
+    private static void saveXSLT(Document doc) throws Exception {
         XMLOutputter xmlOutputter = new XMLOutputter();
         OutputStream outStream = new FileOutputStream(FilesIO.out.toString());
         xmlOutputter.output(doc, outStream);
     }
 
-    public static void forEachTd(Element element) {
+    //Delete all Attributes from all td elements
+    private static void forEachTd(Element element) {
         if (element.getName() == "td") {
             element.setAttributes(null);
         }
@@ -718,7 +420,8 @@ public class JdomProcessing {
         }
     }
 
-    public static void forEachTr(Element element) {
+    //Delete all empty tr or tr/td
+    private static void forEachTr(Element element) {
         if (element.getName() == "tr") {
             if (element.getChild("td") == null) {
                 if (element.getChild("th") == null) {
@@ -734,7 +437,8 @@ public class JdomProcessing {
         }
     }
 
-    public static int levelOfVariableInIf(Element element) {
+    //Get level of In element
+    private static int levelOfVariableInIf(Element element) {
         for (Element el : element.getChildren()) {
             if (el.getName().contains("variable")) {
                 int res = 0;
@@ -750,12 +454,10 @@ public class JdomProcessing {
         return 0;
     }
 
-    public static void forEachStrongFirst(Element element) {
+
+    private static void forEachStrongFirst(Element element) {
         if (element.getName() == "strong") {
             if (element.getParentElement().getName() == "if") {
-                if (strongsForCapltrim.indexOf(element) == -1) {
-                    strongsForCapltrim.add(element);
-                }
                 int level = levelOfVariableInIf(element.getParentElement());
                 if (level < 3) {
                     Element destination = element.getParentElement();
@@ -788,12 +490,9 @@ public class JdomProcessing {
         }
     }
 
-    public static void forEachStrong(Element element) {
+    private static void forEachStrong(Element element) {
         if (element.getName() == "strong") {
             if (element.getParentElement().getName() == "if") {
-                if (strongsForCapltrim.indexOf(element) == -1) {
-                    strongsForCapltrim.add(element);
-                }
                 int level = levelOfVariableInIf(element.getParentElement());
                 if (level < 3) {
                     Element destination = element.getParentElement();
@@ -826,72 +525,8 @@ public class JdomProcessing {
         }
     }
 
-    public static void withoutStrongsToCapltrim() {
-        for (Element strong : strongsForCapltrim) {
-            Element destination = strong.getParentElement();
-            List<Content> contentList = destination.getContent();
-            List<Content> detached = new ArrayList<>();
-            for (int i = 0; i < contentList.size(); i++) {
-                Content buf = contentList.get(i);
-                if (buf instanceof Element) {
-                    if (((Element) buf).getName() == "if") {
-                        detached.add(buf.detach());
-                        break;
-                    }
-                }
-            }
-
-            Element variable = addAndSetContentListToVariable(destination, detached, 1, capltrimVal++);
-            addCallTemplateCapltrimVariable(variable);
-        }
-    }
-
-    public static Element addAndSetContentListToVariable(Element destination, List<Content> contentList, int posToInsert, int numberOfVar) {
-        Namespace xsl = Namespace.getNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
-        Element variableElement = new Element("variable");
-        variableElement.setNamespace(xsl);
-        variableElement.setAttribute("name", "varCapltrim" + numberOfVar);
-        variableElement.setContent(contentList);
-        destination.addContent(posToInsert + 1, variableElement);
-        return variableElement;
-    }
-
-    public static void addCallTemplateCapltrimVariable(Element variable) {
-        Namespace xsl = Namespace.getNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
-        Element callTemplateElement = new Element("call-template");
-        callTemplateElement.setNamespace(xsl);
-        callTemplateElement.setAttribute("name", "string-capltrim");
-        Element newWithParamElement = new Element("with-param");
-        newWithParamElement.setAttribute("name", "string");
-        newWithParamElement.setAttribute("select", "$" + variable.getAttributeValue("name"));
-        newWithParamElement.setNamespace(xsl);
-        callTemplateElement.setContent(newWithParamElement);
-        int posToInsert = variable.getParentElement().getContent().indexOf(variable) + 1;
-        variable.getParentElement().addContent(posToInsert, callTemplateElement);
-    }
-
-
-    public static boolean elementIsHead2nd(Element element) {
-        List<Element> childs = element.getChildren();
-        return true; //for debug
-//        for(Element el : childs) {
-//            String elNameAtr = "";
-//            try{
-//                elNameAtr = el.getAttributeValue("name");
-//                if(elNameAtr.length() - elNameAtr.replace("_","").length() == 1) {
-//                    return true;
-//                }
-//            }
-//            catch (Exception e) {
-//                continue;
-//            }
-//
-//        }
-//        return false;
-    }
-
-    public static void addMythInStrongAndBr(Element element) {
-        List<Element> el = null;
+    private static void addMythInStrongAndBr(Element element) {
+        List<Element> el;
         if (element.getName() == "tr") {
             el = element.getChild("td").getChildren();
             if (el.get(0).getName() == "table" & el.size() == 1) {
@@ -904,22 +539,19 @@ public class JdomProcessing {
 
         for (int i = 0; i < el.size(); i++) {
             Element buf = el.get(i);
-            if ((buf.getName() == "strong") & (elementIsHead2nd(buf))) {
+            if ((buf.getName() == "strong")) {
                 buf.setAttribute("class", "myth");
                 Content textWithOnlyCharacters = buf.getContent(0);
-                Text newText = new Text(deleteAllNonCharecter(textWithOnlyCharacters.getValue()));
+                Text newText = new Text(Processing.deleteAllNonCharacter(textWithOnlyCharacters.getValue()));
                 buf.setContent(newText);
                 el.add(i + 1, new Element("br"));
             }
 
         }
-//        if(el.get(1).getName() != "br") {
-//            el.add(1,new Element("br"));
-//        }
     }
 
-    public static void addPartInStrongAndBr(Element element) {
-        List<Element> el = null;
+    private static void addPartInStrongAndBr(Element element) {
+        List<Element> el;
         if (element.getName() == "tr") {
             el = element.getChild("td").getChildren();
             if (el.get(0).getName() == "table" & el.size() == 1) {
@@ -932,22 +564,15 @@ public class JdomProcessing {
 
         for (int i = 0; i < el.size(); i++) {
             Element buf = el.get(i);
-            if ((buf.getName() == "strong") & (elementIsHead2nd(buf))) {
+            if ((buf.getName() == "strong")) {
                 buf.setAttribute("class", "part");
                 Content textWithOnlyCharacters = buf.getContent(0);
-                Text newText = new Text(deleteAllNonCharecter(textWithOnlyCharacters.getValue()));
+                Text newText = new Text(Processing.deleteAllNonCharacter(textWithOnlyCharacters.getValue()));
                 buf.setContent(newText);
                 el.add(i + 1, new Element("br"));
             }
 
         }
-//        if(el.get(1).getName() != "br") {
-//            el.add(1,new Element("br"));
-//        }
     }
 
-
-    public static String deleteAllNonCharecter(String str) {
-        return str.replace(":", "").replace(".", "");
-    }
 }
