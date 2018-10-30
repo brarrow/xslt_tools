@@ -12,9 +12,10 @@ import java.util.List;
 public class JDOMProcessing {
     public static void processXSLT() throws Exception {
         sixth(FilesIO.out.toString());
+        twenty_two(FilesIO.out.toString());
         eight(FilesIO.out.toString());
         recomMyth(FilesIO.out.toString());
-        twenty_two(FilesIO.out.toString());
+
         twenty_three(FilesIO.out.toString());
         twenty_four(FilesIO.out.toString());
         twenty_five(FilesIO.out.toString());

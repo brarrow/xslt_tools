@@ -17,7 +17,7 @@ public class Console {
         System.out.println("Version " + Main.version + ".");
         System.out.println("Made by brarrow.");
         do {
-            System.out.println("Command: ");
+            System.out.print("Command: ");
             commands = in.nextLine().split(" ");
             switch (commands[0]) {
                 case "s": {
