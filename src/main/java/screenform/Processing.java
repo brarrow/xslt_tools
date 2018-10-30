@@ -7,27 +7,31 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Processing {
-    public static List<String> rows;
+    private static List<String> rows;
 
     public static void processXSLT() throws Exception {
         rows = Files.readAllLines(new File(FilesIO.input).toPath(), Charset.forName("UTF-8"));
-        first();
-        thirteenth();
-        second();
-        third();
-        fourth();
-        fifth();
-        ninth();
-        tenth();
-        twelth();
-        fourteenth();
+        one();
+        thirteen();
+        two();
+        three();
+        four();
+        five();
+        nine();
+        ten();
+        twelve();
+        fourteen();
         twenty();
 
         tabToWhite();
-        FilesIO.writeToFile();
+        FilesIO.writeToFile(rows);
     }
 
-    public static void first() {
+    static String deleteAllNonCharacter(String str) {
+        return str.replace(":", "").replace(".", "");
+    }
+
+    private static void one() {
         boolean deleting = false;
         for (int i = 0; i < rows.size(); i++) {
             if (rows.get(i).contains("<table")) {
@@ -43,7 +47,7 @@ public class Processing {
         }
     }
 
-    public static void second() {
+    private static void two() {
         String styleName = "23456789123456789123456789";
         String styles = "    <style>\n" +
                 "     @import url('https://fonts.googleapis.com/css?family=Open+Sans');\n" +
@@ -136,10 +140,9 @@ public class Processing {
                 rows.set(i, rows.get(i).replace(styleName, styleName + "s"));
             }
         }
-        return;
     }
 
-    public static void third() {
+    private static void three() {
         boolean notFirst = false;
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
@@ -156,19 +159,19 @@ public class Processing {
         }
     }
 
-    public static void fourth() {
+    private static void four() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("width=\"116pt\"")) {
                 rows.set(i, rows.get(i).replace("width=\"116pt\"", ""));
             }
             if (now.contains("style=\" border-top: 0.5pt solid rgba(0,0,0,0.4);\">")) {
-                rows.remove(i);
+                rows.remove(i--);
             }
         }
     }
 
-    public static void fifth() {
+    private static void five() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("<tr>")) {
@@ -185,7 +188,7 @@ public class Processing {
             String now = rows.get(i);
             if (now.contains("</td>")) {
                 if (now.contains("<td")) {
-                    rows.remove(i);
+                    rows.remove(i--);
                 }
             }
         }
@@ -202,7 +205,7 @@ public class Processing {
         }
     }
 
-    public static void ninth() {
+    private static void nine() {
         boolean obsOsmFound = false;
         boolean bodyFound = false;
         for (int i = 0; i < rows.size(); i++) {
@@ -232,7 +235,7 @@ public class Processing {
         }
     }
 
-    public static void tenth() {
+    private static void ten() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("span class=\"part\"")) {
@@ -241,10 +244,9 @@ public class Processing {
                 }
             }
         }
-        return;
     }
 
-    public static void twelth() {
+    private static void twelve() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("<strong>")) {
@@ -253,10 +255,9 @@ public class Processing {
                 }
             }
         }
-        return;
     }
 
-    public static void thirteenth() {
+    private static void thirteen() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("<td")) {
@@ -275,7 +276,7 @@ public class Processing {
         }
     }
 
-    public static void fourteenth() {
+    private static void fourteen() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("<br/>.")) {
@@ -284,7 +285,7 @@ public class Processing {
         }
     }
 
-    public static void twenty() {
+    private static void twenty() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains(">рост")) {
@@ -299,22 +300,9 @@ public class Processing {
         }
     }
 
-    public static void tabToWhite() {
+    private static void tabToWhite() {
         for (int i = 0; i < rows.size(); i++) {
             rows.set(i, rows.get(i).replaceAll("\\t", " "));
         }
-    }
-
-    public static String replaceLast(String find, String replace, String string) {
-        int lastIndex = string.lastIndexOf(find);
-
-        if (lastIndex == -1) {
-            return string;
-        }
-
-        String beginString = string.substring(0, lastIndex);
-        String endString = string.substring(lastIndex + find.length());
-
-        return beginString + replace + endString;
     }
 }

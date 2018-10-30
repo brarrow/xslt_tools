@@ -1,8 +1,9 @@
 package functionality;
 
+import console.Console;
 import main.Main;
 import screenform.FilesIO;
-import screenform.JdomProcessing;
+import screenform.JDOMProcessing;
 import screenform.Processing;
 
 import java.io.File;
@@ -13,7 +14,7 @@ public class Functions {
         FilesIO.readPathsFromTxt();
 
         if (Main.allFiles) {
-            FilesIO.forAllXSLT(true);
+            FilesIO.forAllXSLT();
         } else {
             if (Main.windows) {
                 FilesIO.input = FilesIO.path + FilesIO.inFileName;
@@ -29,19 +30,18 @@ public class Functions {
                 operationsForScreenForm(FilesIO.input, FilesIO.out.toString() + "/" + FilesIO.outFileName);
             }
         }
-        System.out.println("Done: " + Main.good + "/" + Main.all);
+        System.out.println("Done: " + Console.good + "/" + Console.all);
 
     }
 
     public static void operationsForScreenForm(String varInput, String varOutput) throws Exception {
-        Main.all++;
+        Console.all++;
         FilesIO.init(varInput, varOutput);
-        //JdomProcessing.preprocess();
         Processing.processXSLT();
         System.out.println("Processing done!");
-        JdomProcessing.processXSLT();
+        JDOMProcessing.processXSLT();
         System.out.println("JDOM processing done!\n");
-        Main.good++;
+        Console.good++;
     }
 
 }

@@ -11,21 +11,18 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-
-//Решение проблемы с болеет в течение pediatrist 15-17, pString
-
+import java.util.List;
 
 public class FilesIO {
     public static String path;
-    public static String pathAll;
+    private static String pathAll;
     public static String inFileName;
     public static String outFileName;
     public static String input;
     public static Path out;
 
-
-    public static void forAllXSLT(boolean debug) {
-        FileVisitor<Path> simpleFileVisitor = new SimpleFileVisitor<Path>() {
+    public static void forAllXSLT() {
+        FileVisitor<Path> simpleFileVisitor = new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
 
@@ -94,15 +91,7 @@ public class FilesIO {
         out = Paths.get((varOut));
     }
 
-    public static String getAbsPath(String el) throws Exception {
-        if (Main.windows) {
-            return new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath() + "\\" + el;
-        } else {
-            return new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getPath() + "/" + el;
-        }
-    }
-
-    public static void writeToFile() throws Exception {
-        Files.write(out, Processing.rows, Charset.forName("UTF-8"));
+    static void writeToFile(List<String> rows) throws Exception {
+        Files.write(out, rows, Charset.forName("UTF-8"));
     }
 }

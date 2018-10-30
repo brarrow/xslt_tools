@@ -1,4 +1,4 @@
 #path to directory with files
 directory= C:\Users\useri\Documents\Repos\RefactorSimiDocuments\Ambulatory
 #path to direct file
-file= C:\Users\useri\Documents\Repos\SimiDocuments\Ambulatory\Adult\cct=22958 Infectious\xslt\openEHR_EHR_COMPOSITION_t_infectious_examination.xslt
+file= C:\Users\useri\Documents\Repos\RefactorSimiDocuments\Ambulatory\Adult\cct=14951 Therapist\xslt\html_print_therapist_examination.v3.xslt

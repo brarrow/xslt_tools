@@ -6,6 +6,9 @@ import main.Main;
 import java.util.Scanner;
 
 public class Console {
+    public static int good = 0;
+    public static int all = 0;
+
     public static void mainCircle() throws Exception {
         Scanner in = new Scanner(System.in);
         String[] commands;
@@ -14,6 +17,7 @@ public class Console {
         System.out.println("Version " + Main.version + ".");
         System.out.println("Made by brarrow.");
         do {
+            System.out.println("Command: ");
             commands = in.nextLine().split(" ");
             switch (commands[0]) {
                 case "s": {
