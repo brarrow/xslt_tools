@@ -12,6 +12,10 @@ import java.util.logging.Level;
 public class Session {
     WebClient webClient;
     HtmlPage page;
+    DomElement load;
+    DomElement save;
+    DomElement getHtml;
+    DomElement getPdf;
     boolean loadCase;
     boolean saveCase;
     String caseName;
@@ -36,7 +40,12 @@ public class Session {
         webClient.getOptions().setJavaScriptEnabled(true);
         webClient.getOptions().setThrowExceptionOnScriptError(false);
         List<DomElement> list = page.getElementsByTagName("input");
-        list.size();
+        for (DomElement el : list) {
+            String onclickAttrVal = el.getAttribute("onclick");
+            if (onclickAttrVal.contains("save")) {
+                save = el;
+            }
+        }
 
     }
 }

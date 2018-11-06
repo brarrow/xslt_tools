@@ -1,6 +1,6 @@
 package main;
 
-import console.Console;
+import webstand.Session;
 
 public class Main {
     public static boolean allFiles;
@@ -8,7 +8,7 @@ public class Main {
     public static String version = "0.2.2";
 
     public static void main(String[] args) throws Exception {
-        Console.mainCircle();
-        //Session ses = new Session("df");
+        //Console.mainCircle();
+        Session ses = new Session("df");
     }
 }
