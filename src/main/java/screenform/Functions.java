@@ -1,4 +1,4 @@
-package functionality;
+package screenform;
 
 import console.Console;
 import main.Main;

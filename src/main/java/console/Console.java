@@ -1,6 +1,6 @@
 package console;
 
-import functionality.Functions;
+import screenform.Functions;
 import main.Main;
 
 import java.util.Scanner;

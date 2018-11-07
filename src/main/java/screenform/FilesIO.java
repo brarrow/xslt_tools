@@ -1,7 +1,6 @@
 package screenform;
 
 
-import functionality.Functions;
 import main.Main;
 
 import java.io.BufferedReader;
@@ -20,6 +19,14 @@ public class FilesIO {
     public static String outFileName;
     public static String input;
     public static Path out;
+
+    public static String getPath() {
+        return path;
+    }
+
+    public static String getPathAll() {
+        return pathAll;
+    }
 
     public static void forAllXSLT() {
         FileVisitor<Path> simpleFileVisitor = new SimpleFileVisitor<>() {
