@@ -1,7 +1,9 @@
 package console;
 
+import repository.Git;
 import screenform.Functions;
 import main.Main;
+import webstand.Updater;
 
 import java.util.Scanner;
 
@@ -37,6 +39,18 @@ public class Console {
                     break;
                 }
                 case "g": {
+                    if(Git.getChangedCases().size()!=0) {
+                        System.out.println("Cases to update: " + Git.getChangedCases()+"\nUpdate? [y/n]");
+                        if((new Scanner(System.in)).next().equals("y")){
+                            Updater.updateCasesOnStand();
+                        }
+                        else {
+                            System.out.println("Canceled.");
+                        }
+                    }
+                    else {
+                        System.out.println("Nothing to update!");
+                    }
                     break;
                 }
                 case "h": {

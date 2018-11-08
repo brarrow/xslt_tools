@@ -37,9 +37,10 @@ public class Session {
         webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
     }
 
-    public Session(String caseName) throws Exception {
+    public Session(String caseName) {
         this.caseName = caseName;
         initWebClient();
+        this.loadCase();
     }
 
     public void setCaseName(String caseName) {
@@ -82,30 +83,34 @@ public class Session {
         return placeholdersString;
     }
 
-    public void saveCase() throws Exception {
-        URL url = new URL("http://doctornew-xslt.emias.solit-clouds.ru/web/save.api");
+    public void saveCase() {
+        try {
+            URL url = new URL("http://doctornew-xslt.emias.solit-clouds.ru/web/save.api");
 
-        WebRequest webRequest = new WebRequest(url, HttpMethod.POST);
-        webRequest = defaultHeaderForRequest(webRequest);
-        String req = "{\"document\":\""+Base64.getEncoder().encodeToString(this.xmlString.getBytes())+"\"," +
-                "\"name\":\""+this.caseName+"\","+
-                "\"placeHolders\":\""+this.placeholdersString+"\","+
-                "\"props\":\""+this.printparamString+"\","+
-                "\"xslt\":\""+Base64.getEncoder().encodeToString(this.xsltString.getBytes())+"\""+"}";
-        webRequest.setRequestBody(req);
-        WebResponse webResponse = webClient.loadWebResponse(webRequest);
-        webResponse.getContentAsString();
-
+            WebRequest webRequest = new WebRequest(url, HttpMethod.POST);
+            webRequest = defaultHeaderForRequest(webRequest);
+            String req = "{\"document\":\"" + Base64.getEncoder().encodeToString(this.xmlString.getBytes()) + "\"," +
+                    "\"name\":\"" + this.caseName + "\"," +
+                    "\"placeHolders\":\"" + this.placeholdersString + "\"," +
+                    "\"props\":\"" + this.printparamString + "\"," +
+                    "\"xslt\":\"" + Base64.getEncoder().encodeToString(this.xsltString.getBytes()) + "\"" + "}";
+            webRequest.setRequestBody(req);
+            WebResponse webResponse = webClient.loadWebResponse(webRequest);
+            webResponse.getContentAsString();
+        }
+        catch (Exception e){}
     }
 
-    public void loadCase() throws Exception{
-        URL url = new URL("http://doctornew-xslt.emias.solit-clouds.ru/web/load.api");
-
-        WebRequest webRequest = new WebRequest(url, HttpMethod.POST);
-        webRequest = defaultHeaderForRequest(webRequest);
-        webRequest.setRequestBody("{\"name\":\""+this.caseName+"\"}");
-        WebResponse webResponse = webClient.loadWebResponse(webRequest);
-        getAllRegionsFromResponse(webResponse);
+    public void loadCase(){
+        try {
+            URL url = new URL("http://doctornew-xslt.emias.solit-clouds.ru/web/load.api");
+            WebRequest webRequest = new WebRequest(url, HttpMethod.POST);
+            webRequest = defaultHeaderForRequest(webRequest);
+            webRequest.setRequestBody("{\"name\":\"" + this.caseName + "\"}");
+            WebResponse webResponse = webClient.loadWebResponse(webRequest);
+            getAllRegionsFromResponse(webResponse);
+        }
+        catch (Exception e){}
     }
 
     public void getAllRegionsFromResponse(WebResponse response) {

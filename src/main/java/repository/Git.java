@@ -1,34 +1,46 @@
 package repository;
 
 import screenform.FilesIO;
+import webstand.Updater;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Git {
     public static String executeCommand(String command) {
-
-        StringBuffer output = new StringBuffer();
-
-        Process p;
+        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+        processBuilder.directory(new File(Git.getRepositoryPath()));
         try {
-            p = Runtime.getRuntime().exec(command);
-            p.waitFor();
+            Process process = processBuilder.start();
             BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-            String line = "";
-            while ((line = reader.readLine())!= null) {
-                output.append(line + "\n");
+                    new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder builder = new StringBuilder();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+                builder.append(System.getProperty("line.separator"));
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            String result = builder.toString();
+            return result;
         }
+        catch (Exception e){}
+        return "";
 
-        return output.toString();
+    }
 
+    public static List<String> getChangedCases() {
+        String[] status = executeCommand("git status").split("\n");
+        ArrayList<String> result = new ArrayList<>();
+        for(String line : status) {
+            if(line.contains("изменено:")){
+                result.add(Updater.findCaseWithPath(line.replaceAll("изменено:      ","").replaceAll("\t","")));
+            }
+        }
+        return result;
     }
 
     public static String getRepositoryPath() {
