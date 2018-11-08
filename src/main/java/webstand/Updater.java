@@ -6,6 +6,7 @@ import screenform.FilesIO;
 import screenform.Functions;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -15,8 +16,18 @@ public class Updater {
     public static void updateXslt(Session session) throws Exception {
         updateCaseNames();
         String pathToCase = findPathWithCase(session.getCaseName());
+        String newXslt = readFile(pathToCase,Charset.forName("UTF-8"));
+        session.setXsltString(newXslt);
 
     }
+
+    static String readFile(String path, Charset encoding)
+            throws IOException
+    {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
+    }
+
     public static void updateCaseNames() throws Exception {
         File caseNames = new File("cases.txt");
         PrintWriter printWriter = new PrintWriter(caseNames);
