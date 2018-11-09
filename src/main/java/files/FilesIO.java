@@ -1,7 +1,8 @@
-package screenform;
+package files;
 
 
 import main.Main;
+import screenform.Functions;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -98,7 +99,17 @@ public class FilesIO {
         out = Paths.get((varOut));
     }
 
-    static void writeToFile(List<String> rows) throws Exception {
+    public static void writeToFile(List<String> rows) throws Exception {
         Files.write(out, rows, Charset.forName("UTF-8"));
+    }
+
+    public static String readXslt(String path) {
+        Charset encoding = Charset.forName("UTF-8");
+        try {
+            byte[] encoded = Files.readAllBytes(Paths.get(path));
+            return (new String(encoded, encoding)).replace("\r", "");
+        } catch (Exception e) {
+        }
+        return "";
     }
 }

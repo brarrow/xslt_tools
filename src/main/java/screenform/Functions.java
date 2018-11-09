@@ -1,10 +1,8 @@
 package screenform;
 
 import console.Console;
+import files.FilesIO;
 import main.Main;
-import screenform.FilesIO;
-import screenform.JDOMProcessing;
-import screenform.Processing;
 
 import java.io.File;
 

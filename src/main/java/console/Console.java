@@ -1,8 +1,9 @@
 package console;
 
+import main.Main;
 import repository.Git;
 import screenform.Functions;
-import main.Main;
+import webstand.Stand;
 import webstand.Updater;
 
 import java.util.Scanner;
@@ -38,11 +39,11 @@ public class Console {
                     }
                     break;
                 }
-                case "g": {
-                    if(Git.getChangedCases().size()!=0) {
-                        System.out.println("Cases to update: " + Git.getChangedCases()+"\nUpdate? [y/n]");
+                case "ug": {
+                    if (Git.getChangedCasesGit().size() != 0) {
+                        System.out.println("Cases to update: " + Git.getChangedCasesGit() + "\nUpdate? [y/n]");
                         if((new Scanner(System.in)).next().equals("y")){
-                            Updater.updateCasesOnStand();
+                            Updater.updateCasesOnStandWithGit();
                         }
                         else {
                             System.out.println("Canceled.");
@@ -53,6 +54,20 @@ public class Console {
                     }
                     break;
                 }
+                case "us": {
+                    if (Stand.getChangedCasesStand().size() != 0) {
+                        System.out.println("Cases to update: " + Stand.getChangedCasesStand() + "\nUpdate? [y/n]");
+                        if ((new Scanner(System.in)).next().equals("y")) {
+                            Updater.updateCasesOnStandWithStand();
+                        } else {
+                            System.out.println("Canceled.");
+                        }
+                    } else {
+                        System.out.println("Nothing to update!");
+                    }
+                    break;
+                }
+
                 case "h": {
                     printHelp();
                     break;

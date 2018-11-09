@@ -1,12 +1,11 @@
 package repository;
 
-import screenform.FilesIO;
-import webstand.Updater;
+import files.FilesIO;
+import webstand.cases.CasesFunctions;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,12 +31,12 @@ public class Git {
 
     }
 
-    public static List<String> getChangedCases() {
+    public static List<String> getChangedCasesGit() {
         String[] status = executeCommand("git status").split("\n");
         ArrayList<String> result = new ArrayList<>();
         for(String line : status) {
             if(line.contains("изменено:")){
-                result.add(Updater.findCaseWithPath(line.replaceAll("изменено:      ","").replaceAll("\t","")));
+                result.add(CasesFunctions.findCaseWithPath(line.replaceAll("изменено:      ", "").replaceAll("\t", "")));
             }
         }
         return result;
