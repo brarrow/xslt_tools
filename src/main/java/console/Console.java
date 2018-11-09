@@ -4,8 +4,11 @@ import main.Main;
 import repository.Git;
 import screenform.Functions;
 import webstand.Stand;
-import webstand.Updater;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Scanner;
 
 public class Console {
@@ -40,31 +43,11 @@ public class Console {
                     break;
                 }
                 case "ug": {
-                    if (Git.getChangedCasesGit().size() != 0) {
-                        System.out.println("Cases to update: " + Git.getChangedCasesGit() + "\nUpdate? [y/n]");
-                        if((new Scanner(System.in)).next().equals("y")){
-                            Updater.updateCasesOnStandWithGit();
-                        }
-                        else {
-                            System.out.println("Canceled.");
-                        }
-                    }
-                    else {
-                        System.out.println("Nothing to update!");
-                    }
+                        UpdateStand.updateCasesOnStandWithGit();
                     break;
                 }
                 case "us": {
-                    if (Stand.getChangedCasesStand().size() != 0) {
-                        System.out.println("Cases to update: " + Stand.getChangedCasesStand() + "\nUpdate? [y/n]");
-                        if ((new Scanner(System.in)).next().equals("y")) {
-                            Updater.updateCasesOnStandWithStand();
-                        } else {
-                            System.out.println("Canceled.");
-                        }
-                    } else {
-                        System.out.println("Nothing to update!");
-                    }
+                    Stand.updateChangedCasesStand();
                     break;
                 }
 
@@ -89,5 +72,26 @@ public class Console {
                 "s -a -o - Get screen form. -a: for all files. -o: for one file. All paths in file paths.txt.\n" +
                 "g - Load or save information to webstand.\n" +
                 "exit - Exit from program.\n");
+    }
+
+    public static String executeCommand(String command, String directory) {
+        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+        processBuilder.directory(new File(directory));
+        try {
+            Process process = processBuilder.start();
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder builder = new StringBuilder();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+                builder.append(System.getProperty("line.separator"));
+            }
+            String result = builder.toString();
+            return result;
+        }
+        catch (Exception e){
+            return "Error executing command!";
+        }
     }
 }

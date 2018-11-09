@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <groupId>xslt</groupId>
     <artifactId>tools</artifactId>
-    <version>0.2.2</version>
+    <version>0.3</version>
     <build>
         <plugins>
             <plugin>

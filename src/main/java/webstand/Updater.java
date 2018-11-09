@@ -13,7 +13,7 @@ public class Updater {
         session.setXsltString(newXslt);
     }
 
-    private static void updateCasesOnStand(List<String> changedCases) {
+    public static void updateCasesOnStand(List<String> changedCases) {
         for (String caseName : changedCases) {
             System.out.println("Updating case " + caseName + "...");
             Session session = new Session(caseName);
@@ -22,16 +22,6 @@ public class Updater {
             System.out.println("Case updated on stand!");
         }
         System.out.println("All cases updated on stand!");
-    }
-
-    public static void updateCasesOnStandWithGit() {
-        List<String> changedCases = Git.getChangedCasesGit();
-        updateCasesOnStand(changedCases);
-    }
-
-    public static void updateCasesOnStandWithStand() {
-        List<String> changedCases = Stand.getChangedCasesStand();
-        updateCasesOnStand(changedCases);
     }
 
 

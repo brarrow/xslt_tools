@@ -15,6 +15,7 @@ import java.util.List;
 
 public class FilesIO {
     public static String path;
+    public static String tmp = System.getProperty("java.io.tmpdir");
     private static String pathAll;
     public static String inFileName;
     public static String outFileName;
@@ -40,7 +41,8 @@ public class FilesIO {
             @Override
             public FileVisitResult visitFile(Path visitedFile, BasicFileAttributes fileAttributes) {
                 if (visitedFile.toFile().getPath().endsWith(".xslt") & visitedFile.getParent().toFile().getPath().endsWith("xslt")) {
-                    if (visitedFile.getParent().toFile().getPath().contains("21973")) {
+                    if (visitedFile.getParent().toFile().getPath().contains("21973") ||
+                            visitedFile.getParent().toFile().getPath().contains("84 Emergency call form")) {
                         return FileVisitResult.CONTINUE;
                     }
                     System.out.println(visitedFile.getParent().toFile().getPath());
@@ -81,8 +83,11 @@ public class FilesIO {
         BufferedReader inp = new BufferedReader(new FileReader("./paths.txt"));
         String line = inp.readLine();
         while (line != null) {
-            if (line.startsWith("directory=")) {
-                pathAll = line.replace("directory=", "").trim();
+            if (line.startsWith("directory_win=") & Main.windows) {
+                pathAll = line.replace("directory_win=", "").trim();
+            }
+            if(line.startsWith("directory_lin=") & !Main.windows) {
+                pathAll = line.replace("directory_lin=", "").trim();
             }
             if (line.startsWith("file=")) {
                 line = line.replace("file=", "").trim();
