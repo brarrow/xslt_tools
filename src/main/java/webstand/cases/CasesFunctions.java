@@ -29,6 +29,13 @@ public class CasesFunctions {
         return null;
     }
 
+    public static String getDoctorAndCct(String caseName) {
+        String tmp = findPathWithCase(caseName);
+        tmp = tmp.substring(0,tmp.indexOf("/xslt"));
+        tmp = tmp.substring(tmp.lastIndexOf("/")+1);
+        return tmp;
+    }
+
     public static void updateCaseNames() {
         File caseNames = new File(casesSource);
         try {

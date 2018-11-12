@@ -8,6 +8,7 @@ import webstand.Stand;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -75,7 +76,10 @@ public class Console {
     }
 
     public static String executeCommand(String command, String directory) {
-        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+        String[] commands = command.split(" ",3);
+
+        ProcessBuilder processBuilder = new ProcessBuilder(commands);
+
         processBuilder.directory(new File(directory));
         try {
             Process process = processBuilder.start();

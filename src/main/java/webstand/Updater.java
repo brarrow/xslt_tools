@@ -13,13 +13,17 @@ public class Updater {
         session.setXsltString(newXslt);
     }
 
+    public static void updateCaseOnStand(String caseName) {
+        System.out.println("Updating case " + caseName + "...");
+        Session session = new Session(caseName);
+        updateXslt(session);
+        session.saveCase();
+        System.out.println("Case updated on stand!");
+    }
+
     public static void updateCasesOnStand(List<String> changedCases) {
         for (String caseName : changedCases) {
-            System.out.println("Updating case " + caseName + "...");
-            Session session = new Session(caseName);
-            updateXslt(session);
-            session.saveCase();
-            System.out.println("Case updated on stand!");
+            updateCaseOnStand(caseName);
         }
         System.out.println("All cases updated on stand!");
     }
