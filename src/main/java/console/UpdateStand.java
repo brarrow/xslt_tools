@@ -28,8 +28,8 @@ public class UpdateStand {
                     System.out.print("Update " + caseName + "? [y/n]: ");
                     if ((new Scanner(System.in)).next().equals("y")) {
                         Updater.updateXslt(session);
-                        Git.commit(caseName);
                         session.saveCase();
+                        Git.commit(caseName);
                         System.out.println("Updated!");
                     } else {
                         System.out.println("Canceled.");

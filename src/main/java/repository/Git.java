@@ -32,18 +32,22 @@ public class Git {
         Console.executeCommand("git add " + CasesFunctions.findPathWithCase(caseName), getRepositoryPath());
         CasesFunctions.getDoctorAndCct(caseName);
         Console.executeCommand("git commit -m " + generateCommitMsg(caseName), getRepositoryPath());
-        String push = Console.executeCommand("git push", getRepositoryPath());
+        Console.executeCommand("git push", getRepositoryPath());
         System.out.println("Messsage to Jira: ");
         System.out.println("Исправлено. Готово к тестированию.");
         System.out.println("Сохранено на стенде " + caseName);
-        System.out.println("Ревизия: " +
-                push.substring(push.indexOf(".."), push.indexOf(" ", push.indexOf(".."))));
+        System.out.println("Ревизия: " + getHashLastCommit().substring(0, 12));
+    }
+
+    public static String getHashLastCommit() {
+        String hash = Console.executeCommand("git rev-parse HEAD", getRepositoryPath());
+        return hash;
     }
 
     public static String generateCommitMsg(String caseName) {
         System.out.println("Enter addition msgs: (all from another line)");
         Scanner input = new Scanner(System.in);
-        String msg = "#update artifacts " + CasesFunctions.getDoctorAndCct(caseName) + (caseName.endsWith("s") ? "(screen " : "(print ") + "form).";
+        String msg = "#update artifacts " + CasesFunctions.getDoctorAndCct(caseName) + (caseName.endsWith("s") ? " (screen " : " (print ") + "form).";
         String line;
         while (input.hasNextLine()) {
             line = input.nextLine();
