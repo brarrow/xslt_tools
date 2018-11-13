@@ -3,7 +3,6 @@ package console;
 import files.FilesIO;
 import repository.Git;
 import webstand.Session;
-import webstand.Stand;
 import webstand.Updater;
 
 import java.util.List;
@@ -21,25 +20,23 @@ public class UpdateStand {
     private static void standardUpdaterCases(List<String> changedCases) {
         if (changedCases.size() != 0) {
             System.out.println("Cases to update: " + changedCases);
-            for(String caseName : changedCases) {
+            for (String caseName : changedCases) {
                 Session session = new Session(caseName);
                 String localXslt = FilesIO.readXslt(findPathWithCase(caseName));
                 if (!localXslt.equals(session.getXsltString())) {
-                    System.out.println(showDiffCommand(session.getXsltString(),localXslt));
+                    System.out.println(showDiffCommand(caseName, session.getXsltString(), localXslt));
                     System.out.print("Update " + caseName + "? [y/n]: ");
-                    if((new Scanner(System.in)).next().equals("y")) {
+                    if ((new Scanner(System.in)).next().equals("y")) {
                         Updater.updateXslt(session);
                         Git.commit(caseName);
                         session.saveCase();
                         System.out.println("Updated!");
-                    }
-                    else {
+                    } else {
                         System.out.println("Canceled.");
                     }
                 }
             }
-        }
-        else {
+        } else {
             System.out.println("Nothing to update!");
         }
     }

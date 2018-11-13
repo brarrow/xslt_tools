@@ -1,15 +1,12 @@
 package console;
 
 import main.Main;
-import repository.Git;
 import screenform.Functions;
 import webstand.Stand;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 
 public class Console {
@@ -44,7 +41,7 @@ public class Console {
                     break;
                 }
                 case "ug": {
-                        UpdateStand.updateCasesOnStandWithGit();
+                    UpdateStand.updateCasesOnStandWithGit();
                     break;
                 }
                 case "us": {
@@ -76,7 +73,7 @@ public class Console {
     }
 
     public static String executeCommand(String command, String directory) {
-        String[] commands = command.split(" ",3);
+        String[] commands = command.split(" ", 3);
 
         ProcessBuilder processBuilder = new ProcessBuilder(commands);
 
@@ -93,8 +90,7 @@ public class Console {
             }
             String result = builder.toString();
             return result;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return "Error executing command!";
         }
     }

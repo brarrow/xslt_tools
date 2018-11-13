@@ -1,6 +1,7 @@
 package webstand.cases;
 
 import files.FilesIO;
+import main.Main;
 
 import java.io.*;
 import java.nio.file.FileSystem;
@@ -31,8 +32,12 @@ public class CasesFunctions {
 
     public static String getDoctorAndCct(String caseName) {
         String tmp = findPathWithCase(caseName);
-        tmp = tmp.substring(0,tmp.indexOf("/xslt"));
-        tmp = tmp.substring(tmp.lastIndexOf("/")+1);
+        String slash;
+        if (Main.windows) {
+            slash = "\\";
+        } else slash = "/";
+        tmp = tmp.substring(0, tmp.indexOf(slash + "xslt"));
+        tmp = tmp.substring(tmp.lastIndexOf(slash) + 1);
         return tmp;
     }
 
@@ -134,7 +139,7 @@ public class CasesFunctions {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 if (line.contains(".xslt_")) {
-                    caseName = line.substring(line.indexOf(".xslt_") + 6, line.indexOf("{", line.replaceAll(" ", "").indexOf(".xslt_"))).replaceAll("[^A-Za-z0-9]","");
+                    caseName = line.substring(line.indexOf(".xslt_") + 6, line.indexOf("{", line.replaceAll(" ", "").indexOf(".xslt_"))).replaceAll("[^A-Za-z0-9]", "");
                     return caseName;
                 }
             }

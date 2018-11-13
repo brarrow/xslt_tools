@@ -16,11 +16,11 @@ import java.util.List;
 public class FilesIO {
     public static String path;
     public static String tmp = System.getProperty("java.io.tmpdir");
-    private static String pathAll;
     public static String inFileName;
     public static String outFileName;
     public static String input;
     public static Path out;
+    private static String pathAll;
 
     public static String getPath() {
         return path;
@@ -86,7 +86,7 @@ public class FilesIO {
             if (line.startsWith("directory_win=") & Main.windows) {
                 pathAll = line.replace("directory_win=", "").trim();
             }
-            if(line.startsWith("directory_lin=") & !Main.windows) {
+            if (line.startsWith("directory_lin=") & !Main.windows) {
                 pathAll = line.replace("directory_lin=", "").trim();
             }
             if (line.startsWith("file=")) {
