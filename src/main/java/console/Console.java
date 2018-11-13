@@ -68,7 +68,8 @@ public class Console {
                 "Available commands: \n" +
                 "h - Get help.\n" +
                 "s -a -o - Get screen form. -a: for all files. -o: for one file. All paths in file paths.txt.\n" +
-                "g - Load or save information to webstand.\n" +
+                "ug - Push updated to git and update stand. (using git changes)\n" +
+                "us - Check all stands cases with local files.\n" +
                 "exit - Exit from program.\n");
     }
 
