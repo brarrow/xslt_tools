@@ -29,11 +29,12 @@ public class Git {
     }
 
     public static void commit(String caseName) {
+        Console.executeCommand("git pull", getRepositoryPath());
         Console.executeCommand("git add " + CasesFunctions.findPathWithCase(caseName), getRepositoryPath());
         CasesFunctions.getDoctorAndCct(caseName);
         Console.executeCommand("git commit -m " + generateCommitMsg(caseName), getRepositoryPath());
         Console.executeCommand("git push", getRepositoryPath());
-        System.out.println("Messsage to Jira: ");
+        System.out.println("Message to Jira: ");
         System.out.println("Исправлено. Готово к тестированию.");
         System.out.println("Сохранено на стенде " + caseName);
         System.out.println("Ревизия: " + getHashLastCommit().substring(0, 12));

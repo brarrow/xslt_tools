@@ -13,12 +13,14 @@ import java.util.List;
 public class JDOMProcessing {
     public static void processXSLT() throws Exception {
         sixth(FilesIO.out.toString());
-        twenty_two(FilesIO.out.toString());
         eight(FilesIO.out.toString());
+        twenty_two(FilesIO.out.toString());
+
         recomMyth(FilesIO.out.toString());
 
         twenty_three(FilesIO.out.toString());
-        twenty_four(FilesIO.out.toString());
+        //twenty_four: deprecated TODO: Need to refactor. Now it works incorrect.
+        //twenty_four(FilesIO.out.toString());
         twenty_five(FilesIO.out.toString());
         twenty_six(FilesIO.out.toString());
         twenty_seven(FilesIO.out.toString());
@@ -384,11 +386,13 @@ public class JDOMProcessing {
                     if (((Text) el).getText().contains(contains) & name.contentEquals("Text")) {
                         return el.getParentElement();
                     }
-                }
-                if (el.getValue().contains(contains) & (((Element) el).getName().contains(name))) {
-                    return (Element) el;
+                } else if (el instanceof Element) {
+                    if (el.getValue().contains(contains) & (((Element) el).getName().contains(name))) {
+                        return (Element) el;
+                    }
                 }
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return null;

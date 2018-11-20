@@ -55,7 +55,7 @@ public class Processing {
                 "     @import url('https://fonts.googleapis.com/css?family=Open+Sans');\n" +
                 "     .xslt_85s{\n" +
                 "         margin: 0pt;\n" +
-                "         padding-left: 0;" +
+                "         padding-left: 0;\n" +
                 "     }\n" +
                 "     .xslt_85s .part{\n" +
                 "         line-height: 24px;\n" +
@@ -69,10 +69,10 @@ public class Processing {
                 "         font-family: Open Sans;\n" +
                 "         font-size: 15px;\n" +
                 "         color: #333333;\n" +
-                "         padding-bottom: 24px;" +
+                "         padding-bottom: 20px;\n" +
                 "     }\n" +
                 "     .xslt_85s .myml{\n" +
-                "         padding-top: 24px;\n" +
+                "         padding-top: 20px;\n" +
                 "     }\n" +
                 "     .xslt_85s .myth{\n" +
                 "         text-align: left;\n" +
@@ -81,7 +81,7 @@ public class Processing {
                 "         font-size: 15px;\n" +
                 "         color: #757575;\n" +
                 "         font-weight: normal;\n" +
-                "         padding-top: 24px\n" +
+                "         padding-top: 20px\n" +
                 "     }\n" +
                 "     .xslt_85s .lefttd{\n" +
                 "         line-height: 24px;\n" +
@@ -101,13 +101,13 @@ public class Processing {
                 "         font-family: Open Sans;\n" +
                 "         font-size: 15px;\n" +
                 "         color: #333333;\n" +
-                "     }" +
+                "     }\n" +
                 "     .xslt_85s td{\n" +
                 "         border-spacing: 0;\n" +
                 "         padding: 0;\n" +
                 "     }\n" +
                 "     .xslt_85s th{\n" +
-                "     \t\t\t padding-left: 0;\n" +
+                "     \t\t\t padding: 0;\n" +
                 "     }\n" +
                 "     .xslt_85s table{\n" +
                 "     \t\t\t\tborder-spacing: 0;\n" +
