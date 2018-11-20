@@ -460,7 +460,6 @@ public class JDOMProcessing {
         return 0;
     }
 
-
     private static void forEachStrongFirst(Element element) {
         if (element.getName() == "strong") {
             if (element.getParentElement().getName() == "if") {
@@ -580,5 +579,4 @@ public class JDOMProcessing {
 
         }
     }
-
 }

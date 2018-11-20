@@ -8,17 +8,12 @@ import java.io.File;
 
 public class Functions {
     public static void getScreenForm(boolean forAll) throws Exception {
-        Main.allFiles = forAll;
         FilesIO.readPathsFromTxt();
 
-        if (Main.allFiles) {
+        if (forAll) {
             FilesIO.forAllXSLT();
         } else {
-            if (Main.windows) {
-                FilesIO.input = FilesIO.path + FilesIO.inFileName;
-            } else {
-                FilesIO.input = FilesIO.path + FilesIO.inFileName;
-            }
+            FilesIO.input = FilesIO.path + FilesIO.inFileName;
             FilesIO.out = new File(new File(FilesIO.path).getPath() + "_screen").toPath();
             FilesIO.out.toFile().mkdir();
             FilesIO.outFileName = FilesIO.inFileName.replaceFirst(".xslt", ".screen.xslt");
@@ -29,7 +24,6 @@ public class Functions {
             }
         }
         System.out.println("Done: " + Console.good + "/" + Console.all);
-
     }
 
     public static void operationsForScreenForm(String varInput, String varOutput) throws Exception {
@@ -41,5 +35,4 @@ public class Functions {
         System.out.println("JDOM processing done!\n");
         Console.good++;
     }
-
 }
