@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 public class JDOMProcessing {
-    public static void processXSLT() throws Exception {
+    public static void processXSLT() {
         sixth(FilesIO.out.toString());
         eight(FilesIO.out.toString());
         twenty_two(FilesIO.out.toString());
@@ -24,15 +24,23 @@ public class JDOMProcessing {
         twenty_five(FilesIO.out.toString());
         twenty_six(FilesIO.out.toString());
         twenty_seven(FilesIO.out.toString());
+        twenty_eight(FilesIO.out.toString());
+        twenty_nine(FilesIO.out.toString());
     }
 
-    private static org.jdom2.Document useSAXParser(String fileName) throws Exception {
-        SAXBuilder saxBuilder = new SAXBuilder();
-        return saxBuilder.build(new File(fileName));
+    private static org.jdom2.Document useSAXParser(String fileName) {
+        try {
+            SAXBuilder saxBuilder = new SAXBuilder();
+
+            return saxBuilder.build(new File(fileName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     //Move obsh diag and soput to begin
-    private static void sixth(String filePath) throws Exception {
+    private static void sixth(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         forEachTd(root);
@@ -51,6 +59,7 @@ public class JDOMProcessing {
                 sopDiagComment = (Comment) sopDiag.getParent().getContent().get(sopDiagIndex - 2);
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         sopDiagDest.addContent(0, sopDiag.detach());
         if (sopDiagComment != null) {
@@ -73,6 +82,7 @@ public class JDOMProcessing {
                 osnDiagComment = (Comment) osnDiag.getParent().getContent().get(osnDiagIndex - 2);
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         osnDiagDest.addContent(0, osnDiag.detach());
         if (osnDiagComment != null) {
@@ -85,7 +95,7 @@ public class JDOMProcessing {
     }
 
     //all main headers in <tr> <td class=myml>
-    private static void eight(String filePath) throws Exception {
+    private static void eight(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         forEachTd(doc.getRootElement());
@@ -118,13 +128,13 @@ public class JDOMProcessing {
         }
 
         forEachStrong(ob);
-        forEachStrongFirst(ob);
+        forEachStrong(ob);
 
         saveXSLT(doc);
     }
 
     //all main headers from capital trim
-    private static void twenty_three(String filePath) throws Exception {
+    private static void twenty_three(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
 
@@ -152,7 +162,7 @@ public class JDOMProcessing {
     }
 
     //add comment head
-    private static void twenty_four(String filePath) throws Exception {
+    private static void twenty_four(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         Element comment = findElWithNameAndAttr(root, "test", "*:Общий_осмотр/*:Комментарий/", "if");
@@ -176,7 +186,7 @@ public class JDOMProcessing {
     }
 
     //to get good and nice Arterial pressure
-    private static void twenty_five(String filePath) throws Exception {
+    private static void twenty_five(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         Element artDavl = findElWithNameAndAttr(root, "test",
@@ -200,7 +210,7 @@ public class JDOMProcessing {
     }
 
     //to get good and nice local status
-    private static void twenty_six(String filePath) throws Exception {
+    private static void twenty_six(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         Element mestStat = findElWithNameAndAttr(root, "test", "*:Местный_статус/*:Местный_статус/*:data/*:", "if");
@@ -219,7 +229,7 @@ public class JDOMProcessing {
     }
 
     //Researches from capital char
-    private static void twenty_seven(String filePath) throws Exception {
+    private static void twenty_seven(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
@@ -248,11 +258,47 @@ public class JDOMProcessing {
             System.out.println("TS");
             saveXSLT(doc);
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
+    //Wrap header of general inspection in tr/td
+    private static void twenty_eight(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        try {
+            Element tempGenInsp = findElWithNameAndCont(root, "Общий осмотр", "thead");
+            tempGenInsp = tempGenInsp.getParentElement();
+            Element placeToInsert = tempGenInsp.getParentElement();
+            Element tr = new Element("tr");
+            Element td = new Element("td");
+            td.setContent(tempGenInsp.detach());
+            tr.setContent(td);
+            placeToInsert.addContent(0, tr);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        saveXSLT(doc);
+    }
+
+    //Change Complication and Concomitant disease headers from part to myth
+    private static void twenty_nine(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        try {
+            Element temp = findElWithNameAndCont(root, "Осложнение", "span");
+            temp.setAttribute("class", "myth");
+
+            temp = findElWithNameAndCont(root, "Дополнительный диагноз", "span");
+            temp.setAttribute("class", "myth");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        saveXSLT(doc);
+    }
+
     //Move parameters from left table to main table
-    private static void twenty_two(String filePath) throws Exception {
+    private static void twenty_two(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         forEachTr(root);
@@ -288,6 +334,7 @@ public class JDOMProcessing {
         try {
             thead = obsOsm.getChild("thead").detach();
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         List<Content> contentToMove = obsOsm.removeContent();
@@ -318,7 +365,7 @@ public class JDOMProcessing {
     }
 
     //Next visit recommendations to good and nice condition
-    private static void recomMyth(String filePath) throws Exception {
+    private static void recomMyth(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         forEachTr(root);
@@ -410,10 +457,15 @@ public class JDOMProcessing {
         return null;
     }
 
-    private static void saveXSLT(Document doc) throws Exception {
-        XMLOutputter xmlOutputter = new XMLOutputter();
-        OutputStream outStream = new FileOutputStream(FilesIO.out.toString());
-        xmlOutputter.output(doc, outStream);
+    private static void saveXSLT(Document doc) {
+        try {
+            XMLOutputter xmlOutputter = new XMLOutputter();
+            OutputStream outStream = new FileOutputStream(FilesIO.out.toString());
+            xmlOutputter.output(doc, outStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     //Delete all Attributes from all td elements
@@ -460,41 +512,6 @@ public class JDOMProcessing {
         return 0;
     }
 
-    private static void forEachStrongFirst(Element element) {
-        if (element.getName() == "strong") {
-            if (element.getParentElement().getName() == "if") {
-                int level = levelOfVariableInIf(element.getParentElement());
-                if (level < 3) {
-                    Element destination = element.getParentElement();
-
-                    Element table = new Element("table");
-                    Element tr = new Element("tr");
-                    Element td = new Element("td");
-
-                    td.setAttribute("class", "myml");
-
-
-                    table.setContent(destination.removeContent());
-                    td.setContent(table);
-                    tr.setContent(td);
-
-                    if (level == 2 || level == 0) {
-                        addMythInStrongAndBr(tr);
-                    }
-                    if (level == 1) {
-                        addPartInStrongAndBr(tr);
-                    }
-                    destination.setContent(tr);
-                }
-            }
-        }
-        List<Element> buf = element.getChildren();
-        if (buf == null) return;
-        for (int i = 0; i < buf.size(); i++) {
-            forEachStrongFirst(buf.get(i));
-        }
-    }
-
     private static void forEachStrong(Element element) {
         if (element.getName() == "strong") {
             if (element.getParentElement().getName() == "if") {
@@ -526,7 +543,7 @@ public class JDOMProcessing {
         List<Element> buf = element.getChildren();
         if (buf == null) return;
         for (int i = 0; i < buf.size(); i++) {
-            forEachStrongFirst(buf.get(i));
+            forEachStrong(buf.get(i));
         }
     }
 

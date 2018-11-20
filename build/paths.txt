@@ -1,5 +1,0 @@
-#path to directory with files
-directory_win= C:\Users\useri\Documents\Repos\SimiDocuments
-directory_lin= /home/brarrow/Projects/SimiDocuments
-#path to direct file
-file= C:\Users\useri\Documents\Repos\RefactorSimiDocuments\Ambulatory\Adult\cct=21975 Traumatologist_trauma\xslt\openEHR_EHR_COMPOSITION_t_trauma.xslt

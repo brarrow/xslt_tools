@@ -11,22 +11,26 @@ import java.util.List;
 public class Processing {
     private static List<String> rows;
 
-    public static void processXSLT() throws Exception {
-        rows = Files.readAllLines(new File(FilesIO.input).toPath(), Charset.forName("UTF-8"));
-        one();
-        thirteen();
-        two();
-        three();
-        four();
-        five();
-        nine();
-        ten();
-        twelve();
-        fourteen();
-        twenty();
+    public static void processXSLT() {
+        try {
+            rows = Files.readAllLines(new File(FilesIO.input).toPath(), Charset.forName("UTF-8"));
+            one();
+            thirteen();
+            two();
+            three();
+            four();
+            five();
+            nine();
+            ten();
+            twelve();
+            fourteen();
+            twenty();
 
-        tabToWhite();
-        FilesIO.writeToFile(rows);
+            tabToWhite();
+            FilesIO.writeToFile(rows);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     static String deleteAllNonCharacter(String str) {

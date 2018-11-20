@@ -26,6 +26,7 @@ public class CasesFunctions {
             }
             return cases;
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -47,6 +48,7 @@ public class CasesFunctions {
             PrintWriter printWriter = new PrintWriter(caseNames);
             printWriter.close();
         } catch (Exception e) {
+            e.printStackTrace();
         }
         FileVisitor<Path> simpleFileVisitor = new SimpleFileVisitor<>() {
             @Override
@@ -74,6 +76,7 @@ public class CasesFunctions {
                         writer.append(toAppend);
                         writer.close();
                     } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
                 return FileVisitResult.CONTINUE;
@@ -110,6 +113,7 @@ public class CasesFunctions {
                 }
             }
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
         return "";
     }
@@ -126,6 +130,7 @@ public class CasesFunctions {
                 }
             }
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
         return "";
     }
@@ -144,6 +149,7 @@ public class CasesFunctions {
                 }
             }
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
         return caseName;
     }

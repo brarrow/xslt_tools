@@ -6,9 +6,9 @@ import webstand.cases.CasesFunctions;
 
 public class Main {
     public static boolean windows = true;
-    public static String version = "0.4";
+    public static String version = "0.4.1";
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         if (System.getProperty("os.name").contains("Linux")) {
             windows = false;
         }

@@ -13,7 +13,7 @@ public class Console {
     public static int good = 0;
     public static int all = 0;
 
-    public static void mainCircle() throws Exception {
+    public static void mainCircle() {
         Scanner in = new Scanner(System.in);
         String[] commands;
         String incorComStr = "Incorrect command. Please, use help or turn off your computer.";

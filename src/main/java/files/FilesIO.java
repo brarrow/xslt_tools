@@ -79,23 +79,27 @@ public class FilesIO {
         }
     }
 
-    public static void readPathsFromTxt() throws Exception {
-        BufferedReader inp = new BufferedReader(new FileReader("./paths.txt"));
-        String line = inp.readLine();
-        while (line != null) {
-            if (line.startsWith("directory_win=") & Main.windows) {
-                pathAll = line.replace("directory_win=", "").trim();
+    public static void readPathsFromTxt() {
+        try {
+            BufferedReader inp = new BufferedReader(new FileReader("./paths.txt"));
+            String line = inp.readLine();
+            while (line != null) {
+                if (line.startsWith("directory_win=") & Main.windows) {
+                    pathAll = line.replace("directory_win=", "").trim();
+                }
+                if (line.startsWith("directory_lin=") & !Main.windows) {
+                    pathAll = line.replace("directory_lin=", "").trim();
+                }
+                if (line.startsWith("file=")) {
+                    line = line.replace("file=", "").trim();
+                    int posFileName = line.lastIndexOf("\\") + 1;
+                    path = line.substring(0, posFileName);
+                    inFileName = line.substring(posFileName);
+                }
+                line = inp.readLine();
             }
-            if (line.startsWith("directory_lin=") & !Main.windows) {
-                pathAll = line.replace("directory_lin=", "").trim();
-            }
-            if (line.startsWith("file=")) {
-                line = line.replace("file=", "").trim();
-                int posFileName = line.lastIndexOf("\\") + 1;
-                path = line.substring(0, posFileName);
-                inFileName = line.substring(posFileName);
-            }
-            line = inp.readLine();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -104,8 +108,12 @@ public class FilesIO {
         out = Paths.get((varOut));
     }
 
-    public static void writeToFile(List<String> rows) throws Exception {
-        Files.write(out, rows, Charset.forName("UTF-8"));
+    public static void writeToFile(List<String> rows) {
+        try {
+            Files.write(out, rows, Charset.forName("UTF-8"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static String readXslt(String path) {
@@ -114,6 +122,7 @@ public class FilesIO {
             byte[] encoded = Files.readAllBytes(Paths.get(path));
             return (new String(encoded, encoding)).replace("\r", "");
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return "";
     }

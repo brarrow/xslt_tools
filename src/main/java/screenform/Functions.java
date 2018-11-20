@@ -7,7 +7,7 @@ import main.Main;
 import java.io.File;
 
 public class Functions {
-    public static void getScreenForm(boolean forAll) throws Exception {
+    public static void getScreenForm(boolean forAll) {
         FilesIO.readPathsFromTxt();
 
         if (forAll) {
@@ -26,7 +26,7 @@ public class Functions {
         System.out.println("Done: " + Console.good + "/" + Console.all);
     }
 
-    public static void operationsForScreenForm(String varInput, String varOutput) throws Exception {
+    public static void operationsForScreenForm(String varInput, String varOutput) {
         Console.all++;
         FilesIO.init(varInput, varOutput);
         Processing.processXSLT();

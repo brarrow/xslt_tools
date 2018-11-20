@@ -90,6 +90,7 @@ public class Session {
             WebResponse webResponse = webClient.loadWebResponse(webRequest);
             webResponse.getContentAsString();
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -102,6 +103,7 @@ public class Session {
             WebResponse webResponse = webClient.loadWebResponse(webRequest);
             getAllRegionsFromResponse(webResponse);
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

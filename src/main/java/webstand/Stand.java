@@ -4,6 +4,7 @@ import console.Console;
 import files.FilesIO;
 import main.Main;
 import repository.Git;
+import webstand.cases.CasesFunctions;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,9 +25,9 @@ public class Stand {
             System.out.print("\r" + counter++ + "/" + all);
             Session session = new Session(caseName);
             String localXslt = FilesIO.readXslt(findPathWithCase(caseName));
-            if (!localXslt.equals(session.getXsltString())) {
+            if (!localXslt.contentEquals(session.getXsltString())) {
                 System.out.println("\r " + showDiffCommand(caseName, session.getXsltString(), localXslt));
-                System.out.print("\rUpdate " + caseName + "? [y/n]: ");
+                System.out.print("\rUpdate " + caseName + " (" + CasesFunctions.getDoctorAndCct(caseName) + ")? [y/n]: ");
                 if ((new Scanner(System.in)).next().equals("y")) {
                     Updater.updateXslt(session);
                     session.saveCase();
