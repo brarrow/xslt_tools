@@ -26,7 +26,7 @@ public class UpdateStand {
                 String localXslt = FilesIO.readXslt(findPathWithCase(caseName));
                 if (!localXslt.contentEquals(session.getXsltString())) {
                     System.out.println(showDiffCommand(caseName, session.getXsltString(), localXslt));
-                    System.out.print("Update " + caseName + CasesFunctions.getDoctorAndCct(caseName) + "? [y/n]: ");
+                    System.out.print("Update " + caseName + " (" + CasesFunctions.getDoctorAndCct(caseName) + ")? [y/n]: ");
                     if ((new Scanner(System.in)).next().equals("y")) {
                         Updater.updateXslt(session);
                         session.saveCase();
