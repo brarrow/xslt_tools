@@ -19,6 +19,7 @@ public class JDOMProcessing {
         recomMyth(FilesIO.out.toString());
 
         twenty_three(FilesIO.out.toString());
+
         //twenty_four: deprecated TODO: Need to refactor. Now it works incorrect.
         //twenty_four(FilesIO.out.toString());
         twenty_five(FilesIO.out.toString());
@@ -26,6 +27,7 @@ public class JDOMProcessing {
         twenty_seven(FilesIO.out.toString());
         twenty_eight(FilesIO.out.toString());
         twenty_nine(FilesIO.out.toString());
+        thirty(FilesIO.out.toString());
     }
 
     private static org.jdom2.Document useSAXParser(String fileName) {
@@ -291,6 +293,36 @@ public class JDOMProcessing {
 
             temp = findElWithNameAndCont(root, "Дополнительный диагноз", "span");
             temp.setAttribute("class", "myth");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        saveXSLT(doc);
+    }
+
+    //Replace whitespaces in "In Period" value
+    private static void thirty(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        try {
+            Element temp = findElWithNameAndAttr(root, "select", "в_течение", "with-param");
+            temp = temp.getParentElement();
+
+            Element parent = temp.getParentElement();
+            int index = parent.getContent().indexOf(temp);
+            temp = temp.detach();
+
+            Namespace xsl = Namespace.getNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
+
+            Element variable = new Element("variable");
+            variable.setNamespace(xsl);
+            variable.setAttribute("name", "date");
+            variable.setContent(temp);
+            parent.addContent(index, variable);
+
+            Element valueOf = new Element("value-of");
+            valueOf.setNamespace(xsl);
+            valueOf.setAttribute("select", "replace($date, ' ', ' ')");
+            parent.addContent(index + 1, valueOf);
         } catch (Exception e) {
             e.printStackTrace();
         }
