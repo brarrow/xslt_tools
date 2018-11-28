@@ -28,6 +28,7 @@ public class JDOMProcessing {
         twenty_eight(FilesIO.out.toString());
         twenty_nine(FilesIO.out.toString());
         thirty(FilesIO.out.toString());
+        deleteCostiliLeft(FilesIO.out.toString());
     }
 
     private static org.jdom2.Document useSAXParser(String fileName) {
@@ -100,67 +101,76 @@ public class JDOMProcessing {
     private static void eight(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
-        forEachTd(doc.getRootElement());
-        forEachTr(root);
+        try {
+            forEachTd(doc.getRootElement());
+            forEachTr(root);
 
-        List<Element> listElement = root.getChildren().get(1).getChild("html").getChild("body").getChild("div").getChildren().get(0).getChildren().get(0).getChildren();//.get(1).getChildren().get(0).getChildren();//.get(2).getChild("tbody").getChildren();
-        Element obsOsm = new Element("j");
-        for (Element el : listElement) {
-            List<Attribute> buf = el.getAttributes();
-            for (Attribute atr : buf) {
-                if (atr.getValue().contains("*:Общий_осмотр")) obsOsm = el;
+            List<Element> listElement = root.getChildren().get(1).getChild("html").getChild("body").getChild("div").getChildren().get(0).getChildren().get(0).getChildren();//.get(1).getChildren().get(0).getChildren();//.get(2).getChild("tbody").getChildren();
+            Element obsOsm = new Element("j");
+            for (Element el : listElement) {
+                List<Attribute> buf = el.getAttributes();
+                for (Attribute atr : buf) {
+                    if (atr.getValue().contains("*:Общий_осмотр")) obsOsm = el;
+                }
             }
-        }
 
-        Element ob;
-        if (filePath.contains("14974") || filePath.contains("23958")) {
-            ob = (Element) obsOsm.getChild("tr").getContent(3); //for surgeon
-        } else {
-            if (filePath.contains("22954")) {
-                ob = findElWithNameAndAttr(root, "test", "*:Жалобы_и_анамнез_заболевания//*:Жалобы_и_анамнез_заболевания//*:Подробности_истории_болезни", "if");
+            Element ob;
+            if (filePath.contains("14974") || filePath.contains("23958")) {
+                ob = (Element) obsOsm.getChild("tr").getChild("td").getContent(3); //for surgeon
             } else {
-                ob = obsOsm.getChild("tr");
+                if (filePath.contains("22954")) {
+                    ob = findElWithNameAndAttr(root, "test", "*:Жалобы_и_анамнез_заболевания//*:Жалобы_и_анамнез_заболевания//*:Подробности_истории_болезни", "if");
+                } else {
+                    ob = obsOsm.getChild("tr");
+                }
             }
+
+            if (!filePath.contains("22954")) { //esli est' obs osm
+                if (ob.getName() != "variable") {
+                    ob = ob.getChild("td");
+                }
+                List<Content> temp = ob.removeContent();
+                ob.setContent(new Element("table").setAttribute("align", "center").setContent(new Element("tbody").setContent(temp)));
+            }
+
+            forEachStrong(ob);
+            forEachStrong(ob);
+
+            saveXSLT(doc);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        if (!filePath.contains("22954")) { //esli est' obs osm
-            ob = ob.getChild("td");
-            List<Content> temp = ob.removeContent();
-            ob.setContent(new Element("table").setAttribute("align", "center").setContent(new Element("tbody").setContent(temp)));
-        }
-
-        forEachStrong(ob);
-        forEachStrong(ob);
-
-        saveXSLT(doc);
     }
 
     //all main headers from capital trim
     private static void twenty_three(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
-
-        for (Content el : root.getDescendants()) {
-            if (el instanceof Element) {
-                if (((Element) el).getName() == "call-template") {
-                    if (((Element) el).getAttributeValue("name").contains("string-ltrim")) {
-                        Element withParam = ((Element) el).getChildren().get(0);
-                        if (withParam != null) {
-                            if (withParam.getName() == "with-param") {
-                                String name = withParam.getAttributeValue("select").replace("$content", "")
-                                        .replace("Up", "").replace("$v", "").replaceAll("[0-9]", "");
-                                int urovenVloz = 1;
-                                if (name.length() <= urovenVloz) {
-                                    ((Element) el).setAttribute("name", ((Element) el).getAttributeValue("name").replace("string-ltrim", "string-capltrim"));
-                                    //el.detach();
+        try {
+            for (Content el : root.getDescendants()) {
+                if (el instanceof Element) {
+                    if (((Element) el).getName() == "call-template") {
+                        if (((Element) el).getAttributeValue("name").contains("string-ltrim")) {
+                            Element withParam = ((Element) el).getChildren().get(0);
+                            if (withParam != null) {
+                                if (withParam.getName() == "with-param") {
+                                    String name = withParam.getAttributeValue("select").replace("$content", "")
+                                            .replace("Up", "").replace("$v", "").replaceAll("[0-9]", "");
+                                    int urovenVloz = 1;
+                                    if (name.length() <= urovenVloz) {
+                                        ((Element) el).setAttribute("name", ((Element) el).getAttributeValue("name").replace("string-ltrim", "string-capltrim"));
+                                        //el.detach();
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            saveXSLT(doc);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        saveXSLT(doc);
     }
 
     //add comment head
@@ -304,7 +314,7 @@ public class JDOMProcessing {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element temp = findElWithNameAndAttr(root, "select", "в_течение", "with-param");
+            Element temp = findElWithNameAndAttr(root, "select", "Болеет_в_течение", "with-param");
             temp = temp.getParentElement();
 
             Element parent = temp.getParentElement();
@@ -366,7 +376,6 @@ public class JDOMProcessing {
         try {
             thead = obsOsm.getChild("thead").detach();
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
         List<Content> contentToMove = obsOsm.removeContent();
@@ -545,7 +554,7 @@ public class JDOMProcessing {
     }
 
     private static void forEachStrong(Element element) {
-        if (element.getName() == "strong") {
+        if (element.getName() == "strong" & !isLeft(element)) {
             if (element.getParentElement().getName() == "if") {
                 int level = levelOfVariableInIf(element.getParentElement());
                 if (level < 3) {
@@ -577,6 +586,29 @@ public class JDOMProcessing {
         for (int i = 0; i < buf.size(); i++) {
             forEachStrong(buf.get(i));
         }
+    }
+
+    private static boolean isLeft(Element element) {
+        if (element.getName() == "strong") {
+            //element.setText(element.getText().replace("left", ""));
+            return element.getText().contains("left");
+        }
+        return false;
+    }
+
+    private static void deleteCostiliLeft(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+
+        while (true) {
+            Element strongLeftCostil = findElWithNameAndCont(root, "left", "strong");
+            if (strongLeftCostil == null) {
+                break;
+            } else {
+                strongLeftCostil.setText(strongLeftCostil.getText().replace("left", ""));
+            }
+        }
+        saveXSLT(doc);
     }
 
     private static void addMythInStrongAndBr(Element element) {

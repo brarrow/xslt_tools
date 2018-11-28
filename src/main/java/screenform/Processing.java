@@ -15,6 +15,7 @@ public class Processing {
         try {
             rows = Files.readAllLines(new File(FilesIO.input).toPath(), Charset.forName("UTF-8"));
             one();
+            twenty();
             thirteen();
             two();
             three();
@@ -24,7 +25,7 @@ public class Processing {
             ten();
             twelve();
             fourteen();
-            twenty();
+
 
             tabToWhite();
             FilesIO.writeToFile(rows);
@@ -232,10 +233,13 @@ public class Processing {
                     int off = 0;
                     String bufForFindCloseTag = rows.get(i);
                     while (!bufForFindCloseTag.contains("</tr>")) {
-                        bufForFindCloseTag = rows.get(i + off++);
+                        if (bufForFindCloseTag.contains("<strong>")) {
+                            rows.set(i + off, bufForFindCloseTag.replaceFirst("strong>", "strong>left"));
+                        }
+                        bufForFindCloseTag = rows.get(i + ++off);
                     }
-                    rows.remove(i + off - 2);
-                    rows.remove(i + off - 2);
+                    rows.remove(i + off - 1);
+                    rows.remove(i + off - 1);
                 }
             }
         }

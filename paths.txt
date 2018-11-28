@@ -1,5 +1,5 @@
 #path to directory with files
-directory_win= C:\Users\useri\Documents\Repos\SimiDocuments\Ambulatory
+directory_win= C:\Users\useri\Documents\Repos\RefactorSimiDocuments\Ambulatory
 directory_lin= /home/brarrow/Projects/SimiDocuments
 #path to direct file
-file=C:\Users\useri\Documents\Repos\SimiDocuments\Ambulatory\Child\cct=28963 Rheumatologist child\xslt\openEHR-EHR-COMPOSITION.t_rheumatologist_examination_child.xslt
+file=C:\Users\useri\Documents\Repos\RefactorSimiDocuments\Ambulatory\Adult\Cardiologist\cct=15951 Cardiologist\xslt\openEHR-EHR-COMPOSITION.t_cardiologist_examination.xslt
