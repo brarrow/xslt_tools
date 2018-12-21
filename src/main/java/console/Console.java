@@ -73,9 +73,7 @@ public class Console {
                 "exit - Exit from program.\n");
     }
 
-    public static String executeCommand(String command, String directory) {
-        String[] commands = command.split(" ", 3);
-
+    public static String executeCommand(String[] commands, String directory) {
         ProcessBuilder processBuilder = new ProcessBuilder(commands);
 
         processBuilder.directory(new File(directory));
@@ -84,13 +82,12 @@ public class Console {
             BufferedReader reader =
                     new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder builder = new StringBuilder();
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null) {
                 builder.append(line);
                 builder.append(System.getProperty("line.separator"));
             }
-            String result = builder.toString();
-            return result;
+            return builder.toString();
         } catch (Exception e) {
             return "Error executing command!";
         }

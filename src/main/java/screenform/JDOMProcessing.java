@@ -48,51 +48,54 @@ public class JDOMProcessing {
         Element root = doc.getRootElement();
         forEachTd(root);
         forEachTr(root);
-
-        Element sopDiag = findElWithNameAndCont(root, "Сопутствующее заболевание", "if");
-        Element spanSopDiag = findElWithNameAndCont(sopDiag, "Сопутствующее заболевание", "span");
-        spanSopDiag.setAttribute("class", "myth");
-        spanSopDiag.setText("Сопутствующий диагноз");
-        Comment sopDiagComment = null;
-        Element sopDiagDest = findElWithNameAndCont(root, "Сопутствующий диагноз", "tbody");
-
-        int sopDiagIndex = sopDiag.getParent().getContent().indexOf(sopDiag);
         try {
-            if (sopDiag.getParent().getContent().get(sopDiagIndex - 2) instanceof Comment) {
-                sopDiagComment = (Comment) sopDiag.getParent().getContent().get(sopDiagIndex - 2);
+            Element sopDiag = findElWithNameAndCont(root, "Сопутствующее заболевание", "if");
+            Element spanSopDiag = findElWithNameAndCont(sopDiag, "Сопутствующее заболевание", "span");
+            spanSopDiag.setAttribute("class", "myth");
+            spanSopDiag.setText("Сопутствующий диагноз");
+            Comment sopDiagComment = null;
+            Element sopDiagDest = findElWithNameAndCont(root, "Сопутствующий диагноз", "tbody");
+
+            int sopDiagIndex = sopDiag.getParent().getContent().indexOf(sopDiag);
+            try {
+                if (sopDiag.getParent().getContent().get(sopDiagIndex - 2) instanceof Comment) {
+                    sopDiagComment = (Comment) sopDiag.getParent().getContent().get(sopDiagIndex - 2);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            sopDiagDest.addContent(0, sopDiag.detach());
+            if (sopDiagComment != null) {
+                sopDiagDest.addContent(0, new Text("\n"));
+                sopDiagDest.addContent(0, sopDiagComment.detach());
+                sopDiagDest.addContent(0, new Text("\n"));
+            }
+
+
+            Element osnDiag = findElWithNameAndCont(root, "Основной диагноз", "if");
+            Element spanOsnDiag = findElWithNameAndCont(osnDiag, "Основной диагноз", "span");
+            spanOsnDiag.setAttribute("class", "myth");
+            Comment osnDiagComment = null;
+            Element osnDiagDest = findElWithNameAndCont(root, "Основной диагноз", "tbody");
+
+
+            int osnDiagIndex = osnDiag.getParent().getContent().indexOf(osnDiag);
+            try {
+                if (osnDiag.getParent().getContent().get(osnDiagIndex - 2) instanceof Comment) {
+                    osnDiagComment = (Comment) osnDiag.getParent().getContent().get(osnDiagIndex - 2);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            osnDiagDest.addContent(0, osnDiag.detach());
+            if (osnDiagComment != null) {
+                osnDiagDest.addContent(0, new Text("\n"));
+                osnDiagDest.addContent(0, osnDiagComment.detach());
+                osnDiagDest.addContent(0, new Text("\n"));
+
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        sopDiagDest.addContent(0, sopDiag.detach());
-        if (sopDiagComment != null) {
-            sopDiagDest.addContent(0, new Text("\n"));
-            sopDiagDest.addContent(0, sopDiagComment.detach());
-            sopDiagDest.addContent(0, new Text("\n"));
-        }
-
-
-        Element osnDiag = findElWithNameAndCont(root, "Основной диагноз", "if");
-        Element spanOsnDiag = findElWithNameAndCont(osnDiag, "Основной диагноз", "span");
-        spanOsnDiag.setAttribute("class", "myth");
-        Comment osnDiagComment = null;
-        Element osnDiagDest = findElWithNameAndCont(root, "Основной диагноз", "tbody");
-
-
-        int osnDiagIndex = osnDiag.getParent().getContent().indexOf(osnDiag);
-        try {
-            if (osnDiag.getParent().getContent().get(osnDiagIndex - 2) instanceof Comment) {
-                osnDiagComment = (Comment) osnDiag.getParent().getContent().get(osnDiagIndex - 2);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        osnDiagDest.addContent(0, osnDiag.detach());
-        if (osnDiagComment != null) {
-            osnDiagDest.addContent(0, new Text("\n"));
-            osnDiagDest.addContent(0, osnDiagComment.detach());
-            osnDiagDest.addContent(0, new Text("\n"));
-
         }
         saveXSLT(doc);
     }
@@ -412,58 +415,60 @@ public class JDOMProcessing {
         forEachTr(root);
         Element recomNextStrongEl;
         Element recomNextEl;
+        try {
+            Content recomNextText = findElWithNameAndCont(root, "Повторный курс/явка", "Text");
+            if (recomNextText != null) {
+                recomNextStrongEl = (new Element("strong"));
+                recomNextStrongEl.setText("Повторный курс/явка");
+                recomNextEl = recomNextText.getParentElement();
+                recomNextEl.addContent(0, recomNextStrongEl);
+            } else {
 
-        Content recomNextText = findElWithNameAndCont(root, "Повторный курс/явка", "Text");
-        if (recomNextText != null) {
-            recomNextStrongEl = (new Element("strong"));
-            recomNextStrongEl.setText("Повторный курс/явка");
-            recomNextEl = recomNextText.getParentElement();
-            recomNextEl.addContent(0, recomNextStrongEl);
-        } else {
-
-            Element recomNextSpanEl = findElWithNameAndCont(root, "Рекомендации по последующему приему", "span");
-            if (recomNextSpanEl != null) {
-                recomNextSpanEl.setName("strong");
+                Element recomNextSpanEl = findElWithNameAndCont(root, "Рекомендации по последующему приему", "span");
+                if (recomNextSpanEl != null) {
+                    recomNextSpanEl.setName("strong");
+                }
+                recomNextStrongEl = findElWithNameAndCont(root, "Рекомендации по последующему приему", "strong");
+                recomNextEl = recomNextStrongEl.getParentElement();
             }
-            recomNextStrongEl = findElWithNameAndCont(root, "Рекомендации по последующему приему", "strong");
-            recomNextEl = recomNextStrongEl.getParentElement();
-        }
-        int recomNextStrongPos = recomNextEl.getChildren().indexOf(recomNextStrongEl);
+            int recomNextStrongPos = recomNextEl.getChildren().indexOf(recomNextStrongEl);
 
-        if ((recomNextStrongPos > 0)) {
-            if (recomNextEl.getChildren().get(recomNextStrongPos - 1).getName().contains("br")) {
-                recomNextEl.getChildren().get(recomNextStrongPos - 1).detach();
-            }
-        }
-        recomNextEl.getChildren().add(recomNextStrongPos + 1, new Element("br"));
-
-        recomNextStrongEl.setText(Processing.deleteAllNonCharacter(recomNextStrongEl.getValue()));
-        recomNextStrongEl.setAttribute("class", "myth");
-
-        List<Content> toFindDot = recomNextStrongEl.getParentElement().getContent();
-        for (int i = 0; i < toFindDot.size(); i++) {
-            if (toFindDot.get(i).equals(recomNextStrongEl)) {
-                if (toFindDot.get(i + 1) instanceof Text) {
-                    ((Text) toFindDot.get(i + 1)).setText(Processing.deleteAllNonCharacter(((Text) toFindDot.get(i + 1)).getText()));
+            if ((recomNextStrongPos > 0)) {
+                if (recomNextEl.getChildren().get(recomNextStrongPos - 1).getName().contains("br")) {
+                    recomNextEl.getChildren().get(recomNextStrongPos - 1).detach();
                 }
             }
-        }
+            recomNextEl.getChildren().add(recomNextStrongPos + 1, new Element("br"));
 
-        Element recomNextParant = recomNextEl.getParentElement();
-        int recomNextPos = recomNextParant.getChildren().indexOf(recomNextEl);
-        Element trEl = new Element("tr");
-        Element tdEl = new Element("td");
-        tdEl.setAttribute("padding-bottom", "32px");
-        tdEl = tdEl.setAttribute("class", "myml");
-        tdEl.setContent(recomNextEl.detach());
-        trEl.setContent(tdEl);
-        recomNextParant.getChildren().add(recomNextPos, trEl);
-        int recomNextPosCont = recomNextParant.getContent().indexOf(trEl);
-        if (recomNextParant.getContent().get(recomNextPosCont - 1) instanceof Text) {
-            Content dot = recomNextParant.getContent().get(recomNextPosCont - 1).detach();
-            tdEl.addContent(dot);
-        }
+            recomNextStrongEl.setText(Processing.deleteAllNonCharacter(recomNextStrongEl.getValue()));
+            recomNextStrongEl.setAttribute("class", "myth");
 
+            List<Content> toFindDot = recomNextStrongEl.getParentElement().getContent();
+            for (int i = 0; i < toFindDot.size(); i++) {
+                if (toFindDot.get(i).equals(recomNextStrongEl)) {
+                    if (toFindDot.get(i + 1) instanceof Text) {
+                        ((Text) toFindDot.get(i + 1)).setText(Processing.deleteAllNonCharacter(((Text) toFindDot.get(i + 1)).getText()));
+                    }
+                }
+            }
+
+            Element recomNextParant = recomNextEl.getParentElement();
+            int recomNextPos = recomNextParant.getChildren().indexOf(recomNextEl);
+            Element trEl = new Element("tr");
+            Element tdEl = new Element("td");
+            tdEl.setAttribute("padding-bottom", "32px");
+            tdEl = tdEl.setAttribute("class", "myml");
+            tdEl.setContent(recomNextEl.detach());
+            trEl.setContent(tdEl);
+            recomNextParant.getChildren().add(recomNextPos, trEl);
+            int recomNextPosCont = recomNextParant.getContent().indexOf(trEl);
+            if (recomNextParant.getContent().get(recomNextPosCont - 1) instanceof Text) {
+                Content dot = recomNextParant.getContent().get(recomNextPosCont - 1).detach();
+                tdEl.addContent(dot);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         saveXSLT(doc);
     }
 

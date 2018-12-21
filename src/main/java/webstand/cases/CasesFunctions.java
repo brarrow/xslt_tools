@@ -61,8 +61,7 @@ public class CasesFunctions {
             public FileVisitResult visitFile(Path visitedFile, BasicFileAttributes fileAttributes) {
                 String filePath = visitedFile.toFile().getPath();
                 if (filePath.endsWith(".xslt")) {
-                    if (visitedFile.getParent().toFile().getPath().contains("21973") ||
-                            visitedFile.getParent().toFile().getPath().contains("84 Emergency call form")) {
+                    if (visitedFile.getParent().toFile().getPath().contains("84 Emergency call form")) {
                         return FileVisitResult.CONTINUE;
                     }
                     String caseNow = findCaseInXslt(filePath);

@@ -57,7 +57,6 @@ public class Processing {
     private static void two() {
         String styleName = "23456789123456789123456789";
         String styles = "    <style>\n" +
-                "     @import url('https://fonts.googleapis.com/css?family=Open+Sans');\n" +
                 "     .xslt_85s{\n" +
                 "         margin: 0pt;\n" +
                 "         padding-left: 0;\n" +
@@ -128,7 +127,7 @@ public class Processing {
                 for (int j = 0; j < newStyleDef.size(); j++) {
                     String nowDef = newStyleDef.get(j);
                     if (nowDef.contains("<style>")) {
-                        styleNameDef = newStyleDef.get(j + 2).replaceAll("[^A-Za-z0-9_]+", "");
+                        styleNameDef = newStyleDef.get(j + 1).replaceAll("[^A-Za-z0-9_]+", "");
                         newStyleDef.set(j, newStyleDef.get(j).replace(styleNameDef, styleName));
                     } else if (nowDef.contains(styleNameDef)) {
                         newStyleDef.set(j, newStyleDef.get(j).replace(styleNameDef, styleName));
@@ -307,6 +306,20 @@ public class Processing {
             if (now.contains("предположительная дата явки")) {
                 rows.set(i, now.replaceFirst("предположительная", "Предположительная"));
             }
+        }
+    }
+
+    private static void custom() {
+        boolean part = false;
+        for (int i = 0; i < rows.size(); i++) {
+            String now = rows.get(i);
+            if (now.contains(".part")) {
+                part = true;
+            }
+            if (now.contains("font-family: Open Sans")) {
+                now.replace("Sans", "Sans Semibold");
+            }
+
         }
     }
 

@@ -11,9 +11,12 @@ import java.util.Scanner;
 public class Git {
 
     public static List<String> getChangedCasesGit() {
-        String[] status = Console.executeCommand("git status", Git.getRepositoryPath()).split("\n");
+        String[] status = Console.executeCommand(new String[]{"git", "status"}, Git.getRepositoryPath()).split("\n");
         ArrayList<String> result = new ArrayList<>();
         for (String line : status) {
+            if (!line.contains(".xslt")) {
+                continue;
+            }
             if (line.contains("изменено:")) {
                 result.add(CasesFunctions.findCaseWithPath(line.replaceAll("изменено:      ", "").replaceAll("\t", "")));
             }
@@ -25,15 +28,15 @@ public class Git {
     }
 
     public static String printChangesInCase(String caseName) {
-        return Console.executeCommand("git diff " + CasesFunctions.findPathWithCase(caseName), Git.getRepositoryPath());
+        return Console.executeCommand(new String[]{"git", "diff", CasesFunctions.findPathWithCase(caseName)}, Git.getRepositoryPath());
     }
 
     public static void commit(String caseName) {
-        Console.executeCommand("git pull", getRepositoryPath());
-        Console.executeCommand("git add " + CasesFunctions.findPathWithCase(caseName), getRepositoryPath());
+        Console.executeCommand(new String[]{"git", "pull"}, getRepositoryPath());
+        Console.executeCommand(new String[]{"git", "add", CasesFunctions.findPathWithCase(caseName)}, getRepositoryPath());
         CasesFunctions.getDoctorAndCct(caseName);
-        Console.executeCommand("git commit -m " + generateCommitMsg(caseName), getRepositoryPath());
-        Console.executeCommand("git push", getRepositoryPath());
+        Console.executeCommand(new String[]{"git", "commit", "-m", generateCommitMsg(caseName)}, getRepositoryPath());
+        Console.executeCommand(new String[]{"git", "push"}, getRepositoryPath());
         System.out.println("Message to Jira: ");
         System.out.println("Исправлено. Готово к тестированию.");
         System.out.println("Сохранено на стенде " + caseName);
@@ -41,7 +44,7 @@ public class Git {
     }
 
     public static String getHashLastCommit() {
-        String hash = Console.executeCommand("git rev-parse HEAD", getRepositoryPath());
+        String hash = Console.executeCommand(new String[]{"git", "rev-parse", "HEAD"}, getRepositoryPath());
         return hash;
     }
 

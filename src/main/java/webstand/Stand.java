@@ -53,7 +53,7 @@ public class Stand {
                 bufRS.write(second);
                 bufRS.close();
 
-                return Console.executeCommand("colordiff first.txt second.txt", FilesIO.tmp);
+                return Console.executeCommand(new String[]{"colordiff", "first.txt", "second.txt"}, FilesIO.tmp);
 
             } catch (Exception e) {
                 e.printStackTrace();
