@@ -65,6 +65,11 @@ public class CasesFunctions {
                         return FileVisitResult.CONTINUE;
                     }
                     String caseNow = findCaseInXslt(filePath);
+                    if (caseNow.isEmpty()) {
+                        System.out.println("Can't find case name in " + filePath);
+                        return FileVisitResult.CONTINUE;
+                    }
+
                     try {
                         BufferedWriter writer = new BufferedWriter(new FileWriter(caseNames, true));
                         String toAppend = "";
