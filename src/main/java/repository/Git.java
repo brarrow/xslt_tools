@@ -38,7 +38,7 @@ public class Git {
         Console.executeCommand(new String[]{"git", "commit", "-m", generateCommitMsg(caseName)}, getRepositoryPath());
         Console.executeCommand(new String[]{"git", "push"}, getRepositoryPath());
         System.out.println("Message to Jira: ");
-        System.out.println("Исправлено. Готово к тестированию.");
+        System.out.println("Доработано. Готово к тестированию.");
         System.out.println("Сохранено на стенде " + caseName);
         System.out.println("Ревизия: " + getHashLastCommit().substring(0, 12));
     }
