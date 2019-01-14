@@ -3,8 +3,12 @@ package screenform;
 import files.FilesIO;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,6 +29,7 @@ public class Processing {
             ten();
             twelve();
             fourteen();
+            addMD5Comment();
 
 
             tabToWhite();
@@ -320,6 +325,19 @@ public class Processing {
                 now.replace("Sans", "Sans Semibold");
             }
 
+        }
+    }
+
+    private static void addMD5Comment() {
+        try (InputStream is = Files.newInputStream(Paths.get(FilesIO.input))) {
+            String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(is);
+            rows.add(5, "<!--" + "md5:" + md5 + "-->");
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            rows.add(5, "<!--" + "generated:" + dtf.format(now) + "-->");
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

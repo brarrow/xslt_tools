@@ -41,8 +41,7 @@ public class FilesIO {
             @Override
             public FileVisitResult visitFile(Path visitedFile, BasicFileAttributes fileAttributes) {
                 if (visitedFile.toFile().getPath().endsWith(".xslt") & visitedFile.getParent().toFile().getPath().endsWith("xslt")) {
-                    if (visitedFile.getParent().toFile().getPath().contains("21973") ||
-                            visitedFile.getParent().toFile().getPath().contains("84 Emergency call form")) {
+                    if (visitedFile.getParent().toFile().getPath().contains("84 Emergency call form")) {
                         return FileVisitResult.CONTINUE;
                     }
                     System.out.println(visitedFile.getParent().toFile().getPath());

@@ -1,6 +1,7 @@
 package console;
 
 import main.Main;
+import monitoring.MonitScreen;
 import screenform.Functions;
 import webstand.Stand;
 
@@ -48,6 +49,10 @@ public class Console {
                     Stand.updateChangedCasesStand();
                     break;
                 }
+                case "m": {
+                    MonitScreen.checkAll();
+                    break;
+                }
 
                 case "h": {
                     printHelp();
@@ -68,6 +73,7 @@ public class Console {
                 "Available commands: \n" +
                 "h - Get help.\n" +
                 "s -a -o - Get screen form. -a: for all files. -o: for one file. All paths in file paths.txt.\n" +
+                "m - Check actuality of screen forms" +
                 "ug - Push updated to git and update stand. (using git changes)\n" +
                 "us - Check all stands cases with local files.\n" +
                 "exit - Exit from program.\n");
