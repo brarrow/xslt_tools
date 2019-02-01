@@ -118,8 +118,8 @@ public class JDOMProcessing {
             }
 
             Element ob;
-            if (filePath.contains("14974") || filePath.contains("23958")) {
-                ob = (Element) obsOsm.getChild("tr").getChild("td").getContent(3); //for surgeon
+            if (filePath.contains("23958")) {
+                ob = (Element) obsOsm.getChild("tr").getChild("td").getContent(3);
             } else {
                 if (filePath.contains("22954")) {
                     ob = findElWithNameAndAttr(root, "test", "*:Жалобы_и_анамнез_заболевания//*:Жалобы_и_анамнез_заболевания//*:Подробности_истории_болезни", "if");

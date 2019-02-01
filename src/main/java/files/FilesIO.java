@@ -91,7 +91,7 @@ public class FilesIO {
                 }
                 if (line.startsWith("file=")) {
                     line = line.replace("file=", "").trim();
-                    int posFileName = line.lastIndexOf("\\") + 1;
+                    int posFileName = line.lastIndexOf(Main.windows?"\\":"/") + 1;
                     path = line.substring(0, posFileName);
                     inFileName = line.substring(posFileName);
                 }
