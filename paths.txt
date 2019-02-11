@@ -1,5 +1,5 @@
 #path to directory with files
 directory_win= C:\Users\useri\Documents\Repos\SimiDocuments\Ambulatory
-directory_lin= /home/brarrow/Projects/RefacSimiDocuments/Ambulatory
+directory_lin= /home/brarrow/Projects/SimiDocuments/Ambulatory
 #path to direct file
-file=C:\Users\useri\Documents\Repos\SimiDocuments\Vaccination\cct = 20978 Vaccination\xslt\openEHR-EHR-COMPOSITION.vaccination.xslt
+file=/home/brarrow/Projects/SimiDocuments/Ambulatory/Adult/cct=21974 Nephrologist/xslt/openEHR-EHR-COMPOSITION.t_nephrologist_examination.xslt

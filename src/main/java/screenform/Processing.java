@@ -29,6 +29,7 @@ public class Processing {
             ten();
             twelve();
             fourteen();
+            twenty_one();
             addMD5Comment();
 
 
@@ -221,7 +222,7 @@ public class Processing {
         boolean bodyFound = false;
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
-            if (now.contains("test=\"*:Общий_осмотр != ''")) {
+            if (now.contains("test=") & now.contains("Общий_осмотр") & now.contains("!= ''")) {
                 obsOsmFound = true;
             }
             if (now.contains("<tbody>")) {
@@ -310,6 +311,18 @@ public class Processing {
             }
             if (now.contains("предположительная дата явки")) {
                 rows.set(i, now.replaceFirst("предположительная", "Предположительная"));
+            }
+        }
+    }
+
+    private static void twenty_one() {
+        for (int i = 0; i < rows.size(); i++) {
+            String now = rows.get(i);
+            if (now.contains("<xsl:element name=\"strong\">")) {
+                rows.set(i, now.replaceFirst("<xsl:element name=\"strong\">", "<strong class=\"part\">"));
+            }
+            if (now.contains("</xsl:element>")) {
+                rows.set(i, now.replaceFirst("</xsl:element>", "</strong>"));
             }
         }
     }

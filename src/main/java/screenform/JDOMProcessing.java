@@ -28,6 +28,7 @@ public class JDOMProcessing {
         twenty_eight(FilesIO.out.toString());
         twenty_nine(FilesIO.out.toString());
         thirty(FilesIO.out.toString());
+        thirty_one(FilesIO.out.toString());
         deleteCostiliLeft(FilesIO.out.toString());
     }
 
@@ -408,6 +409,20 @@ public class JDOMProcessing {
         saveXSLT(doc);
     }
 
+    private static void thirty_one(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        try {
+            Element element = findElWithNameAndAttr(root, "test", "Интерпретация_результатов_обследования", "if");
+            if (element.getChildren().get(0).getName() == "br") {
+                element.getChildren().remove(0);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        saveXSLT(doc);
+    }
+
     //Next visit recommendations to good and nice condition
     private static void recomMyth(String filePath) {
         Document doc = useSAXParser(filePath);
@@ -569,7 +584,9 @@ public class JDOMProcessing {
                     Element tr = new Element("tr");
                     Element td = new Element("td");
 
-                    td.setAttribute("class", "myml");
+                    if (!destination.getValue().contains("Общее состояние")) {
+                        td.setAttribute("class", "myml");
+                    }
 
 
                     table.setContent(destination.removeContent());
