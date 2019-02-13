@@ -50,12 +50,12 @@ public class JDOMProcessing {
         forEachTd(root);
         forEachTr(root);
         try {
-            Element sopDiag = findElWithNameAndCont(root, "Сопутствующее заболевание", "if");
-            Element spanSopDiag = findElWithNameAndCont(sopDiag, "Сопутствующее заболевание", "span");
+            Element sopDiag = findElWithNameAndCont(root, "Сопутствующий диагноз", "if");
+            Element spanSopDiag = findElWithNameAndCont(sopDiag, "Сопутствующий диагноз", "span");
             spanSopDiag.setAttribute("class", "myth");
-            spanSopDiag.setText("Сопутствующий диагноз");
+            spanSopDiag.setText("Сопутствующее заболевание");
             Comment sopDiagComment = null;
-            Element sopDiagDest = findElWithNameAndCont(root, "Сопутствующий диагноз", "tbody");
+            Element sopDiagDest = findElWithNameAndCont(root, "Сопутствующее заболевание", "tbody");
 
             int sopDiagIndex = sopDiag.getParent().getContent().indexOf(sopDiag);
             try {
