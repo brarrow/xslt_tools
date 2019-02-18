@@ -11,25 +11,28 @@ import java.io.OutputStream;
 import java.util.List;
 
 public class JDOMProcessing {
+    static String in = FilesIO.input;
+    static String out = FilesIO.out.toString();
+
     public static void processXSLT() {
-        sixth(FilesIO.out.toString());
-        eight(FilesIO.out.toString());
-        twenty_two(FilesIO.out.toString());
+        sixth(out);
+        eight(out);
+        twenty_two(out);
 
-        recomMyth(FilesIO.out.toString());
+        recomMyth(out);
 
-        twenty_three(FilesIO.out.toString());
+        twenty_three(out);
 
         //twenty_four: deprecated TODO: Need to refactor. Now it works incorrect.
-        //twenty_four(FilesIO.out.toString());
-        twenty_five(FilesIO.out.toString());
-        twenty_six(FilesIO.out.toString());
-        twenty_seven(FilesIO.out.toString());
-        twenty_eight(FilesIO.out.toString());
-        twenty_nine(FilesIO.out.toString());
-        thirty(FilesIO.out.toString());
-        thirty_one(FilesIO.out.toString());
-        deleteCostiliLeft(FilesIO.out.toString());
+        //twenty_four(out);
+        twenty_five(out);
+        twenty_six(out);
+        twenty_seven(out);
+        twenty_eight(out);
+        twenty_nine(out);
+        thirty(out);
+        thirty_one(out);
+        deleteCostiliLeft(out);
     }
 
     private static org.jdom2.Document useSAXParser(String fileName) {
@@ -43,6 +46,35 @@ public class JDOMProcessing {
         return null;
     }
 
+    public static void left_params_fix(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        forEachTd(root);
+        forEachTr(root);
+        Element obs_osm_table = findElWithNameAndCont(root, "Общий осмотр", "span");
+
+        while (obs_osm_table.getName() != "table") {
+            obs_osm_table = obs_osm_table.getParentElement();
+        }
+        obs_osm_table.getChildren().forEach(el -> {
+            if (el.getName().equalsIgnoreCase("tr")) {
+                Element need_if = el.getChildren().get(0).getChildren().get(0);
+                List<Content> buf = need_if.removeContent();
+                Element tr = new Element("tr");
+                Element td = new Element("td").setContent(buf).setAttribute("class", "lefttd");
+                tr.setContent(td);
+                Namespace xsl = Namespace.getNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
+                el.removeContent();
+                el.setName("if").setNamespace(xsl)
+                        .setAttribute("test",
+                                need_if.getAttributeValue("test"))
+                        .setContent(tr);
+            }
+        });
+        saveXSLT(doc, in);
+
+    }
+
     //Move obsh diag and soput to begin
     private static void sixth(String filePath) {
         Document doc = useSAXParser(filePath);
@@ -50,10 +82,18 @@ public class JDOMProcessing {
         forEachTd(root);
         forEachTr(root);
         try {
-            Element sopDiag = findElWithNameAndCont(root, "Сопутствующий диагноз", "if");
-            Element spanSopDiag = findElWithNameAndCont(sopDiag, "Сопутствующий диагноз", "span");
-            spanSopDiag.setAttribute("class", "myth");
-            spanSopDiag.setText("Сопутствующее заболевание");
+            Element sopDiag;
+            try {
+                sopDiag = findElWithNameAndCont(root, "Сопутствующий диагноз", "if");
+                Element spanSopDiag = findElWithNameAndCont(sopDiag, "Сопутствующий диагноз", "span");
+                spanSopDiag.setAttribute("class", "myth");
+                spanSopDiag.setText("Сопутствующее заболевание");
+            } catch (Exception ex) {
+                sopDiag = findElWithNameAndCont(root, "Сопутствующее заболевание", "if");
+                Element spanSopDiag = findElWithNameAndCont(sopDiag, "Сопутствующее заболевание", "span");
+                spanSopDiag.setAttribute("class", "myth");
+                System.out.println("Sop diag is allright!");
+            }
             Comment sopDiagComment = null;
             Element sopDiagDest = findElWithNameAndCont(root, "Сопутствующее заболевание", "tbody");
 
@@ -98,7 +138,7 @@ public class JDOMProcessing {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        saveXSLT(doc);
+        saveXSLT(doc, out);
     }
 
     //all main headers in <tr> <td class=myml>
@@ -134,13 +174,13 @@ public class JDOMProcessing {
                     ob = ob.getChild("td");
                 }
                 List<Content> temp = ob.removeContent();
-                ob.setContent(new Element("table").setAttribute("align", "center").setContent(new Element("tbody").setContent(temp)));
+                ob.setContent(new Element("table").setAttribute("align", "left").setContent(new Element("tbody").setContent(temp)));
             }
 
             forEachStrong(ob);
             forEachStrong(ob);
 
-            saveXSLT(doc);
+            saveXSLT(doc, out);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -171,7 +211,7 @@ public class JDOMProcessing {
                     }
                 }
             }
-            saveXSLT(doc);
+            saveXSLT(doc, out);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -198,7 +238,7 @@ public class JDOMProcessing {
         }
         comment.getContent().add(0, new Element("br"));
         comment.getContent().add(0, new Element("strong").setAttribute("class", "myth").setText("Комментарий"));
-        saveXSLT(doc);
+        saveXSLT(doc, out);
     }
 
     //to get good and nice Arterial pressure
@@ -220,7 +260,7 @@ public class JDOMProcessing {
                 ((Text) el).setText(((Text) el).getText().replace("место измерения", "Место измерения"));
             }
         }
-        saveXSLT(doc);
+        saveXSLT(doc, out);
 
 
     }
@@ -241,7 +281,7 @@ public class JDOMProcessing {
         tr.setContent(td);
         addMythInStrongAndBr(tr);
         mestStat.setContent(tr);
-        saveXSLT(doc);
+        saveXSLT(doc, out);
     }
 
     //Researches from capital char
@@ -272,7 +312,7 @@ public class JDOMProcessing {
             newCallTemplate.setContent(newWithParam);
             neededForEach.addContent(newCallTemplate);
             System.out.println("TS");
-            saveXSLT(doc);
+            saveXSLT(doc, out);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -294,7 +334,7 @@ public class JDOMProcessing {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        saveXSLT(doc);
+        saveXSLT(doc, out);
     }
 
     //Change Complication and Concomitant disease headers from part to myth
@@ -310,7 +350,7 @@ public class JDOMProcessing {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        saveXSLT(doc);
+        saveXSLT(doc, out);
     }
 
     //Replace whitespaces in "In Period" value
@@ -340,7 +380,7 @@ public class JDOMProcessing {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        saveXSLT(doc);
+        saveXSLT(doc, out);
     }
 
     //Move parameters from left table to main table
@@ -373,7 +413,10 @@ public class JDOMProcessing {
                     el.getChild("td").detach();
                     el.setContent(tdContent);
                 }
-                el.addContent((new Element("span")).setText(". "));
+                if (el.getChildren().size() == 1 && el.getAttributeValue("test").contains("count"))
+                    el.getChildren().get(0).addContent((new Element("span")).setText(". "));
+                else
+                    el.addContent((new Element("span")).setText(". "));
             }
         }
         Element thead = null;
@@ -406,7 +449,7 @@ public class JDOMProcessing {
 
         obsSostParent.addContent(obsSostPos + 1, (new Element("tr")).setContent((new Element("td")).setContent(contentToMove)));
 
-        saveXSLT(doc);
+        saveXSLT(doc, out);
     }
 
     private static void thirty_one(String filePath) {
@@ -420,7 +463,7 @@ public class JDOMProcessing {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        saveXSLT(doc);
+        saveXSLT(doc, out);
     }
 
     //Next visit recommendations to good and nice condition
@@ -484,7 +527,7 @@ public class JDOMProcessing {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        saveXSLT(doc);
+        saveXSLT(doc, out);
     }
 
     private static Element findElWithNameAndCont(Element root, String contains, String name) {
@@ -518,10 +561,10 @@ public class JDOMProcessing {
         return null;
     }
 
-    private static void saveXSLT(Document doc) {
+    private static void saveXSLT(Document doc, String path) {
         try {
             XMLOutputter xmlOutputter = new XMLOutputter();
-            OutputStream outStream = new FileOutputStream(FilesIO.out.toString());
+            OutputStream outStream = new FileOutputStream(path);
             xmlOutputter.output(doc, outStream);
         } catch (Exception e) {
             e.printStackTrace();
@@ -630,7 +673,7 @@ public class JDOMProcessing {
                 strongLeftCostil.setText(strongLeftCostil.getText().replace("left", ""));
             }
         }
-        saveXSLT(doc);
+        saveXSLT(doc, out);
     }
 
     private static void addMythInStrongAndBr(Element element) {

@@ -17,7 +17,9 @@ public class Processing {
 
     public static void processXSLT() {
         try {
+//            JDOMProcessing.left_params_fix(FilesIO.input);
             rows = Files.readAllLines(new File(FilesIO.input).toPath(), Charset.forName("UTF-8"));
+            zero();
             one();
             twenty();
             thirteen();
@@ -42,6 +44,13 @@ public class Processing {
 
     static String deleteAllNonCharacter(String str) {
         return str.replace(":", "").replace(".", "");
+    }
+
+    private static void zero() {
+        for (int i = 0; i < rows.size(); i++) {
+            if (rows.get(i).trim().length() == 0)
+                rows.remove(i--);
+        }
     }
 
     private static void one() {
