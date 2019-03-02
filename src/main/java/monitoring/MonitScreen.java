@@ -12,7 +12,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.stream.Collectors;
 
 public class MonitScreen {
-    static boolean checkXsltIsActual(String pathPrint, String pathScreen) {
+    private static boolean checkXsltIsActual(String pathPrint, String pathScreen) {
         try {
             String md5InFile = Files.readAllLines(new File(pathScreen).toPath(), Charset.forName("UTF-8")).stream()
                     .filter(str -> str.contains("md5:"))

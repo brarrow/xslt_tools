@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
-public class Processing {
+class Processing {
     private static List<String> rows;
 
     public static void processXSLT() {
@@ -337,14 +337,10 @@ public class Processing {
     }
 
     private static void custom() {
-        boolean part = false;
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
-            if (now.contains(".part")) {
-                part = true;
-            }
             if (now.contains("font-family: Open Sans")) {
-                now.replace("Sans", "Sans Semibold");
+                rows.set(i, now.replace("Sans", "Sans Semibold"));
             }
 
         }

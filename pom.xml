@@ -6,7 +6,11 @@
     <packaging>jar</packaging>
     <groupId>xslt</groupId>
     <artifactId>xslt_tools</artifactId>
-    <version>0.4.2</version>
+    <version>0.4.3</version>
+    <properties>
+        <maven.compiler.source>1.11</maven.compiler.source>
+        <maven.compiler.target>1.11</maven.compiler.target>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -29,7 +33,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <release>10</release>
+                    <release>11</release>
                 </configuration>
                 <dependencies>
                     <dependency>

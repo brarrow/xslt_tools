@@ -4,7 +4,7 @@ import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 
 import java.util.List;
 
-public class StructEl {
+class StructEl {
     String oehrName;
     String formName;
     byte visible;

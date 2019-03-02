@@ -9,7 +9,7 @@ import java.io.FileInputStream;
 import java.util.Iterator;
 import java.util.List;
 
-public class Docx {
+class Docx {
     public static void readDocx(String filePath) {
         try {
             FileInputStream fis = new FileInputStream(filePath);

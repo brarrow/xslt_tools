@@ -10,9 +10,9 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-public class JDOMProcessing {
-    static String in = FilesIO.input;
-    static String out = FilesIO.out.toString();
+class JDOMProcessing {
+    private static String in = FilesIO.input;
+    private static String out = FilesIO.out.toString();
 
     public static void processXSLT() {
         sixth(out);
@@ -32,6 +32,8 @@ public class JDOMProcessing {
         twenty_nine(out);
         thirty(out);
         thirty_one(out);
+        thirty_two(out);
+        thirty_three(out);
         deleteCostiliLeft(out);
     }
 
@@ -53,7 +55,7 @@ public class JDOMProcessing {
         forEachTr(root);
         Element obs_osm_table = findElWithNameAndCont(root, "Общий осмотр", "span");
 
-        while (obs_osm_table.getName() != "table") {
+        while (obs_osm_table.getName().equalsIgnoreCase("table")) {
             obs_osm_table = obs_osm_table.getParentElement();
         }
         obs_osm_table.getChildren().forEach(el -> {
@@ -92,7 +94,6 @@ public class JDOMProcessing {
                 sopDiag = findElWithNameAndCont(root, "Сопутствующее заболевание", "if");
                 Element spanSopDiag = findElWithNameAndCont(sopDiag, "Сопутствующее заболевание", "span");
                 spanSopDiag.setAttribute("class", "myth");
-                System.out.println("Sop diag is allright!");
             }
             Comment sopDiagComment = null;
             Element sopDiagDest = findElWithNameAndCont(root, "Сопутствующее заболевание", "tbody");
@@ -136,7 +137,7 @@ public class JDOMProcessing {
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Failed: moving diagnosis to begin.");
         }
         saveXSLT(doc, out);
     }
@@ -159,7 +160,7 @@ public class JDOMProcessing {
             }
 
             Element ob;
-            if (filePath.contains("23958")) {
+            if (filePath.contains("2395558")) {
                 ob = (Element) obsOsm.getChild("tr").getChild("td").getContent(3);
             } else {
                 if (filePath.contains("22954")) {
@@ -170,7 +171,7 @@ public class JDOMProcessing {
             }
 
             if (!filePath.contains("22954")) { //esli est' obs osm
-                if (ob.getName() != "variable") {
+                if (!ob.getName().equals("variable")) {
                     ob = ob.getChild("td");
                 }
                 List<Content> temp = ob.removeContent();
@@ -182,7 +183,7 @@ public class JDOMProcessing {
 
             saveXSLT(doc, out);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Failed: make all subtitles from another line.");
         }
     }
 
@@ -193,11 +194,11 @@ public class JDOMProcessing {
         try {
             for (Content el : root.getDescendants()) {
                 if (el instanceof Element) {
-                    if (((Element) el).getName() == "call-template") {
+                    if (((Element) el).getName().equals("call-template")) {
                         if (((Element) el).getAttributeValue("name").contains("string-ltrim")) {
                             Element withParam = ((Element) el).getChildren().get(0);
                             if (withParam != null) {
-                                if (withParam.getName() == "with-param") {
+                                if (withParam.getName().equals("with-param")) {
                                     String name = withParam.getAttributeValue("select").replace("$content", "")
                                             .replace("Up", "").replace("$v", "").replaceAll("[0-9]", "");
                                     int urovenVloz = 1;
@@ -213,7 +214,7 @@ public class JDOMProcessing {
             }
             saveXSLT(doc, out);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Failed: make all subtitles from capital char.");
         }
     }
 
@@ -222,12 +223,8 @@ public class JDOMProcessing {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         Element comment = findElWithNameAndAttr(root, "test", "*:Общий_осмотр/*:Комментарий/", "if");
-        if (comment == null) {
-            return;
-        }
-        if (comment == null) {
-            return;
-        }
+        if (comment == null) return;
+
         try {
             comment = comment.getChild("tr").getChild("td");
         } catch (Exception e) {
@@ -245,43 +242,49 @@ public class JDOMProcessing {
     private static void twenty_five(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
-        Element artDavl = findElWithNameAndAttr(root, "test",
-                "*:Общий_осмотр/*:Артериальное_давление/*:data/*:Любое_событие_as_Point_Event/*:data/*:Комментарий/*:value/rm:value != ''", "if");
-        if (artDavl == null) {
-            return;
-        }
-        artDavl = artDavl.getChild("tr").getChild("td");
-        artDavl = findElWithNameAndAttr(artDavl, "select", "*:Общий_осмотр/*:Артериальное_давление", "for-each");
-        artDavl.getChildren().get(0).getChildren().get(0).detach();
-        artDavl = artDavl.getChildren().get(0);
-        List<Content> buf = artDavl.getContent();
-        for (Content el : buf) {
-            if (el instanceof Text & el.getValue().contains("место измерения")) {
-                ((Text) el).setText(((Text) el).getText().replace("место измерения", "Место измерения"));
+        try {
+            Element artDavl = findElWithNameAndAttr(root, "test",
+                    "*:Общий_осмотр/*:Артериальное_давление/*:data/*:Любое_событие_as_Point_Event/*:data/*:Комментарий/*:value/rm:value != ''", "if");
+            if (artDavl == null) {
+                return;
             }
+            artDavl = artDavl.getChild("tr").getChild("td");
+            artDavl = findElWithNameAndAttr(artDavl, "select", "*:Общий_осмотр/*:Артериальное_давление", "for-each");
+            artDavl.getChildren().get(0).getChildren().get(0).detach();
+            artDavl = artDavl.getChildren().get(0);
+            List<Content> buf = artDavl.getContent();
+            for (Content el : buf) {
+                if (el instanceof Text & el.getValue().contains("место измерения")) {
+                    ((Text) el).setText(((Text) el).getText().replace("место измерения", "Место измерения"));
+                }
+            }
+            saveXSLT(doc, out);
+        } catch (Exception ex) {
+            System.out.println("Failed: make good and nice Arterial pressure.");
         }
-        saveXSLT(doc, out);
-
-
     }
 
     //to get good and nice local status
     private static void twenty_six(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
-        Element mestStat = findElWithNameAndAttr(root, "test", "*:Местный_статус/*:Местный_статус/*:data/*:", "if");
-        if (mestStat == null) {
-            return;
+        try {
+            Element mestStat = findElWithNameAndAttr(root, "test", "*:Местный_статус/*:Местный_статус/*:data/*:", "if");
+            if (mestStat == null) {
+                return;
+            }
+            List<Content> detach = mestStat.removeContent();
+            Element tr = new Element("tr");
+            Element td = new Element("td");
+            td.setAttribute("class", "myml");
+            td.setContent(detach);
+            tr.setContent(td);
+            addMythInStrongAndBr(tr);
+            mestStat.setContent(tr);
+            saveXSLT(doc, out);
+        } catch (Exception ex) {
+            System.out.println("Failed: make good and nice local status.");
         }
-        List<Content> detach = mestStat.removeContent();
-        Element tr = new Element("tr");
-        Element td = new Element("td");
-        td.setAttribute("class", "myml");
-        td.setContent(detach);
-        tr.setContent(td);
-        addMythInStrongAndBr(tr);
-        mestStat.setContent(tr);
-        saveXSLT(doc, out);
     }
 
     //Researches from capital char
@@ -314,7 +317,7 @@ public class JDOMProcessing {
             System.out.println("TS");
             saveXSLT(doc, out);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Failed: make researches from capital char.");
         }
     }
 
@@ -331,10 +334,10 @@ public class JDOMProcessing {
             td.setContent(tempGenInsp.detach());
             tr.setContent(td);
             placeToInsert.addContent(0, tr);
+            saveXSLT(doc, out);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Failed: wrap general inspection in tr/td.");
         }
-        saveXSLT(doc, out);
     }
 
     //Change Complication and Concomitant disease headers from part to myth
@@ -347,10 +350,10 @@ public class JDOMProcessing {
 
             temp = findElWithNameAndCont(root, "Дополнительный диагноз", "span");
             temp.setAttribute("class", "myth");
+            saveXSLT(doc, out);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Failed: change diagnosis from part to myth.");
         }
-        saveXSLT(doc, out);
     }
 
     //Replace whitespaces in "In Period" value
@@ -377,93 +380,135 @@ public class JDOMProcessing {
             valueOf.setNamespace(xsl);
             valueOf.setAttribute("select", "replace($date, ' ', ' ')");
             parent.addContent(index + 1, valueOf);
+            saveXSLT(doc, out);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Failed: replace whitespaces in \"In Period\" value.");
         }
-        saveXSLT(doc, out);
     }
 
     //Move parameters from left table to main table
     private static void twenty_two(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
-        forEachTr(root);
-
-        Element obsOsm = findElWithNameAndCont(root, "Общий осмотр", "span");
-        if (obsOsm == null) {
-            return;
-        }
-        while (obsOsm.getName() != "table") {
-            obsOsm = obsOsm.getParentElement();
-        }
-        if (obsOsm.getChild("tbody") != null) {
-            obsOsm = obsOsm.getChild("tbody");
-        }
-
-        for (Element el : obsOsm.getChildren()) {
-            if (el.getName().contains("if")) {
-                if ((el).getChild("tr") != null) {
-
-                    List<Content> trContent = (el).getChild("tr").removeContent();
-                    el.getChild("tr").detach();
-                    el.setContent(trContent);
-                }
-                if ((el).getChild("td") != null) {
-                    List<Content> tdContent = (el).getChild("td").removeContent();
-                    el.getChild("td").detach();
-                    el.setContent(tdContent);
-                }
-                if (el.getChildren().size() == 1 && el.getAttributeValue("test").contains("count"))
-                    el.getChildren().get(0).addContent((new Element("span")).setText(". "));
-                else
-                    el.addContent((new Element("span")).setText(". "));
-            }
-        }
-        Element thead = null;
         try {
-            thead = obsOsm.getChild("thead").detach();
-        } catch (Exception e) {
+            forEachTr(root);
+
+            Element obsOsm = findElWithNameAndCont(root, "Общий осмотр", "span");
+            if (obsOsm == null) {
+                return;
+            }
+            while (!obsOsm.getName().equals("table")) {
+                obsOsm = obsOsm.getParentElement();
+            }
+            if (obsOsm.getChild("tbody") != null) {
+                obsOsm = obsOsm.getChild("tbody");
+            }
+
+            for (Element el : obsOsm.getChildren()) {
+                if (el.getName().contains("if")) {
+                    if ((el).getChild("tr") != null) {
+
+                        List<Content> trContent = (el).getChild("tr").removeContent();
+                        el.getChild("tr").detach();
+                        el.setContent(trContent);
+                    }
+                    if ((el).getChild("td") != null) {
+                        List<Content> tdContent = (el).getChild("td").removeContent();
+                        el.getChild("td").detach();
+                        el.setContent(tdContent);
+                    }
+                    if (el.getChildren().size() == 1 && el.getAttributeValue("test").contains("count"))
+                        el.getChildren().get(0).addContent((new Element("span")).setText(". "));
+                    else
+                        el.addContent((new Element("span")).setText(". "));
+                }
+            }
+            Element thead = obsOsm.getChild("thead").detach();
+
+
+            List<Content> contentToMove = obsOsm.removeContent();
+            if (thead != null) {
+                obsOsm.addContent(thead);
+            }
+
+
+            if (obsOsm.getName().equals("tbody")) {
+                obsOsm.detach();
+            }
+
+            Element obsSost = findElWithNameAndCont(root, "Общее", "strong");
+
+            if (obsSost == null) {
+                return;
+            }
+            while (!obsSost.getName().equals("if")) {
+                obsSost = obsSost.getParentElement();
+            }
+            Element obsSostParent = obsSost.getParentElement();
+            int obsSostPos = obsSostParent.getContent().indexOf(obsSost);
+
+
+            obsSostParent.addContent(obsSostPos + 1, (new Element("tr")).setContent((new Element("td")).setContent(contentToMove)));
+
+            saveXSLT(doc, out);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Failed: move parameters from left table to main table.");
         }
-
-        List<Content> contentToMove = obsOsm.removeContent();
-        if (thead != null) {
-            obsOsm.addContent(thead);
-        }
-
-
-        if (obsOsm.getName() == "tbody") {
-            obsOsm.detach();
-        }
-
-        Element obsSost = findElWithNameAndCont(root, "Общее", "strong");
-
-        if (obsSost == null) {
-            return;
-        }
-        while (obsSost.getName() != "if") {
-            obsSost = obsSost.getParentElement();
-        }
-        Element obsSostParent = obsSost.getParentElement();
-        int obsSostPos = obsSostParent.getContent().indexOf(obsSost);
-
-
-        obsSostParent.addContent(obsSostPos + 1, (new Element("tr")).setContent((new Element("td")).setContent(contentToMove)));
-
-        saveXSLT(doc, out);
     }
 
+    //Delete br in Interpretation
     private static void thirty_one(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
             Element element = findElWithNameAndAttr(root, "test", "Интерпретация_результатов_обследования", "if");
-            if (element.getChildren().get(0).getName() == "br") {
+            if (element.getChildren().get(0).getName().equals("br")) {
                 element.getChildren().remove(0);
             }
+            saveXSLT(doc, out);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.out.println("Failed: delete br in interpretation.");
         }
-        saveXSLT(doc, out);
+    }
+
+    //Make in the moment compl from low case
+    private static void thirty_two(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        try {
+            Element buf = findElWithNameAndAttr(root, "select", "На_момент_осмотра_жалобы", "with-param");
+            if (buf == null) {
+                buf = findElWithNameAndAttr(root, "select", "На_момент_осмотра_жалобы", "value-of");
+            }
+            while (!buf.getName().contains("variable")) {
+                buf = buf.getParentElement();
+            }
+            String nameOfVariable = buf.getAttributeValue("name");
+            buf = findElWithNameAndAttr(root, "select", nameOfVariable, "with-param");
+            buf.getParentElement().setAttribute("name", "string-ltrim");
+            saveXSLT(doc, out);
+        } catch (Exception ex) {
+            System.out.println("Failed: make \"In the moment...\" from low char.");
+        }
+    }
+
+    //Remove br from at the next reception
+    private static void thirty_three(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        try {
+            Element buf = findElWithNameAndCont(root, "по последующему", "strong");
+            buf = buf.getParentElement().getChildren().get(0);
+            if (buf.getName().contains("if") & buf.getChildren().size() == 1
+                    & buf.getChildren().get(0).getName().equalsIgnoreCase("br")) {
+                buf.detach();
+            }
+            saveXSLT(doc, out);
+
+        } catch (Exception ex) {
+            System.out.println("Failed: remove br from \"at the next reception\".");
+        }
     }
 
     //Next visit recommendations to good and nice condition
@@ -524,10 +569,11 @@ public class JDOMProcessing {
                 Content dot = recomNextParant.getContent().get(recomNextPosCont - 1).detach();
                 tdEl.addContent(dot);
             }
+            saveXSLT(doc, out);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Failed: make good and nice Recommendations.");
         }
-        saveXSLT(doc, out);
+
     }
 
     private static Element findElWithNameAndCont(Element root, String contains, String name) {
@@ -574,7 +620,7 @@ public class JDOMProcessing {
 
     //Delete all Attributes from all td elements
     private static void forEachTd(Element element) {
-        if (element.getName() == "td") {
+        if (element.getName().equals("td")) {
             element.setAttributes(null);
         }
         for (Element el : element.getChildren()) {
@@ -584,7 +630,7 @@ public class JDOMProcessing {
 
     //Delete all empty tr or tr/td
     private static void forEachTr(Element element) {
-        if (element.getName() == "tr") {
+        if (element.getName().equals("tr")) {
             if (element.getChild("td") == null) {
                 if (element.getChild("th") == null) {
                     element.detach();
@@ -594,8 +640,8 @@ public class JDOMProcessing {
         }
         List<Element> buf = element.getChildren();
         if (buf == null) return;
-        for (int i = 0; i < buf.size(); i++) {
-            forEachTr(buf.get(i));
+        for (Element element1 : buf) {
+            forEachTr(element1);
         }
     }
 
@@ -617,8 +663,8 @@ public class JDOMProcessing {
     }
 
     private static void forEachStrong(Element element) {
-        if (element.getName() == "strong" & !isLeft(element)) {
-            if (element.getParentElement().getName() == "if") {
+        if (element.getName().equals("strong") & !isLeft(element)) {
+            if (element.getParentElement().getName().equals("if")) {
                 int level = levelOfVariableInIf(element.getParentElement());
                 if (level < 3) {
                     Element destination = element.getParentElement();
@@ -648,13 +694,13 @@ public class JDOMProcessing {
         }
         List<Element> buf = element.getChildren();
         if (buf == null) return;
-        for (int i = 0; i < buf.size(); i++) {
-            forEachStrong(buf.get(i));
+        for (Element element1 : buf) {
+            forEachStrong(element1);
         }
     }
 
     private static boolean isLeft(Element element) {
-        if (element.getName() == "strong") {
+        if (element.getName().equals("strong")) {
             //element.setText(element.getText().replace("left", ""));
             return element.getText().contains("left");
         }
@@ -678,9 +724,9 @@ public class JDOMProcessing {
 
     private static void addMythInStrongAndBr(Element element) {
         List<Element> el;
-        if (element.getName() == "tr") {
+        if (element.getName().equals("tr")) {
             el = element.getChild("td").getChildren();
-            if (el.get(0).getName() == "table" & el.size() == 1) {
+            if (el.get(0).getName().equals("table") & el.size() == 1) {
                 el = el.get(0).getChildren();
             }
         } else {
@@ -690,7 +736,7 @@ public class JDOMProcessing {
 
         for (int i = 0; i < el.size(); i++) {
             Element buf = el.get(i);
-            if ((buf.getName() == "strong")) {
+            if ((buf.getName().equals("strong"))) {
                 buf.setAttribute("class", "myth");
                 Content textWithOnlyCharacters = buf.getContent(0);
                 Text newText = new Text(Processing.deleteAllNonCharacter(textWithOnlyCharacters.getValue()));
@@ -703,9 +749,9 @@ public class JDOMProcessing {
 
     private static void addPartInStrongAndBr(Element element) {
         List<Element> el;
-        if (element.getName() == "tr") {
+        if (element.getName().equals("tr")) {
             el = element.getChild("td").getChildren();
-            if (el.get(0).getName() == "table" & el.size() == 1) {
+            if (el.get(0).getName().equals("table") & el.size() == 1) {
                 el = el.get(0).getChildren();
             }
         } else {
@@ -715,7 +761,7 @@ public class JDOMProcessing {
 
         for (int i = 0; i < el.size(); i++) {
             Element buf = el.get(i);
-            if ((buf.getName() == "strong")) {
+            if ((buf.getName().equals("strong"))) {
                 buf.setAttribute("class", "part");
                 Content textWithOnlyCharacters = buf.getContent(0);
                 Text newText = new Text(Processing.deleteAllNonCharacter(textWithOnlyCharacters.getValue()));

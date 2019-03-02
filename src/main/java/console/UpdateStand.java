@@ -12,8 +12,8 @@ import java.util.Scanner;
 import static webstand.Stand.showDiffCommand;
 import static webstand.cases.CasesFunctions.findPathWithCase;
 
-public class UpdateStand {
-    public static void updateCasesOnStandWithGit() {
+class UpdateStand {
+    static void updateCasesOnStandWithGit() {
         List<String> changedCases = Git.getChangedCasesGit();
         standardUpdaterCases(changedCases);
     }

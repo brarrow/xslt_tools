@@ -6,7 +6,7 @@ import org.jdom2.input.SAXBuilder;
 
 import java.io.File;
 
-public class Xsd {
+class Xsd {
     private static org.jdom2.Document useSAXParser(String fileName) {
         try {
             SAXBuilder saxBuilder = new SAXBuilder();

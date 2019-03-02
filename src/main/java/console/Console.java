@@ -3,6 +3,7 @@ package console;
 import main.Main;
 import monitoring.MonitScreen;
 import screenform.Functions;
+import testing.Test;
 import webstand.Stand;
 
 import java.io.BufferedReader;
@@ -22,6 +23,8 @@ public class Console {
         System.out.println("Version " + Main.version + ".");
         System.out.println("Made by brarrow.");
         do {
+            all = 0;
+            good = 0;
             System.out.print("Command: ");
             commands = in.nextLine().split(" ");
             switch (commands[0]) {
@@ -53,6 +56,14 @@ public class Console {
                     MonitScreen.checkAll();
                     break;
                 }
+                case "t": {
+                    Test.getHtmlText("/home/brarrow/Рабочий стол/html.html");
+                    break;
+                }
+                case "c": {
+                    Functions.changeCurrentFile();
+                    break;
+                }
 
                 case "h": {
                     printHelp();
@@ -68,12 +79,14 @@ public class Console {
         } while (!commands[0].equals("exit"));
     }
 
-    public static void printHelp() {
+    private static void printHelp() {
         System.out.println("Help for " + Main.version + " version.\n" +
                 "Available commands: \n" +
                 "h - Get help.\n" +
+                "c - Change current processing file.\n" +
+//                "t - Testing result html" +
                 "s -a -o - Get screen form. -a: for all files. -o: for one file. All paths in file paths.txt.\n" +
-                "m - Check actuality of screen forms" +
+//                "m - Check actuality of screen forms" +
                 "ug - Push updated to git and update stand. (using git changes)\n" +
                 "us - Check all stands cases with local files.\n" +
                 "exit - Exit from program.\n");

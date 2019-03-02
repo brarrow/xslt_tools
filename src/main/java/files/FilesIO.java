@@ -14,17 +14,14 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 
 public class FilesIO {
+    public static final String tmp = System.getProperty("java.io.tmpdir");
     public static String path;
-    public static String tmp = System.getProperty("java.io.tmpdir");
     public static String inFileName;
     public static String outFileName;
     public static String input;
     public static Path out;
     private static String pathAll;
 
-    public static String getPath() {
-        return path;
-    }
 
     public static String getPathAll() {
         return pathAll;
@@ -91,7 +88,7 @@ public class FilesIO {
                 }
                 if (line.startsWith("file=")) {
                     line = line.replace("file=", "").trim();
-                    int posFileName = line.lastIndexOf(Main.windows?"\\":"/") + 1;
+                    int posFileName = line.lastIndexOf(Main.windows ? "\\" : "/") + 1;
                     path = line.substring(0, posFileName);
                     inFileName = line.substring(posFileName);
                 }

@@ -12,7 +12,7 @@ public class Updater {
         session.setXsltString(newXslt);
     }
 
-    public static void updateCaseOnStand(String caseName) {
+    private static void updateCaseOnStand(String caseName) {
         System.out.println("Updating case " + caseName + "...");
         Session session = new Session(caseName);
         updateXslt(session);

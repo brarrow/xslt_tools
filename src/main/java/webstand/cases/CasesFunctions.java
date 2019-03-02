@@ -112,8 +112,7 @@ public class CasesFunctions {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 if (line.contains(path)) {
-                    String res = getCaseFromStandardLine(line);
-                    return res;
+                    return getCaseFromStandardLine(line);
                 }
             }
         } catch (FileNotFoundException e) {
@@ -139,22 +138,22 @@ public class CasesFunctions {
         return "";
     }
 
-    public static String findCaseInXslt(String filePath) {
+    private static String findCaseInXslt(String filePath) {
         File file = new File(filePath);
-        String caseName = "";
         try {
             Scanner scanner = new Scanner(file);
 
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 if (line.contains(".xslt_")) {
-                    caseName = line.substring(line.indexOf(".xslt_") + 6, line.indexOf("{", line.replaceAll(" ", "").indexOf(".xslt_"))).replaceAll("[^A-Za-z0-9]", "");
-                    return caseName;
+                    return line.substring(line.indexOf(".xslt_") + 6,
+                            line.indexOf("{", line.replaceAll(" ", "").indexOf(".xslt_")))
+                            .replaceAll("[^A-Za-z0-9]", "");
                 }
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return caseName;
+        return "";
     }
 }

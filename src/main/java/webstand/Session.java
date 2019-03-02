@@ -9,12 +9,12 @@ import java.util.logging.Level;
 
 
 public class Session {
-    WebClient webClient;
-    String caseName;
-    String xmlString;
-    String xsltString;
-    String printparamString;
-    String placeholdersString;
+    private WebClient webClient;
+    private String caseName;
+    private String xmlString;
+    private String xsltString;
+    private String printparamString;
+    private String placeholdersString;
 
     public Session(String caseName) {
         this.caseName = caseName;
@@ -80,7 +80,7 @@ public class Session {
             URL url = new URL("http://doctornew-xslt.emias.solit-clouds.ru/web/save.api");
 
             WebRequest webRequest = new WebRequest(url, HttpMethod.POST);
-            webRequest = defaultHeaderForRequest(webRequest);
+            defaultHeaderForRequest(webRequest);
             String req = "{\"document\":\"" + Base64.getEncoder().encodeToString(this.xmlString.getBytes()) + "\"," +
                     "\"name\":\"" + this.caseName + "\"," +
                     "\"placeHolders\":\"" + this.placeholdersString + "\"," +
@@ -94,11 +94,11 @@ public class Session {
         }
     }
 
-    public void loadCase() {
+    private void loadCase() {
         try {
             URL url = new URL("http://doctornew-xslt.emias.solit-clouds.ru/web/load.api");
             WebRequest webRequest = new WebRequest(url, HttpMethod.POST);
-            webRequest = defaultHeaderForRequest(webRequest);
+            defaultHeaderForRequest(webRequest);
             webRequest.setRequestBody("{\"name\":\"" + this.caseName + "\"}");
             WebResponse webResponse = webClient.loadWebResponse(webRequest);
             getAllRegionsFromResponse(webResponse);
@@ -107,7 +107,7 @@ public class Session {
         }
     }
 
-    public void getAllRegionsFromResponse(WebResponse response) {
+    private void getAllRegionsFromResponse(WebResponse response) {
         String temp = response.getContentAsString();
         int posName = temp.indexOf("name");
         int posXslt = temp.indexOf("xslt");
@@ -128,13 +128,12 @@ public class Session {
         printparamString = temp.substring(posProps + 5 + 3, posError - 3);
     }
 
-    public WebRequest defaultHeaderForRequest(WebRequest request) {
+    private void defaultHeaderForRequest(WebRequest request) {
         request.setCharset("UTF-8");
         request.setAdditionalHeader("Accept", "*/*");
         request.setAdditionalHeader("Content-Type", "application/json");
         request.setAdditionalHeader("Referer", "http://doctornew-xslt.emias.solit-clouds.ru/web/index.html");
         request.setAdditionalHeader("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7");
         request.setAdditionalHeader("Accept-Encoding", "gzip, deflate");
-        return request;
     }
 }

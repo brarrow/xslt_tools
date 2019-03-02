@@ -18,10 +18,12 @@ public class Git {
                 continue;
             }
             if (line.contains("изменено:")) {
-                result.add(CasesFunctions.findCaseWithPath(line.replaceAll("изменено:      ", "").replaceAll("\t", "")));
+                result.add(CasesFunctions.findCaseWithPath(line.replaceAll("изменено: {6}", "")
+                        .replaceAll("\t", "")));
             }
             if (line.contains("modified:")) {
-                result.add(CasesFunctions.findCaseWithPath(line.replaceAll("modified:   ", "").replaceAll("\t", "").replaceAll("\r", "").replace("/", "\\")));
+                result.add(CasesFunctions.findCaseWithPath(line.replaceAll("modified: {3}", "")
+                        .replaceAll("\t", "").replaceAll("\r", "").replace("/", "\\")));
             }
         }
         return result;
@@ -43,28 +45,29 @@ public class Git {
         System.out.println("Ревизия: " + getHashLastCommit().substring(0, 12));
     }
 
-    public static String getHashLastCommit() {
-        String hash = Console.executeCommand(new String[]{"git", "rev-parse", "HEAD"}, getRepositoryPath());
-        return hash;
+    private static String getHashLastCommit() {
+        return Console.executeCommand(new String[]{"git", "rev-parse", "HEAD"}, getRepositoryPath());
     }
 
-    public static String generateCommitMsg(String caseName) {
+    private static String generateCommitMsg(String caseName) {
         System.out.println("Enter addition msgs: (all from another line)");
         Scanner input = new Scanner(System.in);
-        String msg = "#update artifacts " + CasesFunctions.getDoctorAndCct(caseName) + (caseName.endsWith("s") ? " (screen " : " (print ") + "form).";
+        StringBuilder msg =
+                new StringBuilder("#update artifacts " + CasesFunctions.getDoctorAndCct(caseName)
+                        + (caseName.endsWith("s") ? " (screen " : " (print ") + "form).");
         String line;
         while (input.hasNextLine()) {
             line = input.nextLine();
             if (line.isEmpty()) break;
-            msg += "\n" + line;
+            msg.append("\n");
+            msg.append(line);
         }
-        return msg;
+        return msg.toString();
     }
 
-    public static String getRepositoryPath() {
+    private static String getRepositoryPath() {
         String pathAll = FilesIO.getPathAll();
         int posSimi = pathAll.indexOf("SimiDocuments");
-        String res = pathAll.substring(0, posSimi + 13);
-        return res;
+        return pathAll.substring(0, posSimi + 13);
     }
 }

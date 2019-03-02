@@ -5,8 +5,8 @@ import files.FilesIO;
 import webstand.cases.CasesFunctions;
 
 public class Main {
+    public static final String version = "0.4.3";
     public static boolean windows = true;
-    public static String version = "0.4.2";
 
     public static void main(String[] args) {
         if (System.getProperty("os.name").contains("Linux")) {
