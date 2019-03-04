@@ -531,7 +531,7 @@ class JDOMProcessing {
                                 int contPos = elementList.indexOf(content);
                                 elementList.remove(contPos - 1);
                                 if (!finded) {
-                                    System.out.println("Warning: finded and removed extra whitespaces before edizm!");
+                                    System.out.println("Warning: found and removed extra whitespaces before edizm!");
                                     finded = true;
                                 }
                             }
