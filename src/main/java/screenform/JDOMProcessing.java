@@ -13,6 +13,7 @@ import java.util.List;
 class JDOMProcessing {
     private static String in = FilesIO.input;
     private static String out = FilesIO.out.toString();
+    private static Namespace xsl = Namespace.getNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
 
     public static void processXSLT() {
         sixth(out);
@@ -66,7 +67,6 @@ class JDOMProcessing {
                 Element tr = new Element("tr");
                 Element td = new Element("td").setContent(buf).setAttribute("class", "lefttd");
                 tr.setContent(td);
-                Namespace xsl = Namespace.getNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
                 el.removeContent();
                 el.setName("if").setNamespace(xsl)
                         .setAttribute("test",
@@ -100,11 +100,8 @@ class JDOMProcessing {
             Element sopDiagDest = findElWithNameAndCont(root, "Сопутствующее заболевание", "tbody");
 
             int sopDiagIndex = sopDiag.getParent().getContent().indexOf(sopDiag);
-            try {
-                if (sopDiag.getParent().getContent().get(sopDiagIndex - 2) instanceof Comment) {
-                    sopDiagComment = (Comment) sopDiag.getParent().getContent().get(sopDiagIndex - 2);
-                }
-            } catch (Exception e) {
+            if (sopDiag.getParent().getContent().get(sopDiagIndex - 2) instanceof Comment) {
+                sopDiagComment = (Comment) sopDiag.getParent().getContent().get(sopDiagIndex - 2);
             }
 
             sopDiagDest.addContent(0, sopDiag.detach());
@@ -305,7 +302,6 @@ class JDOMProcessing {
 
             Element neededValueOf = findElWithNameAndAttr(neededForEach, "select", ".", "value-of");
             neededValueOf.detach();
-            Namespace xsl = Namespace.getNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
             Element newCallTemplate = new Element("call-template");
             newCallTemplate.setNamespace(xsl);
             newCallTemplate.setAttribute("name", "string-capltrim");
@@ -370,8 +366,6 @@ class JDOMProcessing {
             int index = parent.getContent().indexOf(temp);
             temp = temp.detach();
 
-            Namespace xsl = Namespace.getNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
-
             Element variable = new Element("variable");
             variable.setNamespace(xsl);
             variable.setAttribute("name", "date");
@@ -403,7 +397,10 @@ class JDOMProcessing {
                 obsOsm = obsOsm.getParentElement();
             }
             if (obsOsm.getChild("tbody") != null) {
-                obsOsm = obsOsm.getChild("tbody");
+                List<Content> tbodyContent = obsOsm.getChild("tbody").removeContent();
+                obsOsm.removeChild("tbody");
+                obsOsm.addContent(tbodyContent);
+
             }
 
             for (Element el : obsOsm.getChildren()) {
@@ -448,6 +445,14 @@ class JDOMProcessing {
             }
             Element obsSostParent = obsSost.getParentElement();
             int obsSostPos = obsSostParent.getContent().indexOf(obsSost);
+            try {
+                Element nextEl = obsSostParent.getChildren().get(obsSostParent.getChildren().indexOf(obsSost) + 1);
+                if (nextEl.getAttributeValue("test").contains("Соотношение_между")) {
+                    Element variable = findElWithNameAndAttr(obsSost, "name", "_", "variable");
+                    variable.addContent(nextEl.detach());
+                }
+            } catch (Exception ignored) {
+            }
 
 
             obsSostParent.addContent(obsSostPos + 1, (new Element("tr")).setContent((new Element("td")).setContent(contentToMove)));
@@ -502,9 +507,11 @@ class JDOMProcessing {
         try {
             Element buf = findElWithNameAndCont(root, "по последующему", "strong");
             buf = buf.getParentElement().getChildren().get(0);
-            if (buf.getName().contains("if") & buf.getChildren().size() == 1
-                    & buf.getChildren().get(0).getName().equalsIgnoreCase("br")) {
-                buf.detach();
+            if (buf.getName().contains("if")) {
+                if (buf.getChildren().size() == 1
+                        & buf.getChildren().get(0).getName().equalsIgnoreCase("br")) {
+                    buf.detach();
+                }
             }
             saveXSLT(doc, out);
 
@@ -518,7 +525,7 @@ class JDOMProcessing {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            boolean finded = false;
+            boolean found = false;
             Element edizm = findElWithNameAndAttr(root, "test", "$val", "when")
                     .getParentElement().getParentElement();
             List<Element> elIf = edizm.getChildren();
@@ -530,9 +537,9 @@ class JDOMProcessing {
                                 List<Element> elementList = content.getParentElement().getChildren();
                                 int contPos = elementList.indexOf(content);
                                 elementList.remove(contPos - 1);
-                                if (!finded) {
+                                if (!found) {
                                     System.out.println("Warning: found and removed extra whitespaces before edizm!");
-                                    finded = true;
+                                    found = true;
                                 }
                             }
                         }
@@ -634,7 +641,7 @@ class JDOMProcessing {
                 if (((Element) el).getAttribute(attributeName).getValue().contains(attributeValue) & (((Element) el).getName().contains(name))) {
                     return (Element) el;
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
         return null;

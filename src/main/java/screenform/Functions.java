@@ -52,18 +52,18 @@ public class Functions {
             while (true) {
                 System.out.println("Changing current file path. Enter new file:");
                 String inpFile = userInp.nextLine();
-                List<String> finded = lines.stream()
+                List<String> found = lines.stream()
                         .filter(el -> el.contains(inpFile))
                         .collect(Collectors.toList());
-                if (finded.size() >= 1) {
+                if (found.size() >= 1) {
                     System.out.println("Found more that one file. Please, choose need one:");
-                    for (int i = 0; i < finded.size(); i++) {
+                    for (int i = 0; i < found.size(); i++) {
                         System.out.println(String.format("%d. %s : %s",
-                                i + 1, finded.get(i).substring(0, finded.get(i).indexOf(" ;")),
-                                CasesFunctions.getDoctorAndCct(finded.get(i).substring(0, finded.get(i).indexOf(" ;"))))
+                                i + 1, found.get(i).substring(0, found.get(i).indexOf(" ;")),
+                                CasesFunctions.getDoctorAndCct(found.get(i).substring(0, found.get(i).indexOf(" ;"))))
                         );
                     }
-                    String needFile = finded.get(Integer.valueOf(userInp.nextLine()) - 1);
+                    String needFile = found.get(Integer.valueOf(userInp.nextLine()) - 1);
 
                     System.out.println(String.format("Change filepath to %s? [y/n]"
                             , CasesFunctions.getDoctorAndCct(needFile.substring(0, needFile.indexOf(" ;")))));
