@@ -34,6 +34,7 @@ class JDOMProcessing {
         thirty_one(out);
         thirty_two(out);
         thirty_three(out);
+        thirty_four(out);
         deleteCostiliLeft(out);
     }
 
@@ -104,8 +105,8 @@ class JDOMProcessing {
                     sopDiagComment = (Comment) sopDiag.getParent().getContent().get(sopDiagIndex - 2);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
             }
+
             sopDiagDest.addContent(0, sopDiag.detach());
             if (sopDiagComment != null) {
                 sopDiagDest.addContent(0, new Text("\n"));
@@ -346,6 +347,7 @@ class JDOMProcessing {
         Element root = doc.getRootElement();
         try {
             Element temp = findElWithNameAndCont(root, "Осложнение", "span");
+            temp.setText("Осложнение");
             temp.setAttribute("class", "myth");
 
             temp = findElWithNameAndCont(root, "Дополнительный диагноз", "span");
@@ -508,6 +510,37 @@ class JDOMProcessing {
 
         } catch (Exception ex) {
             System.out.println("Failed: remove br from \"at the next reception\".");
+        }
+    }
+
+    //delete extra whitespace before edizm
+    private static void thirty_four(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        try {
+            boolean finded = false;
+            Element edizm = findElWithNameAndAttr(root, "test", "$val", "when")
+                    .getParentElement().getParentElement();
+            List<Element> elIf = edizm.getChildren();
+            if (elIf.get(1).getName().equalsIgnoreCase("if")) {
+                for (Content content : root.getDescendants()) {
+                    if (content instanceof Element) {
+                        if (((Element) content).getName().equalsIgnoreCase("call-template")) {
+                            if (((Element) content).getAttributeValue("name").contains("edizm")) {
+                                List<Element> elementList = content.getParentElement().getChildren();
+                                int contPos = elementList.indexOf(content);
+                                elementList.remove(contPos - 1);
+                                if (!finded) {
+                                    System.out.println("Warning: finded and removed extra whitespaces before edizm!");
+                                    finded = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            saveXSLT(doc, out);
+        } catch (Exception ignored) {
         }
     }
 

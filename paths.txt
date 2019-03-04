@@ -2,4 +2,4 @@
 directory_win= C:\Users\useri\Documents\Repos\SimiDocuments\Ambulatory
 directory_lin= /home/brarrow/Projects/SimiDocuments/Ambulatory
 #path to direct file
-file=/home/brarrow/Projects/SimiDocuments/Ambulatory/Adult/cct=14951 Therapist/xslt/html_print_therapist_examination.v3.xslt
+file=/home/brarrow/Projects/SimiDocuments/Ambulatory/Adult/cct=22951 Haematologist/xslt/openEHR-EHR-COMPOSITION.t_haematologist_examination.xslt
