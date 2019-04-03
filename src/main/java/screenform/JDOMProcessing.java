@@ -1,6 +1,7 @@
 package screenform;
 
 import files.FilesIO;
+import org.apache.commons.lang3.StringUtils;
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
@@ -36,6 +37,7 @@ class JDOMProcessing {
         thirty_two(out);
         thirty_three(out);
         thirty_four(out);
+        thirty_five(out);
         deleteCostiliLeft(out);
     }
 
@@ -524,31 +526,84 @@ class JDOMProcessing {
     private static void thirty_four(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
-        try {
-            boolean found = false;
-            Element edizm = findElWithNameAndAttr(root, "test", "$val", "when")
-                    .getParentElement().getParentElement();
-            List<Element> elIf = edizm.getChildren();
-            if (elIf.get(1).getName().equalsIgnoreCase("if")) {
-                for (Content content : root.getDescendants()) {
-                    if (content instanceof Element) {
-                        if (((Element) content).getName().equalsIgnoreCase("call-template")) {
-                            if (((Element) content).getAttributeValue("name").contains("edizm")) {
-                                List<Element> elementList = content.getParentElement().getChildren();
-                                int contPos = elementList.indexOf(content);
-                                elementList.remove(contPos - 1);
-                                if (!found) {
-                                    System.out.println("Warning: found and removed extra whitespaces before edizm!");
-                                    found = true;
+        boolean deleted;
+        do {
+            try {
+                boolean found = false;
+                deleted = false;
+                Element edizm = findElWithNameAndAttr(root, "test", "$val", "when")
+                        .getParentElement().getParentElement();
+                List<Element> elIf = edizm.getChildren();
+                if (elIf.get(1).getName().equalsIgnoreCase("if")) {
+                    for (Content content : root.getDescendants()) {
+                        if (content instanceof Element) {
+                            if (((Element) content).getName().equalsIgnoreCase("call-template")) {
+                                if (((Element) content).getAttributeValue("name").contains("edizm")) {
+                                    List<Element> elementList = content.getParentElement().getChildren();
+                                    int contPos = elementList.indexOf(content);
+                                    if (contPos == 0) {
+                                        continue;
+                                    }
+                                    if (elementList.get(contPos - 1).getName().contains("span")) {
+                                        elementList.remove(contPos - 1);
+                                        if (!found) {
+                                            System.out.println("Warning: found and removed extra whitespaces before edizm!");
+                                            found = true;
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                saveXSLT(doc, out);
+            } catch (Exception ignored) {
+                deleted = true;
             }
-            saveXSLT(doc, out);
-        } catch (Exception ignored) {
+        } while (deleted);
+    }
+
+    private static void thirty_five(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        while (true) {
+            Element td = findElWithNameAndAttr(root, "class", "myml", "td");
+            try {
+                if (td != null) {
+                    td.removeAttribute("class");
+                    String curPath;
+                    if (td.getParentElement().getParentElement().getAttributeValue("test").contains("$")) {
+                        curPath = td.getParentElement().getParentElement().getParentElement().getAttributeValue("test").trim();
+                    } else {
+                        curPath = td.getParentElement().getParentElement().getAttributeValue("test").trim();
+                    }
+                    int posSlash = StringUtils.ordinalIndexOf(curPath, "/", 2);
+                    int posSpace = curPath.indexOf(" ");
+                    int posResult;
+                    if (posSlash == -1) {
+                        posResult = posSpace;
+                    } else if (posSpace == -1) {
+                        posResult = posSlash;
+                    } else posResult = posSlash < posSpace ? posSlash : posSpace;
+
+                    curPath = curPath.substring(0, posResult);
+                    Element elForEach = new Element("for-each", xsl);
+                    elForEach.setAttribute("select", curPath);
+                    Element elIf = new Element("if", xsl);
+                    elIf.setAttribute("test", "count(preceding-sibling::*) > 1");
+                    Element elAttr = new Element("attribute", xsl);
+                    elAttr.setAttribute("name", "class");
+                    elAttr.setText("myml");
+                    elIf.setContent(elAttr);
+                    elForEach.setContent(elIf);
+                    td.addContent(0, elForEach);
+                } else {
+                    break;
+                }
+            } catch (Exception ignored) {
+            }
         }
+        saveXSLT(doc, out);
     }
 
     //Next visit recommendations to good and nice condition

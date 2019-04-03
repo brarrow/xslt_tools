@@ -15,10 +15,9 @@ import java.util.List;
 class Processing {
     private static List<String> rows;
 
-    public static void processXSLT() {
+    static void processXSLT() {
         try {
-//            JDOMProcessing.left_params_fix(FilesIO.input);
-            rows = Files.readAllLines(new File(FilesIO.input).toPath(), Charset.forName("UTF-8"));
+            readRows(FilesIO.input);
             zero();
             one();
             twenty();
@@ -42,18 +41,31 @@ class Processing {
         }
     }
 
+    static void readRows(String filePath) {
+        try {
+            List<String> listRows = Files.readAllLines(new File(filePath).toPath(), Charset.forName("UTF-8"));
+            setRows(listRows);
+        } catch (Exception e) {
+            System.out.println("Error while reading file!");
+        }
+    }
+
+    static void setRows(List<String> listRows) {
+        rows = listRows;
+    }
+
     static String deleteAllNonCharacter(String str) {
         return str.replace(":", "").replace(".", "");
     }
 
-    private static void zero() {
+    static void zero() {
         for (int i = 0; i < rows.size(); i++) {
             if (rows.get(i).trim().length() == 0)
                 rows.remove(i--);
         }
     }
 
-    private static void one() {
+    static void one() {
         boolean deleting = false;
         for (int i = 0; i < rows.size(); i++) {
             if (rows.get(i).contains("<table")) {
@@ -69,7 +81,7 @@ class Processing {
         }
     }
 
-    private static void two() {
+    static void two() {
         String styleName = "23456789123456789123456789";
         String styles = "    <style>\n" +
                 "     .xslt_85s{\n" +
@@ -163,7 +175,7 @@ class Processing {
         }
     }
 
-    private static void three() {
+    static void three() {
         boolean notFirst = false;
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
@@ -180,7 +192,7 @@ class Processing {
         }
     }
 
-    private static void four() {
+    static void four() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("width=\"116pt\"")) {
@@ -192,7 +204,7 @@ class Processing {
         }
     }
 
-    private static void five() {
+    static void five() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("<tr>")) {
@@ -226,7 +238,7 @@ class Processing {
         }
     }
 
-    private static void nine() {
+    static void nine() {
         boolean obsOsmFound = false;
         boolean bodyFound = false;
         for (int i = 0; i < rows.size(); i++) {
@@ -259,7 +271,7 @@ class Processing {
         }
     }
 
-    private static void ten() {
+    static void ten() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("span class=\"part\"")) {
@@ -270,7 +282,7 @@ class Processing {
         }
     }
 
-    private static void twelve() {
+    static void twelve() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("<strong>")) {
@@ -281,7 +293,7 @@ class Processing {
         }
     }
 
-    private static void thirteen() {
+    static void thirteen() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("<td")) {
@@ -300,7 +312,7 @@ class Processing {
         }
     }
 
-    private static void fourteen() {
+    static void fourteen() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("<br/>.")) {
@@ -309,7 +321,7 @@ class Processing {
         }
     }
 
-    private static void twenty() {
+    static void twenty() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains(">рост")) {
@@ -324,7 +336,7 @@ class Processing {
         }
     }
 
-    private static void twenty_one() {
+    static void twenty_one() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("<xsl:element name=\"strong\">")) {
@@ -336,7 +348,7 @@ class Processing {
         }
     }
 
-    private static void custom() {
+    static void custom() {
         for (int i = 0; i < rows.size(); i++) {
             String now = rows.get(i);
             if (now.contains("font-family: Open Sans")) {
@@ -346,7 +358,7 @@ class Processing {
         }
     }
 
-    private static void addMD5Comment() {
+    static void addMD5Comment() {
         try (InputStream is = Files.newInputStream(Paths.get(FilesIO.input))) {
             String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(is);
             rows.add(5, "<!--" + "md5:" + md5 + "-->");
@@ -359,7 +371,7 @@ class Processing {
         }
     }
 
-    private static void tabToWhite() {
+    static void tabToWhite() {
         for (int i = 0; i < rows.size(); i++) {
             rows.set(i, rows.get(i).replaceAll("\\t", " "));
         }
