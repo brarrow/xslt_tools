@@ -117,8 +117,7 @@ public class FilesIO {
         try {
             byte[] encoded = Files.readAllBytes(Paths.get(path));
             return (new String(encoded, encoding)).replace("\r", "");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
         return "";
     }
