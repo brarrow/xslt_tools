@@ -9,6 +9,7 @@ import org.jdom2.output.XMLOutputter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 class JDOMProcessing {
@@ -17,6 +18,7 @@ class JDOMProcessing {
     private static Namespace xsl = Namespace.getNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
 
     public static void processXSLT() {
+        paths_fix(out);
         sixth(out);
         eight(out);
         twenty_two(out);
@@ -50,6 +52,45 @@ class JDOMProcessing {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void paths_fix(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        Element tmpl = findElWithNameAndAttr(root, "match", "/*:", "template");
+
+        if (tmpl == null) {
+            System.out.println("Error: can't get template name!");
+            return;
+        }
+
+        String nameToDel = tmpl.getAttributeValue("match") + "/";
+
+        for (Content content : root.getDescendants()) {
+            if (content instanceof Element) {
+                List<String> atr_names = new ArrayList<>(List.of("test", "select"));
+                for (String atr : atr_names) {
+                    try {
+                        String atr_value = ((Element) content).getAttributeValue(atr);
+                        if (atr_value == null) continue;
+                        ((Element) content).setAttribute(atr, atr_value.replace(nameToDel, "")
+                                .replace("'1' = '0' or ", "").trim());
+                        //for good and nice Interpr results
+                        if (((Element) content).getName().contains("if")) {
+                            if (content.getParentElement().getName().contains("for-each")) {
+                                String test_atr = ((Element) content).getAttributeValue("test");
+                                if (test_atr.contains("*:Интерпретация_результатов_обследования/*:Исследование/*:Интерпретация_результатов/*:data/")) {
+                                    ((Element) content).setAttribute("test", test_atr
+                                            .replaceAll("\\*:Интерпретация_результатов_обследования/*:Исследование/", ""));
+                                }
+                            }
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        }
+        saveXSLT(doc, out);
     }
 
     public static void left_params_fix(String filePath) {
