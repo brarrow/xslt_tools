@@ -611,6 +611,17 @@ class JDOMProcessing {
             Element td = findElWithNameAndAttr(root, "class", "myml", "td");
             try {
                 if (td != null) {
+                    boolean partTd = false;
+                    for (Content content : td.getDescendants()) {
+                        try {
+                            if (((Element) content).getAttributeValue("class").equals("part")) {
+                                td.setAttribute("class", "mltmp");
+                                partTd = true;
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    }
+                    if (partTd) continue;
                     td.removeAttribute("class");
                     String curPath;
                     if (td.getParentElement().getParentElement().getAttributeValue("test").contains("$")) {
@@ -619,6 +630,26 @@ class JDOMProcessing {
                         curPath = td.getParentElement().getParentElement().getAttributeValue("test").trim();
                     }
                     int posSlash = StringUtils.ordinalIndexOf(curPath, "/", 2);
+                    if (posSlash != -1) {
+                        int firstSlash = StringUtils.ordinalIndexOf(curPath, "/", 1);
+                        String parentNode = curPath.substring(0, firstSlash);
+                        String childNode = curPath.substring(firstSlash + 1, posSlash);
+                        if (parentNode.equals(childNode)) {
+                            boolean finded = false;
+                            int slash_position = 3;
+                            while (!finded) {
+                                firstSlash = posSlash;
+                                posSlash = StringUtils.ordinalIndexOf(curPath, "/", slash_position);
+                                String nowNode = curPath.substring(firstSlash + 1, posSlash);
+                                if (nowNode.contains("*:data") | nowNode.contains("Любое_событие")
+                                        | nowNode.equals("*:Осмотр") | nowNode.equals("*:Подробности")) {
+                                    slash_position++;
+                                } else {
+                                    finded = true;
+                                }
+                            }
+                        }
+                    }
                     int posSpace = curPath.indexOf(" ");
                     int posResult;
                     if (posSlash == -1) {
@@ -644,6 +675,19 @@ class JDOMProcessing {
             } catch (Exception ignored) {
             }
         }
+        while (true) {
+            Element td = findElWithNameAndAttr(root, "class", "mltmp", "td");
+            try {
+                if (td != null) {
+                    td.setAttribute("class", "myml");
+                } else {
+                    break;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+
         saveXSLT(doc, out);
     }
 
