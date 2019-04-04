@@ -81,7 +81,7 @@ class JDOMProcessing {
                                 String test_atr = ((Element) content).getAttributeValue("test");
                                 if (test_atr.contains("*:Интерпретация_результатов_обследования/*:Исследование/*:Интерпретация_результатов/*:data/")) {
                                     ((Element) content).setAttribute("test", test_atr
-                                            .replaceAll("\\*:Интерпретация_результатов_обследования/*:Исследование/", ""));
+                                            .replace("*:Интерпретация_результатов_обследования/*:Исследование/", ""));
                                 }
                             }
                         }
