@@ -385,15 +385,22 @@ class JDOMProcessing {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element temp = findElWithNameAndCont(root, "Осложнение", "span");
+            Element temp = findElWithNameAndCont(root, "сложнение", "span");
+            if (temp == null) {
+                temp = findElWithNameAndCont(root, "сложнение", "strong");
+            }
             temp.setText("Осложнение");
-            temp.setAttribute("class", "myth");
-
-            temp = findElWithNameAndCont(root, "Дополнительный диагноз", "span");
             temp.setAttribute("class", "myth");
             saveXSLT(doc, out);
         } catch (Exception e) {
-            System.out.println("Failed: change diagnosis from part to myth.");
+            System.out.println("Failed: change Осложнение from part to myth.");
+        }
+        try {
+            Element temp = findElWithNameAndCont(root, "Дополнительный диагноз", "span");
+            temp.setAttribute("class", "myth");
+            saveXSLT(doc, out);
+        } catch (Exception e) {
+            System.out.println("Failed: change Дополнительный диагноз from part to myth.");
         }
     }
 
@@ -629,6 +636,12 @@ class JDOMProcessing {
                     } else {
                         curPath = td.getParentElement().getParentElement().getAttributeValue("test").trim();
                     }
+
+                    while (!StringUtils.startsWithAny(curPath, new String[]{"/", ":", "*"})
+                            & !Character.isLetter(curPath.charAt(0))) {
+                        curPath = curPath.substring(1);
+                    }
+                    curPath = curPath.replace("(", "");
                     int posSlash = StringUtils.ordinalIndexOf(curPath, "/", 2);
                     if (posSlash != -1) {
                         int firstSlash = StringUtils.ordinalIndexOf(curPath, "/", 1);
