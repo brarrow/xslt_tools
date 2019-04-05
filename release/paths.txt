@@ -1,5 +1,0 @@
-#path to directory with files
-directory_win=
-directory_lin=
-#path to direct file
-file=
