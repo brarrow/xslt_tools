@@ -1,5 +1,0 @@
-#path to directory with files
-directory_win= C:\Users\useri\Documents\Repos\SimiDocuments\Ambulatory
-directory_lin= /home/brarrow/Projects/SimiDocuments/Ambulatory
-#path to direct file
-file=/home/brarrow/Projects/SimiDocuments/Ambulatory/Adult/cct=22952 Urologist men/xslt/openEHR-EHR-COMPOSITION.t_urologist_examination_men.xslt
