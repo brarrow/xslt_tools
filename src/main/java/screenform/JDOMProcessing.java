@@ -60,7 +60,7 @@ class JDOMProcessing {
     public static void paths_fix(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
-        Element tmpl = findElWithNameAndAttr(root, "match", "/*:", "template");
+        Element tmpl = findElWithNameAndAttr(root, "match", "*:", "template");
 
         if (tmpl == null) {
             System.out.println("Error: can't get template name!");
@@ -779,6 +779,14 @@ class JDOMProcessing {
                         curPath = curPath.substring(1);
                     }
                     curPath = curPath.replace("(", "");
+                    if (curPath.startsWith("not")) {
+                        curPath = StringUtils.replaceOnce(curPath, "not", "");
+                    }
+
+                    if (curPath.startsWith("count")) {
+                        curPath = StringUtils.replaceOnce(curPath, "count", "");
+                    }
+
                     int posSlash = StringUtils.ordinalIndexOf(curPath, "/", 2);
                     if (posSlash != -1) {
                         int firstSlash = StringUtils.ordinalIndexOf(curPath, "/", 1);
