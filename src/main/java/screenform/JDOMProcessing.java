@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jdom2.*;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
+import webstand.cases.CasesFunctions;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,9 +19,11 @@ class JDOMProcessing {
     private static Namespace xsl = Namespace.getNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
 
     public static void processXSLT() {
+//        two(out);
         paths_fix(out);
         sixth(out);
         eight(out);
+//        eight_two(out);
         twenty_two(out);
 
         recomMyth(out);
@@ -121,6 +124,93 @@ class JDOMProcessing {
 
     }
 
+    static void two(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        Element styleEl = null;
+        for (Content content : root.getDescendants()) {
+            if (content instanceof Element) {
+                if (((Element) content).getName().equals("style")) {
+                    styleEl = (Element) content;
+                    break;
+                }
+            }
+        }
+        String stN = CasesFunctions.findCaseWithPath(in).replace("test", "xslt") + "s";
+        String styles = "\n" +
+                "     ." + stN + "{\n" +
+                "         margin: 0pt;\n" +
+                "         padding-left: 0;\n" +
+                "     }\n" +
+                "     ." + stN + " .part{\n" +
+                "         line-height: 24px;\n" +
+                "         font-family: Open Sans;\n" +
+                "         font-weight: bold;\n" +
+                "         font-size: 15px;\n" +
+                "         color: #333333;\n" +
+                "     }\n" +
+                "     ." + stN + " .mytd{\n" +
+                "         line-height: 24px;\n" +
+                "         font-family: Open Sans;\n" +
+                "         font-size: 15px;\n" +
+                "         color: #333333;\n" +
+                "         padding-bottom: 20px;\n" +
+                "     }\n" +
+                "     ." + stN + " .myml{\n" +
+                "         padding-top: 20px;\n" +
+                "     }\n" +
+                "     ." + stN + " .myth{\n" +
+                "         text-align: left;\n" +
+                "         line-height: 24px;\n" +
+                "         font-family: Open Sans;\n" +
+                "         font-size: 15px;\n" +
+                "         color: #757575;\n" +
+                "         font-weight: normal;\n" +
+                "         padding-top: 20px\n" +
+                "     }\n" +
+                "     ." + stN + " .lefttd{\n" +
+                "         line-height: 24px;\n" +
+                "         font-family: Open Sans;\n" +
+                "         font-size: 15px;\n" +
+                "         color: #333333;\n" +
+                "     }\n" +
+                "     ." + stN + " strong{\n" +
+                "         line-height: 24px;\n" +
+                "         font-family: Open Sans;\n" +
+                "         font-size: 15px;\n" +
+                "         font-weight: normal;\n" +
+                "         color: #333333;\n" +
+                "     }\n" +
+                "     ." + stN + " span{\n" +
+                "         line-height: 24px;\n" +
+                "         font-family: Open Sans;\n" +
+                "         font-size: 15px;\n" +
+                "         color: #333333;\n" +
+                "     }\n" +
+                "     ." + stN + " td{\n" +
+                "         border-spacing: 0;\n" +
+                "         padding: 0;\n" +
+                "     }\n" +
+                "     ." + stN + " th{\n" +
+                "     \t\t\t padding: 0;\n" +
+                "     }\n" +
+                "     ." + stN + " table{\n" +
+                "     \t\t\t\tborder-spacing: 0;\n";
+        styleEl.setText(styles);
+        for (Content content : root.getDescendants()) {
+            if (content instanceof Element) {
+                try {
+                    if (((Element) content).getAttributeValue("class").equals(stN.substring(0, stN.length() - 2))) {
+                        ((Element) content).setAttribute("class", stN);
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        saveXSLT(doc, filePath);
+
+    }
+
     //Move obsh diag and soput to begin
     private static void sixth(String filePath) {
         Document doc = useSAXParser(filePath);
@@ -192,8 +282,9 @@ class JDOMProcessing {
             forEachTr(root);
 
             List<Element> listElement = root.getChildren().get(1).getChild("html").getChild("body").getChild("div").getChildren().get(0).getChildren().get(0).getChildren();//.get(1).getChildren().get(0).getChildren();//.get(2).getChild("tbody").getChildren();
-            Element obsOsm = new Element("j");
+            Element obsOsm = null;
             for (Element el : listElement) {
+                if (obsOsm != null) break;
                 List<Attribute> buf = el.getAttributes();
                 for (Attribute atr : buf) {
                     if (atr.getValue().contains("*:Общий_осмотр")) obsOsm = el;
@@ -227,6 +318,52 @@ class JDOMProcessing {
             System.out.println("Failed: make all subtitles from another line.");
         }
     }
+
+    private static void eight_two(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        try {
+            forEachTd(doc.getRootElement());
+            forEachTr(root);
+
+            List<Element> listElement = root.getChildren().get(1).getChild("html").getChild("body").getChild("div").getChildren().get(0).getChildren().get(0).getChildren();//.get(1).getChildren().get(0).getChildren();//.get(2).getChild("tbody").getChildren();
+            Element obsOsm = null;
+            for (Element el : listElement) {
+                if (obsOsm != null) break;
+                List<Attribute> buf = el.getAttributes();
+                for (Attribute atr : buf) {
+                    if (atr.getValue().contains("*:Осмотр_ротоглотки__openBrkt_фарингоскопия_closeBrkt_")) obsOsm = el;
+                }
+            }
+
+            Element ob;
+            if (filePath.contains("2395558")) {
+                ob = (Element) obsOsm.getChild("tr").getChild("td").getContent(3);
+            } else {
+                if (filePath.contains("22954")) {
+                    ob = findElWithNameAndAttr(root, "test", "*:Жалобы_и_анамнез_заболевания//*:Жалобы_и_анамнез_заболевания//*:Подробности_истории_болезни", "if");
+                } else {
+                    ob = obsOsm.getChild("tr");
+                }
+            }
+
+            if (!filePath.contains("22954")) { //esli est' obs osm
+                if (!ob.getName().equals("variable")) {
+                    ob = ob.getChild("td");
+                }
+                List<Content> temp = ob.removeContent();
+                ob.setContent(new Element("table").setAttribute("align", "left").setContent(new Element("tbody").setContent(temp)));
+            }
+
+            forEachStrong(ob);
+            forEachStrong(ob);
+
+            saveXSLT(doc, out);
+        } catch (Exception e) {
+            System.out.println("Failed: make all subtitles from another line.");
+        }
+    }
+
 
     //all main headers from capital trim
     private static void twenty_three(String filePath) {
@@ -823,6 +960,7 @@ class JDOMProcessing {
 
     //Delete all empty tr or tr/td
     private static void forEachTr(Element element) {
+
         if (element.getName().equals("tr")) {
             if (element.getChild("td") == null) {
                 if (element.getChild("th") == null) {
@@ -834,8 +972,12 @@ class JDOMProcessing {
         List<Element> buf = element.getChildren();
         if (buf == null) return;
         for (Element element1 : buf) {
-            forEachTr(element1);
+            try {
+                forEachTr(element1);
+            } catch (Exception ignored) {
+            }
         }
+
     }
 
     //Get level of In element

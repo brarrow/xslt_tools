@@ -23,6 +23,10 @@ class Processing {
             twenty();
             thirteen();
             two();
+//            FilesIO.writeToFile(rows);
+//
+//            JDOMProcessing.two(FilesIO.input);
+//            readRows(FilesIO.input);
             three();
             four();
             five();
@@ -58,6 +62,7 @@ class Processing {
         return str.replace(":", "").replace(".", "");
     }
 
+    //ok
     static void zero() {
         for (int i = 0; i < rows.size(); i++) {
             if (rows.get(i).trim().length() == 0)
@@ -65,6 +70,7 @@ class Processing {
         }
     }
 
+    //ok
     static void one() {
         boolean deleting = false;
         for (int i = 0; i < rows.size(); i++) {

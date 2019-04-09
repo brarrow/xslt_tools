@@ -5,7 +5,7 @@ import files.FilesIO;
 import webstand.cases.CasesFunctions;
 
 public class Main {
-    public static final String version = "0.4.8";
+    public static final String version = "0.4.9";
     public static boolean windows = true;
 
     public static void main(String[] args) {
