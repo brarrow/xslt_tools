@@ -68,6 +68,9 @@ class JDOMProcessing {
         }
 
         String nameToDel = tmpl.getAttributeValue("match") + "/";
+        if (!nameToDel.startsWith("/")) {
+            nameToDel = "/" + nameToDel;
+        }
 
         for (Content content : root.getDescendants()) {
             if (content instanceof Element) {
