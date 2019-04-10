@@ -383,6 +383,14 @@ class JDOMProcessing {
                                     String name = withParam.getAttributeValue("select").replace("$content", "")
                                             .replace("Up", "").replace("$v", "").replaceAll("[0-9]", "");
                                     int urovenVloz = 1;
+                                    if (el.getParentElement().getName().equals("if")) {
+                                        try {
+                                            if (el.getParentElement().getAttributeValue("test").contains("position")) {
+                                                continue;
+                                            }
+                                        } catch (Exception ignored) {
+                                        }
+                                    }
                                     if (name.length() <= urovenVloz) {
                                         ((Element) el).setAttribute("name", ((Element) el).getAttributeValue("name").replace("string-ltrim", "string-capltrim"));
                                         //el.detach();
