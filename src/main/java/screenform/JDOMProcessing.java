@@ -251,7 +251,15 @@ class JDOMProcessing {
             spanOsnDiag.setAttribute("class", "myth");
             Comment osnDiagComment = null;
             Element osnDiagDest = findElWithNameAndCont(root, "Основной диагноз", "tbody");
-
+            try {
+                List<Element> osnDiagEls = osnDiag.getChild("tr").getChild("td").getChildren("if", xsl);
+                for (Element element : osnDiagEls) {
+                    if (element.getAttributeValue("test").contains("Диагностический_статус")) {
+                        element.getChild("strong").setAttribute("class", "part");
+                    }
+                }
+            } catch (Exception ignored) {
+            }
 
             int osnDiagIndex = osnDiag.getParent().getContent().indexOf(osnDiag);
             try {
