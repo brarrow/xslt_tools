@@ -24,13 +24,8 @@ class JDOMProcessing {
         sixth(out); //Move obsh diag and soput to begin
         eight(out); //all main headers in <tr> <td class=myml>
         twenty_two(out); //Move parameters from left table to main table
-
         recomMyth(out); //Next visit recommendations to good and nice condition
-
         twenty_three(out); //all main headers from capital trim
-
-        //twenty_four: deprecated TODO: Need to refactor. Now it works incorrect.
-        //twenty_four(out); //add comment head
         twenty_five(out); //to get good and nice Arterial pressure
         twenty_six(out); //to get good and nice local status
         twenty_seven(out); //Researches from capital char
@@ -42,6 +37,10 @@ class JDOMProcessing {
         thirty_three(out); //Remove br from at the next reception
         thirty_four(out); //delete extra whitespace before edizm
         thirty_five(out); //make gaping before EVALUATION headers
+
+        eightGyn(out); //all main headers in <tr> <td class=myml> Gynecologist
+        thirty_five(out); //make gaping before EVALUATION headers in Gynecologist
+
         deleteCostiliLeft(out);
     }
 
@@ -276,11 +275,48 @@ class JDOMProcessing {
     }
 
     //all main headers in <tr> <td class=myml>
+    private static void eightGyn(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        try {
+            forEachTd(root);
+            forEachTr(root);
+
+            List<Element> listElement = root.getChildren().get(1).getChild("html").getChild("body").getChild("div").getChildren().get(0).getChildren().get(0).getChildren();//.get(1).getChildren().get(0).getChildren();//.get(2).getChild("tbody").getChildren();
+            Element obsOsm = null;
+            for (Element el : listElement) {
+                if (obsOsm != null) break;
+                List<Attribute> buf = el.getAttributes();
+                for (Attribute atr : buf) {
+                    if (atr.getValue().contains("*:Гинекологический_осмотр")) obsOsm = el;
+                }
+            }
+
+            Element ob;
+            ob = obsOsm.getChild("tr");
+
+            if (!ob.getName().equals("variable")) {
+                ob = ob.getChild("td");
+            }
+            List<Content> temp = ob.removeContent();
+            ob.setContent(new Element("table").setAttribute("align", "left").setContent(new Element("tbody")
+                    .setContent((new Element("tr")).setContent((new Element("td")).setContent(temp)))));
+
+            forEachStrong(ob);
+            forEachStrong(ob);
+
+            saveXSLT(doc, out);
+        } catch (Exception e) {
+            System.out.println("Failed: make all subtitles from another line. Gynecologist.");
+        }
+    }
+
+    //all main headers in <tr> <td class=myml>
     private static void eight(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            forEachTd(doc.getRootElement());
+            forEachTd(root);
             forEachTr(root);
 
             List<Element> listElement = root.getChildren().get(1).getChild("html").getChild("body").getChild("div").getChildren().get(0).getChildren().get(0).getChildren();//.get(1).getChildren().get(0).getChildren();//.get(2).getChild("tbody").getChildren();
@@ -320,6 +356,7 @@ class JDOMProcessing {
             System.out.println("Failed: make all subtitles from another line.");
         }
     }
+
 
     //all main headers from capital trim
     private static void twenty_three(String filePath) {
@@ -589,7 +626,7 @@ class JDOMProcessing {
             Element obsSost = findElWithNameAndCont(root, "Общее", "strong");
 
             if (obsSost == null) {
-                return;
+                obsSost = findElWithNameAndCont(root, "Состояние беременности", "strong");
             }
             while (!obsSost.getName().equals("if")) {
                 obsSost = obsSost.getParentElement();
@@ -604,7 +641,6 @@ class JDOMProcessing {
                 }
             } catch (Exception ignored) {
             }
-
 
             obsSostParent.addContent(obsSostPos + 1, (new Element("tr")).setContent((new Element("td")).setContent(contentToMove)));
 

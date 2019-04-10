@@ -23,10 +23,6 @@ class Processing {
             twenty();
             thirteen();
             two();
-//            FilesIO.writeToFile(rows);
-//
-//            JDOMProcessing.two(FilesIO.input);
-//            readRows(FilesIO.input);
             three();
             four();
             five();
