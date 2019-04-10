@@ -26,6 +26,8 @@
                             <mainClass>main.Main</mainClass>
                         </manifest>
                     </archive>
+                    <outputDirectory>release</outputDirectory>
+                    <finalName>xslt_tools</finalName>
                 </configuration>
             </plugin>
             <plugin>
