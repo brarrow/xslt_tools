@@ -20,29 +20,28 @@ class JDOMProcessing {
 
     public static void processXSLT() {
 //        two(out);
-        paths_fix(out);
-        sixth(out);
-        eight(out);
-//        eight_two(out);
-        twenty_two(out);
+        paths_fix(out); //make relative paths from direct
+        sixth(out); //Move obsh diag and soput to begin
+        eight(out); //all main headers in <tr> <td class=myml>
+        twenty_two(out); //Move parameters from left table to main table
 
-        recomMyth(out);
+        recomMyth(out); //Next visit recommendations to good and nice condition
 
-        twenty_three(out);
+        twenty_three(out); //all main headers from capital trim
 
         //twenty_four: deprecated TODO: Need to refactor. Now it works incorrect.
-        //twenty_four(out);
-        twenty_five(out);
-        twenty_six(out);
-        twenty_seven(out);
-        twenty_eight(out);
-        twenty_nine(out);
-        thirty(out);
-        thirty_one(out);
-        thirty_two(out);
-        thirty_three(out);
-        thirty_four(out);
-        thirty_five(out);
+        //twenty_four(out); //add comment head
+        twenty_five(out); //to get good and nice Arterial pressure
+        twenty_six(out); //to get good and nice local status
+        twenty_seven(out); //Researches from capital char
+        twenty_eight(out); //Wrap header of general inspection in tr/td
+        twenty_nine(out); //Change Complication and Concomitant disease headers from part to myth
+        thirty(out); //Replace whitespaces in "In Period" value
+        thirty_one(out); //Delete br in Interpretation
+        thirty_two(out); //Make in the moment compl from low case
+        thirty_three(out); //Remove br from at the next reception
+        thirty_four(out); //delete extra whitespace before edizm
+        thirty_five(out); //make gaping before EVALUATION headers
         deleteCostiliLeft(out);
     }
 
@@ -321,52 +320,6 @@ class JDOMProcessing {
             System.out.println("Failed: make all subtitles from another line.");
         }
     }
-
-    private static void eight_two(String filePath) {
-        Document doc = useSAXParser(filePath);
-        Element root = doc.getRootElement();
-        try {
-            forEachTd(doc.getRootElement());
-            forEachTr(root);
-
-            List<Element> listElement = root.getChildren().get(1).getChild("html").getChild("body").getChild("div").getChildren().get(0).getChildren().get(0).getChildren();//.get(1).getChildren().get(0).getChildren();//.get(2).getChild("tbody").getChildren();
-            Element obsOsm = null;
-            for (Element el : listElement) {
-                if (obsOsm != null) break;
-                List<Attribute> buf = el.getAttributes();
-                for (Attribute atr : buf) {
-                    if (atr.getValue().contains("*:Осмотр_ротоглотки__openBrkt_фарингоскопия_closeBrkt_")) obsOsm = el;
-                }
-            }
-
-            Element ob;
-            if (filePath.contains("2395558")) {
-                ob = (Element) obsOsm.getChild("tr").getChild("td").getContent(3);
-            } else {
-                if (filePath.contains("22954")) {
-                    ob = findElWithNameAndAttr(root, "test", "*:Жалобы_и_анамнез_заболевания//*:Жалобы_и_анамнез_заболевания//*:Подробности_истории_болезни", "if");
-                } else {
-                    ob = obsOsm.getChild("tr");
-                }
-            }
-
-            if (!filePath.contains("22954")) { //esli est' obs osm
-                if (!ob.getName().equals("variable")) {
-                    ob = ob.getChild("td");
-                }
-                List<Content> temp = ob.removeContent();
-                ob.setContent(new Element("table").setAttribute("align", "left").setContent(new Element("tbody").setContent(temp)));
-            }
-
-            forEachStrong(ob);
-            forEachStrong(ob);
-
-            saveXSLT(doc, out);
-        } catch (Exception e) {
-            System.out.println("Failed: make all subtitles from another line.");
-        }
-    }
-
 
     //all main headers from capital trim
     private static void twenty_three(String filePath) {
@@ -759,6 +712,7 @@ class JDOMProcessing {
         } while (deleted);
     }
 
+    //make gaping before EVALUATION headers
     private static void thirty_five(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
@@ -891,7 +845,6 @@ class JDOMProcessing {
                 }
             }
             recomNextEl.getChildren().add(recomNextStrongPos + 1, new Element("br"));
-
             recomNextStrongEl.setText(Processing.deleteAllNonCharacter(recomNextStrongEl.getValue()));
             recomNextStrongEl.setAttribute("class", "myth");
 
@@ -903,6 +856,21 @@ class JDOMProcessing {
                     }
                 }
             }
+
+            Element forEachEl = new Element("for-each");
+            forEachEl.setNamespace(xsl);
+            forEachEl.setAttribute("select", "*:Рекомендации/*:Рекомендации_по_последующему_приему");
+            Element ifEl = new Element("if");
+            ifEl.setNamespace(xsl);
+            ifEl.setAttribute("test", "count(preceding-sibling::*) > 1");
+            Element attrEl = new Element("attribute");
+            attrEl.setNamespace(xsl);
+            attrEl.setAttribute("name", "class");
+            attrEl.setText("myml");
+            ifEl.setContent(attrEl);
+            forEachEl.setContent(ifEl);
+            recomNextEl.getChildren().add(0, forEachEl);
+
 
             Element recomNextParant = recomNextEl.getParentElement();
             int recomNextPos = recomNextParant.getChildren().indexOf(recomNextEl);
