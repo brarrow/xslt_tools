@@ -80,7 +80,6 @@ public class CasesFunctions {
                         writer.append(toAppend);
                         writer.close();
                     } catch (Exception e) {
-                        e.printStackTrace();
                     }
                 }
                 return FileVisitResult.CONTINUE;

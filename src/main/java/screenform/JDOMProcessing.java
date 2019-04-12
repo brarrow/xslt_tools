@@ -392,15 +392,52 @@ class JDOMProcessing {
                                     String name = withParam.getAttributeValue("select").replace("$content", "")
                                             .replace("Up", "").replace("$v", "").replaceAll("[0-9]", "");
                                     int urovenVloz = 1;
+                                    boolean needToChange = false;
                                     if (el.getParentElement().getName().equals("if")) {
                                         try {
                                             if (el.getParentElement().getAttributeValue("test").contains("position")) {
-                                                continue;
+                                                Element ifEl = el.getParentElement();
+                                                for (Element element : ifEl.getParentElement().getParentElement().getChildren()) {
+                                                    if (element.getName().equals("span")
+                                                            & element.getText().contains(":")) {
+                                                        throw new Exception("bad");
+                                                    }
+                                                }
+                                                try {
+                                                    if (ifEl.getParentElement().getName().contains("for-each")) {
+                                                        Element mainIf = ifEl.getParentElement().getParentElement();
+                                                        for (Element element : mainIf.getChildren()) {
+                                                            if (element.getName().equals("strong")) {
+                                                                if (element.getAttributeValue("class").contains("myth")) {
+                                                                    needToChange = true;
+                                                                }
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        if (!needToChange) {
+                                                            mainIf = ifEl.getParentElement().getParentElement().getParentElement();
+                                                            for (Element element : mainIf.getChildren()) {
+                                                                if (element.getName().equals("strong")) {
+                                                                    if (element.getAttributeValue("class").contains("myth")) {
+                                                                        needToChange = true;
+                                                                    }
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                } catch (Exception ignored) {
+                                                    continue;
+                                                }
                                             }
                                         } catch (Exception ignored) {
+                                            if (ignored.getMessage().equals("bad")) {
+                                                continue;
+                                            }
                                         }
                                     }
-                                    if (name.length() <= urovenVloz) {
+                                    if (name.length() <= urovenVloz | needToChange) {
                                         ((Element) el).setAttribute("name", ((Element) el).getAttributeValue("name").replace("string-ltrim", "string-capltrim"));
                                         //el.detach();
                                     }
