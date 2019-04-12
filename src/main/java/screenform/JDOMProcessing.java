@@ -77,6 +77,17 @@ class JDOMProcessing {
                     try {
                         String atr_value = ((Element) content).getAttributeValue(atr);
                         if (atr_value == null) continue;
+                        Element parent = content.getParentElement();
+                        int depth = 8;
+                        boolean forEachInParent = false;
+                        while (depth > 0 & !forEachInParent) {
+                            if (parent.getName().contains("for-each")) {
+                                forEachInParent = true;
+                            }
+                            parent = parent.getParentElement();
+                            depth--;
+                        }
+                        if (forEachInParent) continue;
                         ((Element) content).setAttribute(atr, atr_value.replace(nameToDel, "")
                                 .replace("'1' = '0' or ", "").trim());
                         //for good and nice Interpr results
