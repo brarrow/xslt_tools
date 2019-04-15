@@ -1125,7 +1125,7 @@ class JDOMProcessing {
 
                     curPath = curPath.substring(0, posResult);
                     Element elForEach = new Element("for-each", xsl);
-                    elForEach.setAttribute("select", curPath);
+                    elForEach.setAttribute("select", curPath + "[1]");
                     Element elIf = new Element("if", xsl);
                     elIf.setAttribute("test", "count(preceding-sibling::*) > 1");
                     Element elAttr = new Element("attribute", xsl);
