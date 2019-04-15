@@ -83,6 +83,7 @@ public class Functions {
                             writerPaths.append(line).append("\n");
                         }
                         writerPaths.close();
+                        FilesIO.readPathsFromTxt();
                         System.out.println("Success!");
                         break;
                     } else {

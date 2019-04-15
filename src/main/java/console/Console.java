@@ -1,10 +1,12 @@
 package console;
 
+import files.FilesIO;
 import main.Main;
 import monitoring.MonitScreen;
 import screenform.Functions;
 import testing.Test;
 import webstand.Stand;
+import webstand.cases.CasesFunctions;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,15 +27,21 @@ public class Console {
         do {
             all = 0;
             good = 0;
+            try {
+                String caseStr = CasesFunctions.findCaseWithPath(FilesIO.path);
+                System.out.println("Current case: " + caseStr + " : " + CasesFunctions.getDoctorAndCct(caseStr));
+            } catch (Exception ignored) {
+                System.out.println("Can't get case name.");
+            }
             System.out.print("Command: ");
             commands = in.nextLine().split(" ");
             switch (commands[0]) {
                 case "s": {
                     switch (commands[1]) {
-                        case "-a": {
-                            Functions.getScreenForm(true);
-                            break;
-                        }
+//                        case "-a": {
+//                            Functions.getScreenForm(true);
+//                            break;
+//                        }
                         case "-o": {
                             Functions.getScreenForm(false);
                             break;

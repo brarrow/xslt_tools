@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 
 class Processing {
@@ -19,21 +18,7 @@ class Processing {
         try {
             readRows(FilesIO.input);
             zero();
-            one();
-            twenty();
-            thirteen();
-            two();
-            three();
-            four();
-            five();
-            nine();
-            ten();
-            twelve();
-            fourteen();
-            twenty_one();
-            addMD5Comment();
-
-
+//            addMD5Comment();
             tabToWhite();
             FilesIO.writeToFile(rows);
         } catch (Exception e) {
@@ -41,7 +26,7 @@ class Processing {
         }
     }
 
-    static void readRows(String filePath) {
+    private static void readRows(String filePath) {
         try {
             List<String> listRows = Files.readAllLines(new File(filePath).toPath(), Charset.forName("UTF-8"));
             setRows(listRows);
@@ -50,7 +35,7 @@ class Processing {
         }
     }
 
-    static void setRows(List<String> listRows) {
+    private static void setRows(List<String> listRows) {
         rows = listRows;
     }
 
@@ -58,309 +43,14 @@ class Processing {
         return str.replace(":", "").replace(".", "");
     }
 
-    //ok
-    static void zero() {
+    private static void zero() {
         for (int i = 0; i < rows.size(); i++) {
             if (rows.get(i).trim().length() == 0)
                 rows.remove(i--);
         }
     }
 
-    //ok
-    static void one() {
-        boolean deleting = false;
-        for (int i = 0; i < rows.size(); i++) {
-            if (rows.get(i).contains("<table")) {
-                deleting = true;
-            }
-            if (rows.get(i).contains("</table>")) {
-                rows.remove(i);
-                return;
-            }
-            if (deleting) {
-                rows.remove(i--);
-            }
-        }
-    }
-
-    static void two() {
-        String styleName = "23456789123456789123456789";
-        String styles = "    <style>\n" +
-                "     .xslt_85s{\n" +
-                "         margin: 0pt;\n" +
-                "         padding-left: 0;\n" +
-                "     }\n" +
-                "     .xslt_85s .part{\n" +
-                "         line-height: 24px;\n" +
-                "         font-family: Open Sans;\n" +
-                "         font-weight: bold;\n" +
-                "         font-size: 15px;\n" +
-                "         color: #333333;\n" +
-                "     }\n" +
-                "     .xslt_85s .mytd{\n" +
-                "         line-height: 24px;\n" +
-                "         font-family: Open Sans;\n" +
-                "         font-size: 15px;\n" +
-                "         color: #333333;\n" +
-                "         padding-bottom: 20px;\n" +
-                "     }\n" +
-                "     .xslt_85s .myml{\n" +
-                "         padding-top: 20px;\n" +
-                "     }\n" +
-                "     .xslt_85s .myth{\n" +
-                "         text-align: left;\n" +
-                "         line-height: 24px;\n" +
-                "         font-family: Open Sans;\n" +
-                "         font-size: 15px;\n" +
-                "         color: #757575;\n" +
-                "         font-weight: normal;\n" +
-                "         padding-top: 20px\n" +
-                "     }\n" +
-                "     .xslt_85s .lefttd{\n" +
-                "         line-height: 24px;\n" +
-                "         font-family: Open Sans;\n" +
-                "         font-size: 15px;\n" +
-                "         color: #333333;\n" +
-                "     }\n" +
-                "     .xslt_85s strong{\n" +
-                "         line-height: 24px;\n" +
-                "         font-family: Open Sans;\n" +
-                "         font-size: 15px;\n" +
-                "         font-weight: normal;\n" +
-                "         color: #333333;\n" +
-                "     }\n" +
-                "     .xslt_85s span{\n" +
-                "         line-height: 24px;\n" +
-                "         font-family: Open Sans;\n" +
-                "         font-size: 15px;\n" +
-                "         color: #333333;\n" +
-                "     }\n" +
-                "     .xslt_85s td{\n" +
-                "         border-spacing: 0;\n" +
-                "         padding: 0;\n" +
-                "     }\n" +
-                "     .xslt_85s th{\n" +
-                "     \t\t\t padding: 0;\n" +
-                "     }\n" +
-                "     .xslt_85s table{\n" +
-                "     \t\t\t\tborder-spacing: 0;\n" +
-                "     }</style>";
-        List<String> newStyleDef = Arrays.asList(styles.split("\\n"));
-
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("<style>")) {
-                styleName = rows.get(i + 1).replaceAll("[^A-Za-z0-9_]+", "");
-                //changing definition style
-                String styleNameDef = "23456789123456789123456789";
-                for (int j = 0; j < newStyleDef.size(); j++) {
-                    String nowDef = newStyleDef.get(j);
-                    if (nowDef.contains("<style>")) {
-                        styleNameDef = newStyleDef.get(j + 1).replaceAll("[^A-Za-z0-9_]+", "");
-                        newStyleDef.set(j, newStyleDef.get(j).replace(styleNameDef, styleName));
-                    } else if (nowDef.contains(styleNameDef)) {
-                        newStyleDef.set(j, newStyleDef.get(j).replace(styleNameDef, styleName));
-                    }
-                }
-                String nowChangeDef = now;
-                while (!nowChangeDef.contains("</style>")) {
-                    nowChangeDef = rows.get(i);
-                    rows.remove(i);
-                }
-                int off = 0;
-                for (String el : newStyleDef) {
-                    rows.add(i + off++, el);
-                }
-            } else if (now.contains(styleName)) {
-                rows.set(i, rows.get(i).replace(styleName, styleName + "s"));
-            }
-        }
-    }
-
-    static void three() {
-        boolean notFirst = false;
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("<table")) {
-                if (!notFirst) {
-                    rows.set(i, "<table class=\"mytd\" width=\"648px\" align=\"center\">");
-                    if ((rows.get(i + 1).contains(">")) & (!rows.get(i + 1).contains("<"))) rows.remove(i + 1);
-                    notFirst = true;
-                } else {
-                    rows.set(i, "<table>");
-                    if ((rows.get(i + 1).contains(">")) & (!rows.get(i + 1).contains("<"))) rows.remove(i + 1);
-                }
-            }
-        }
-    }
-
-    static void four() {
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("width=\"116pt\"")) {
-                rows.set(i, rows.get(i).replace("width=\"116pt\"", ""));
-            }
-            if (now.contains("style=\" border-top: 0.5pt solid rgba(0,0,0,0.4);\">")) {
-                rows.remove(i--);
-            }
-        }
-    }
-
-    static void five() {
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("<tr>")) {
-                if (rows.get(i + 1).contains("colspan")) {
-                    String nowChange = now;
-                    while (!nowChange.contains("</tr>")) {
-                        nowChange = rows.get(i);
-                        rows.remove(i);
-                    }
-                }
-            }
-        }
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("</td>")) {
-                if (now.contains("<td")) {
-                    rows.remove(i--);
-                }
-            }
-        }
-
-
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("</td>")) {
-                if (rows.get(i + 1).contains("<td")) {
-                    rows.remove(i);
-                    rows.remove(i);
-                }
-            }
-        }
-    }
-
-    static void nine() {
-        boolean obsOsmFound = false;
-        boolean bodyFound = false;
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("test=") & now.contains("Общий_осмотр") & now.contains("!= ''")) {
-                obsOsmFound = true;
-            }
-            if (now.contains("<tbody>")) {
-                bodyFound = true;
-            }
-            if (now.contains("</tbody>")) {
-                bodyFound = false;
-            }
-            if (obsOsmFound & bodyFound) {
-                if (now.contains("<tr>") & rows.get(i + 1).contains("<td class=\"lefttd\">")) {
-                    rows.remove(i);
-                    rows.remove(i);
-                    int off = 0;
-                    String bufForFindCloseTag = rows.get(i);
-                    while (!bufForFindCloseTag.contains("</tr>")) {
-                        if (bufForFindCloseTag.contains("<strong>")) {
-                            rows.set(i + off, bufForFindCloseTag.replaceFirst("strong>", "strong>left"));
-                        }
-                        bufForFindCloseTag = rows.get(i + ++off);
-                    }
-                    rows.remove(i + off - 1);
-                    rows.remove(i + off - 1);
-                }
-            }
-        }
-    }
-
-    static void ten() {
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("span class=\"part\"")) {
-                if (now.contains("<br/>")) {
-                    rows.set(i, rows.get(i).replace("<br/>", " "));
-                }
-            }
-        }
-    }
-
-    static void twelve() {
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("<strong>")) {
-                if (rows.get(i - 1).contains("<br/>")) {
-                    rows.remove(i - 1);
-                }
-            }
-        }
-    }
-
-    static void thirteen() {
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("<td")) {
-                if (!now.contains(">")) {
-                    while (!now.contains(">")) {
-                        rows.remove(i);
-                        now = rows.get(i);
-                    }
-
-                    rows.set(i, now.substring(now.indexOf(">") + 1));
-                    if (!now.contains("/>")) {
-                        rows.add(i, "<td>");
-                    }
-                }
-            }
-        }
-    }
-
-    static void fourteen() {
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("<br/>.")) {
-                rows.set(i, now.replaceFirst("<br/>.", "<br/>"));
-            }
-        }
-    }
-
-    static void twenty() {
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains(">рост")) {
-                rows.set(i, now.replaceFirst("рост", "Рост"));
-            }
-            if (now.contains(">вес")) {
-                rows.set(i, now.replaceFirst("вес", "Вес"));
-            }
-            if (now.contains("предположительная дата явки")) {
-                rows.set(i, now.replaceFirst("предположительная", "Предположительная"));
-            }
-        }
-    }
-
-    static void twenty_one() {
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("<xsl:element name=\"strong\">")) {
-                rows.set(i, now.replaceFirst("<xsl:element name=\"strong\">", "<strong class=\"part\">"));
-            }
-            if (now.contains("</xsl:element>")) {
-                rows.set(i, now.replaceFirst("</xsl:element>", "</strong>"));
-            }
-        }
-    }
-
-    static void custom() {
-        for (int i = 0; i < rows.size(); i++) {
-            String now = rows.get(i);
-            if (now.contains("font-family: Open Sans")) {
-                rows.set(i, now.replace("Sans", "Sans Semibold"));
-            }
-
-        }
-    }
-
-    static void addMD5Comment() {
+    private static void addMD5Comment() {
         try (InputStream is = Files.newInputStream(Paths.get(FilesIO.input))) {
             String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(is);
             rows.add(5, "<!--" + "md5:" + md5 + "-->");
@@ -373,7 +63,7 @@ class Processing {
         }
     }
 
-    static void tabToWhite() {
+    private static void tabToWhite() {
         for (int i = 0; i < rows.size(); i++) {
             rows.set(i, rows.get(i).replaceAll("\\t", " "));
         }

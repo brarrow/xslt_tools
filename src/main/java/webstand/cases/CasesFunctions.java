@@ -79,7 +79,7 @@ public class CasesFunctions {
                         toAppend += "test_" + caseNow.replaceAll(" ", "") + " ; " + filePath;
                         writer.append(toAppend);
                         writer.close();
-                    } catch (Exception e) {
+                    } catch (Exception ignored) {
                     }
                 }
                 return FileVisitResult.CONTINUE;
