@@ -3,6 +3,7 @@ package console;
 import files.FilesIO;
 import main.Main;
 import monitoring.MonitScreen;
+import repository.Docx;
 import screenform.Functions;
 import testing.Test;
 import webstand.Stand;
@@ -16,11 +17,20 @@ import java.util.Scanner;
 public class Console {
     public static int good = 0;
     public static int all = 0;
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";
+    public static String caseStr = null;
 
     public static void mainCircle() {
         Scanner in = new Scanner(System.in);
         String[] commands;
-        String incorComStr = "Incorrect command. Please, use help or turn off your computer.";
         System.out.println("Tools for xslt making. Type \"h\" to get help.");
         System.out.println("Version " + Main.version + ".");
         System.out.println("Made by brarrow.");
@@ -28,8 +38,8 @@ public class Console {
             all = 0;
             good = 0;
             try {
-                String caseStr = CasesFunctions.findCaseWithPath(FilesIO.path);
-                System.out.println("Current case: " + caseStr + " : " + CasesFunctions.getDoctorAndCct(caseStr));
+                caseStr = CasesFunctions.findCaseWithPath(FilesIO.path);
+                System.out.println("\nCurrent case: " + caseStr + ", " + CasesFunctions.getDoctor(caseStr));
             } catch (Exception ignored) {
                 System.out.println("Can't get case name.");
             }
@@ -47,7 +57,7 @@ public class Console {
                             break;
                         }
                         default: {
-                            System.out.println(incorComStr);
+                            printIncorr();
                         }
                     }
                     break;
@@ -72,7 +82,14 @@ public class Console {
                     Functions.changeCurrentFile();
                     break;
                 }
-
+                case "d": {
+                    Docx.openDocWithCase(caseStr);
+                    break;
+                }
+                case "l": {
+                    Stand.loadActualXML(caseStr);
+                    break;
+                }
                 case "h": {
                     printHelp();
                     break;
@@ -81,10 +98,19 @@ public class Console {
                     break;
                 }
                 default: {
-                    System.out.println(incorComStr);
+                    printIncorr();
                 }
             }
         } while (!commands[0].equals("exit"));
+    }
+
+    public static void printMessage(String message, String color) {
+        System.out.println(color + message + ANSI_RESET);
+    }
+
+    private static void printIncorr() {
+        String incorComStr = "Incorrect command.";
+        System.out.println(incorComStr);
     }
 
     private static void printHelp() {
@@ -92,6 +118,8 @@ public class Console {
                 "Available commands: \n" +
                 "h - Get help.\n" +
                 "c - Change current processing file.\n" +
+//                "l - Load actual xml from stand.\n" +
+                "d - Open documentation for current processing file.\n" +
 //                "t - Testing result html" +
                 "s -a -o - Get screen form. -a: for all files. -o: for one file. All paths in file paths.txt.\n" +
 //                "m - Check actuality of screen forms" +

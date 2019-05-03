@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FilesIO {
@@ -21,6 +22,7 @@ public class FilesIO {
     public static String input;
     public static Path out;
     private static String pathAll;
+    public static String delim;
 
 
     public static String getPathAll() {
@@ -110,6 +112,14 @@ public class FilesIO {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static List<String> listFilesForFolder(final File folder) {
+        List<String> filesNames = new ArrayList<>();
+        for (final File fileEntry : folder.listFiles()) {
+            filesNames.add(fileEntry.getName());
+        }
+        return filesNames;
     }
 
     public static String readXslt(String path) {

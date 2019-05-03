@@ -42,6 +42,12 @@ public class CasesFunctions {
         return tmp;
     }
 
+    public static String getDoctor(String caseName) {
+        String tmp = getDoctorAndCct(caseName).trim();
+        int whitePos = tmp.indexOf(" ");
+        return tmp.substring(whitePos).trim();
+    }
+
     public static void updateCaseNames() {
         File caseNames = new File(casesSource);
         try {

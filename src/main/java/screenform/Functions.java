@@ -32,16 +32,16 @@ public class Functions {
                 operationsForScreenForm(FilesIO.input, FilesIO.out.toString() + "/" + FilesIO.outFileName);
             }
         }
-        System.out.println("Done: " + Console.good + "/" + Console.all);
+        System.out.println(Console.ANSI_GREEN + "Done: " + Console.good + "/" + Console.all + Console.ANSI_RESET);
     }
 
     public static void operationsForScreenForm(String varInput, String varOutput) {
+        System.out.println();
         Console.all++;
         FilesIO.init(varInput, varOutput);
         Processing.processXSLT();
-        System.out.println("Processing done!");
         JDOMProcessing.processXSLT();
-        System.out.println("JDOM processing done!\n");
+        Console.printMessage("Screen form generated!", Console.ANSI_GREEN);
         Console.good++;
     }
 

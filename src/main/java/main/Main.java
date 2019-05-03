@@ -5,12 +5,16 @@ import files.FilesIO;
 import webstand.cases.CasesFunctions;
 
 public class Main {
-    public static final String version = "0.5.0";
+    public static final String version = "0.5.1";
     public static boolean windows = true;
+
 
     public static void main(String[] args) {
         if (System.getProperty("os.name").contains("Linux")) {
+            FilesIO.delim = "/";
             windows = false;
+        } else {
+            FilesIO.delim = "\\\\";
         }
 
         FilesIO.readPathsFromTxt();

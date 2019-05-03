@@ -38,6 +38,11 @@ public class Stand {
         System.out.println();
     }
 
+    public static void loadActualXML(String caseName) {
+        Session session = new Session(Console.caseStr);
+        session.loadActualXML();
+    }
+
     public static String showDiffCommand(String caseName, String first, String second) {
         if (Main.windows) {
             return Git.printChangesInCase(caseName);

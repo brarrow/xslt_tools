@@ -1,5 +1,6 @@
 package screenform;
 
+import console.Console;
 import files.FilesIO;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.*;
@@ -39,6 +40,7 @@ class JDOMProcessing {
         nine(out);          //Make relative paths from direct
         ten(out);           //Move obsh diag and soput to begin
         eleven(out);        //All main headers in <tr> <td class=myml>
+        //
         twelve(out);        //Move parameters from left table to main table
         thirteen(out);      //Next visit recommendations to good and nice condition
         fourteen(out);      //All main headers from capital trim
@@ -47,6 +49,7 @@ class JDOMProcessing {
         seventeen(out);     //Researches from capital char
         eighteen(out);      //Wrap header of general inspection in tr/td
         nineteen(out);      //Change Complication and Concomitant disease headers from part to myth
+
         twenty(out);        //Replace whitespaces in "In Period" value
         twentyone(out);     //Delete br in Interpretation
         twentytwo(out);     //Make in the moment compl from low case
@@ -55,12 +58,42 @@ class JDOMProcessing {
         twentyfive(out);    //Make gaping before EVALUATION headers
         twentyseven(out);   //Remove <br/> in anamnesis
 
+        twentysix(out, "*:Принимает_препарат");
+        twentyfive(out);
+
+        twentysix(out, "*:Жалобы/");
+        twentyfive(out);
+
+
+
         twentysix(out, "*:Подробности_истории_болезни");
+        twentyfive(out);
+
+        twentysix(out, "*:score/*:Балл/");
         twentyfive(out);
 
         if (out.toLowerCase().contains("gynecologist")) {
             twentysix(out, "*:Гинекологический_осмотр");     //All main headers in <tr> <td class=myml> Gynecologist
             twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
+        }
+        if (out.toLowerCase().contains("otolaryngologist")) {
+            twentysix(out, "/*:Осмотр_оториноларинголога/*:Осмотр_носа_и_носоглотки/*:Общий_осмотр/*:Общий_осмотр/*:data/*:Любое_событие_as_Point_Event/*:data/*:Осмотр_носа/*:Форма/*:value/*:value");     //All main headers in <tr> <td class=myml> Gynecologist
+            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
+            twentysix(out, "*:Осмотр_ротоглотки__openBrkt_фарингоскопия_closeBrkt_");     //All main headers in <tr> <td class=myml> Gynecologist
+            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
+            twentysix(out, "*:Отоневрологический_осмотр");     //All main headers in <tr> <td class=myml> Gynecologist
+            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
+
+        }
+
+        if (out.toLowerCase().contains("ophthalmologist")) {
+            twentysix(out, "*:Инструментальные_исследования_глаз");     //All main headers in <tr> <td class=myml> Gynecologist
+            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
+            twentysix(out, "*:Острота_зрения");     //All main headers in <tr> <td class=myml> Gynecologist
+            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
+            twentysix(out, "*:Рефрактометрия");     //All main headers in <tr> <td class=myml> Gynecologist
+            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
+
         }
         deleteCostiliLeft(out); // delete costili from left attributes
     }
@@ -70,8 +103,8 @@ class JDOMProcessing {
             SAXBuilder saxBuilder = new SAXBuilder();
 
             return saxBuilder.build(new File(fileName));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
+            Console.printMessage("Error: while parsing xslt document.", Console.ANSI_RED);
         }
         return null;
     }
@@ -89,9 +122,8 @@ class JDOMProcessing {
             root.addContent(0, new Comment("generated:" + dtf.format(now)));
             saveXSLT(doc, filePath);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Failed: add generation information.");
+        } catch (Exception ignored) {
+            Console.printMessage("Failed: add generation information.", Console.ANSI_YELLOW);
         }
     }
 
@@ -107,7 +139,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: remove table in div with name talon.");
+            Console.printMessage("Failed: remove table in div with name talon.", Console.ANSI_YELLOW);
         }
 
     }
@@ -142,7 +174,7 @@ class JDOMProcessing {
             date.setText(date.getText().replaceFirst("предпол", "Предпол"));
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: make weight, height, date in recommendation from capital char.");
+            Console.printMessage("Failed: make weight, height, date in recommendation from capital char.", Console.ANSI_YELLOW);
         }
     }
 
@@ -150,6 +182,12 @@ class JDOMProcessing {
     private static void three(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
+
+        List<String> safePatterns = new ArrayList<>();
+        safePatterns.add("border-top: 0.5pt solid rgba(0,0,0,0.4); height:1pt padding-top: 6pt;" +
+                "padding-right: 0pt;" +
+                "padding-bottom: 0pt;");
+
         try {
             for (Content content : root.getDescendants()) {
                 if (content instanceof Element) {
@@ -161,6 +199,10 @@ class JDOMProcessing {
                                 if (attribute.getName().equals("colspan")
                                         | attribute.getName().equals("valign")) {
                                     forRemove = true;
+                                }
+                                if (safePatterns.stream().anyMatch(el -> attribute.getValue().contains(el))) {
+                                    forRemove = false;
+                                    break;
                                 }
                             }
                             if (forRemove) {
@@ -175,7 +217,7 @@ class JDOMProcessing {
             deleteEmptyTd(root);
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: remove not needed td elements.");
+            Console.printMessage("Failed: remove not needed td elements.", Console.ANSI_YELLOW);
         }
     }
 
@@ -269,7 +311,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: add new style section.");
+            Console.printMessage("Failed: add new style section.", Console.ANSI_YELLOW);
         }
 
     }
@@ -302,8 +344,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: delete all attributed in tables exclude main table.");
-            ignored.printStackTrace();
+            Console.printMessage("Failed: delete all attributed in tables exclude main table.", Console.ANSI_YELLOW);
         }
     }
 
@@ -338,7 +379,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: move left headers to main table.");
+            Console.printMessage("Failed: move left headers to main table.", Console.ANSI_YELLOW);
         }
     }
 
@@ -366,7 +407,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: remove tr/td container in left column attributes and add costili to it.");
+            Console.printMessage("Failed: remove tr/td container in left column attributes and add costili to it.", Console.ANSI_YELLOW);
         }
     }
 
@@ -386,7 +427,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: make bold in diagnosis.");
+            Console.printMessage("Failed: make bold in diagnosis.", Console.ANSI_YELLOW);
         }
     }
 
@@ -398,7 +439,7 @@ class JDOMProcessing {
             Element tmpl = findElWithNameAndAttr(root, "match", "*:", "template");
 
             if (tmpl == null) {
-                System.out.println("Error: can't get template name!");
+                Console.printMessage("Error: can't get template name!", Console.ANSI_RED);
                 return;
             }
 
@@ -414,6 +455,19 @@ class JDOMProcessing {
                         try {
                             String atr_value = ((Element) content).getAttributeValue(atr);
                             if (atr_value == null) continue;
+
+                            String trash = "'1' = '0'";
+                            try {
+                                while (atr_value.contains(trash)) {
+                                    int posFrom = atr_value.indexOf(trash);
+                                    int posTo = posFrom + atr_value.substring(posFrom).indexOf(" or ") + " or ".length();
+                                    atr_value = atr_value.replace(atr_value.substring(posFrom, posTo), "");
+                                }
+                            } catch (Exception ignored) {
+                                ignored.printStackTrace();
+                            }
+                            ((Element) content).setAttribute(atr, atr_value);
+
                             Element parent = content.getParentElement();
                             int depth = 8;
                             boolean forEachInParent = false;
@@ -425,8 +479,10 @@ class JDOMProcessing {
                                 depth--;
                             }
                             if (forEachInParent) continue;
-                            ((Element) content).setAttribute(atr, atr_value.replace(nameToDel, "")
-                                    .replace("'1' = '0' or ", "").trim());
+
+                            atr_value = atr_value.replace(nameToDel, "").trim();
+                            ((Element) content).setAttribute(atr, atr_value);
+
                             //for good and nice Interpr results
                             if (((Element) content).getName().contains("if")) {
                                 if (content.getParentElement().getName().contains("for-each")) {
@@ -444,7 +500,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: make relative paths from direct");
+            Console.printMessage("Failed: make relative paths from direct", Console.ANSI_YELLOW);
         }
     }
 
@@ -513,7 +569,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception e) {
-            System.out.println("Failed: moving diagnosis to begin.");
+            Console.printMessage("Failed: moving diagnosis to begin.", Console.ANSI_YELLOW);
         }
 
     }
@@ -560,7 +616,7 @@ class JDOMProcessing {
 
             saveXSLT(doc, filePath);
         } catch (Exception e) {
-            System.out.println("Failed: make all subtitles from another line.");
+            Console.printMessage("Failed: make all subtitles from another line.", Console.ANSI_YELLOW);
         }
     }
 
@@ -640,7 +696,7 @@ class JDOMProcessing {
 
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: move parameters from left table to main table.");
+            Console.printMessage("Failed: move parameters from left table to main table.", Console.ANSI_YELLOW);
         }
     }
 
@@ -718,7 +774,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: make good and nice Recommendations.");
+            Console.printMessage("Failed: make good and nice Recommendations.", Console.ANSI_YELLOW);
         }
 
     }
@@ -743,10 +799,25 @@ class JDOMProcessing {
                                         try {
                                             if (el.getParentElement().getAttributeValue("test").contains("position")) {
                                                 Element ifEl = el.getParentElement();
-                                                for (Element element : ifEl.getParentElement().getParentElement().getChildren()) {
-                                                    if (element.getName().equals("span")
-                                                            & element.getText().contains(":")) {
-                                                        throw new Exception("bad");
+                                                for (Content content : ifEl.getParentElement().getParentElement().getContent()) {
+                                                    if (content instanceof Element) {
+                                                        if (((Element) content).getName().equals("span")
+                                                                & (((Element) content).getText().contains(":")
+                                                                | ((Element) content).getText().contains(","))) {
+                                                            throw new Exception("bad");
+                                                        }
+                                                        if (((Element) content).getName().equals("if")) {
+                                                            Element ifChild = ((Element) content).getChildren().get(0);
+                                                            if (ifChild.getName().equals("span") & ifChild.getText().contains(",")) {
+                                                                throw new Exception("bad");
+                                                            }
+                                                        }
+                                                    }
+                                                    if (content instanceof Text) {
+                                                        if (content.getValue().contains(",")
+                                                                | content.getValue().contains(":")) {
+                                                            throw new Exception("bad");
+                                                        }
                                                     }
                                                 }
                                                 try {
@@ -795,7 +866,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: make all subtitles from capital char.");
+            Console.printMessage("Failed: make all subtitles from capital char.", Console.ANSI_YELLOW);
         }
     }
 
@@ -811,7 +882,11 @@ class JDOMProcessing {
             }
             artDavl = artDavl.getChild("tr").getChild("td");
             artDavl = findElWithNameAndAttr(artDavl, "select", "*:Общий_осмотр/*:Артериальное_давление", "for-each");
-            artDavl.getChildren().get(0).getChildren().get(0).detach();
+            Element forDelete = artDavl.getChildren().get(0).getChildren().get(0);
+            if (!forDelete.getAttributeValue("test").toLowerCase().contains("место_измерения")) {
+                forDelete.detach();
+            }
+
             artDavl = artDavl.getChildren().get(0);
             List<Content> buf = artDavl.getContent();
             for (Content el : buf) {
@@ -821,7 +896,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: make good and nice Arterial pressure.");
+            Console.printMessage("Failed: make good and nice Arterial pressure.", Console.ANSI_YELLOW);
         }
     }
 
@@ -844,7 +919,7 @@ class JDOMProcessing {
             mestStat.setContent(tr);
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: make good and nice local status.");
+            Console.printMessage("Failed: make good and nice local status.", Console.ANSI_YELLOW);
         }
     }
 
@@ -874,10 +949,9 @@ class JDOMProcessing {
             newWithParam.setNamespace(xsl);
             newCallTemplate.setContent(newWithParam);
             neededForEach.addContent(newCallTemplate);
-            System.out.println("TS");
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: make researches from capital char.");
+            Console.printMessage("Failed: make researches from capital char.", Console.ANSI_YELLOW);
         }
     }
 
@@ -896,7 +970,7 @@ class JDOMProcessing {
             placeToInsert.addContent(0, tr);
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: wrap general inspection in tr/td.");
+            Console.printMessage("Failed: wrap general inspection in tr/td.", Console.ANSI_YELLOW);
         }
     }
 
@@ -913,19 +987,19 @@ class JDOMProcessing {
             temp.setAttribute("class", "myth");
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: change Осложнение from part to myth.");
+            Console.printMessage("Failed: change Осложнение from part to myth.", Console.ANSI_YELLOW);
         }
         try {
             Element temp = findElWithNameAndCont(root, "Дополнительный диагноз", "span");
             if (temp == null) {
-                System.out.println("Дополнительный диагноз not found!");
+                Console.printMessage("Дополнительный диагноз not found!", Console.ANSI_CYAN);
 
             } else {
                 temp.setAttribute("class", "myth");
             }
             saveXSLT(doc, filePath);
         } catch (Exception ig) {
-            System.out.println("Failed: change Дополнительный диагноз from part to myth.");
+            Console.printMessage("Failed: change Дополнительный диагноз from part to myth.", Console.ANSI_YELLOW);
         }
     }
 
@@ -953,7 +1027,7 @@ class JDOMProcessing {
             parent.addContent(index + 1, valueOf);
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: replace whitespaces in \"In Period\" value.");
+            Console.printMessage("Failed: replace whitespaces in \"In Period\" value.", Console.ANSI_YELLOW);
         }
     }
 
@@ -968,7 +1042,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: delete br in interpretation.");
+            Console.printMessage("Failed: delete br in interpretation.", Console.ANSI_YELLOW);
         }
     }
 
@@ -989,7 +1063,7 @@ class JDOMProcessing {
             buf.getParentElement().setAttribute("name", "string-ltrim");
             saveXSLT(doc, filePath);
         } catch (Exception ex) {
-            System.out.println("Failed: make \"In the moment...\" from low char.");
+            Console.printMessage("Failed: make \"In the moment...\" from low char.", Console.ANSI_YELLOW);
         }
     }
 
@@ -1009,7 +1083,7 @@ class JDOMProcessing {
             saveXSLT(doc, filePath);
 
         } catch (Exception ex) {
-            System.out.println("Failed: remove br from \"at the next reception\".");
+            Console.printMessage("Failed: remove br from \"at the next reception\".", Console.ANSI_YELLOW);
         }
     }
 
@@ -1038,7 +1112,7 @@ class JDOMProcessing {
                                     if (elementList.get(contPos - 1).getName().contains("span")) {
                                         elementList.remove(contPos - 1);
                                         if (!found) {
-                                            System.out.println("Warning: found and removed extra whitespaces before edizm!");
+                                            Console.printMessage("Warning: found and removed extra whitespaces before edizm!", Console.ANSI_CYAN);
                                             found = true;
                                         }
                                     }
@@ -1164,33 +1238,70 @@ class JDOMProcessing {
             forEachTd(root);
             deleteEmptyTr(root);
 
-            List<Element> listElement = root.getChildren().get(1).getChild("html").getChild("body").getChild("div").getChildren().get(0).getChildren().get(0).getChildren();//.get(1).getChildren().get(0).getChildren();//.get(2).getChild("tbody").getChildren();
-            Element obsOsm = null;
-            for (Element el : listElement) {
-                if (obsOsm != null) break;
-                List<Attribute> buf = el.getAttributes();
-                for (Attribute atr : buf) {
-                    if (atr.getValue().contains(pattern)) obsOsm = el;
+            Element stdRootElement = root.getChildren().get(1).getChild("html").getChild("body").getChild("div").getChildren().get(0).getChildren().get(0);//.get(1).getChildren().get(0).getChildren();//.get(2).getChild("tbody").getChildren();
+            Element obsOsm = findHeader(stdRootElement, pattern);
+            Element ob = obsOsm;
+            try {
+                if (ob.getChildren("tr").size() == 1) {
+                    ob = obsOsm.getChild("tr");
+
+                    if (!ob.getName().equals("variable")) {
+                        ob = ob.getChild("td");
+                    }
+
+                    List<Content> temp = ob.removeContent();
+                    ob.setContent(new Element("table").setAttribute("align", "left").setContent(new Element("tbody")
+                            .setContent((new Element("tr")).setContent((new Element("td")).setContent(temp)))));
                 }
+            } catch (Exception ignored) {
             }
-
-            Element ob;
-            ob = obsOsm.getChild("tr");
-
-            if (!ob.getName().equals("variable")) {
-                ob = ob.getChild("td");
-            }
-            List<Content> temp = ob.removeContent();
-            ob.setContent(new Element("table").setAttribute("align", "left").setContent(new Element("tbody")
-                    .setContent((new Element("tr")).setContent((new Element("td")).setContent(temp)))));
 
             forEachStrong(ob);
             forEachStrong(ob);
+            forEachStrong(ob.getParentElement().getParentElement());
+            forEachStrong(ob.getParentElement());
 
             saveXSLT(doc, filePath);
         } catch (Exception e) {
-            System.out.println("Failed: make all subtitles from another line.");
+            Console.printMessage("Failed: make all subtitles from another line.", Console.ANSI_YELLOW);
         }
+    }
+
+    private static Element findHeader(Element root, String pattern) {
+        try {
+            List<Element> listElement = root.getChildren();//.get(1).getChildren().get(0).getChildren();//.get(2).getChild("tbody").getChildren();
+            Element header = null;
+            for (Element el : listElement) {
+                if (header != null) return header;
+                List<Attribute> buf = el.getAttributes();
+                try {
+                    for (Attribute atr : buf) {
+
+                        String atrVal = atr.getValue();
+                        if (atrVal.contains(" or ")) {
+                            atrVal = atrVal.substring(0, atrVal.indexOf(" or "));
+                        }
+                        if (atrVal.contains(pattern)
+                                & el.getChildren("strong").size() > 0) {
+                            header = el;
+                            return header;
+                        }
+
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            if (header == null) {
+                for (Element element : listElement) {
+                    header = findHeader(element, pattern);
+                    if (header != null) {
+                        return header;
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 
     //remove <br/> in anamnesis
@@ -1222,7 +1333,7 @@ class JDOMProcessing {
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
-            System.out.println("Failed: remove <br/> in anamnesis.");
+            Console.printMessage("Failed: remove <br/> in anamnesis.", Console.ANSI_YELLOW);
             ignored.printStackTrace();
         }
     }
@@ -1271,8 +1382,14 @@ class JDOMProcessing {
 
     //Delete all Attributes from all td elements
     private static void forEachTd(Element element) {
+        List<String> safePatterns = new ArrayList<>();
+        safePatterns.add("padding-bottom");
         if (element.getName().equals("td")) {
-            element.setAttributes(null);
+            for (Attribute attribute : element.getAttributes()) {
+                if (safePatterns.stream().noneMatch(el -> attribute.getValue().contains(el))) {
+                    element.setAttributes(null);
+                }
+            }
         }
         for (Element el : element.getChildren()) {
             forEachTd(el);
@@ -1280,10 +1397,22 @@ class JDOMProcessing {
     }
 
     private static void deleteEmptyTd(Element element) {
+        List<String> safePatterns = new ArrayList<>();
+        safePatterns.add("padding-bottom");
+
+        boolean toDelete = true;
         if (element.getName().equals("td")) {
             if (element.getChildren().isEmpty()) {
-                element.detach();
-                return;
+                for (Attribute attribute : element.getAttributes()) {
+                    String atrVal = attribute.getValue();
+                    if (safePatterns.stream().anyMatch(el -> el.contains(atrVal))) {
+                        toDelete = false;
+                    }
+                }
+                if (toDelete) {
+                    element.detach();
+                    return;
+                }
             }
         }
         List<Element> buf = element.getChildren();
