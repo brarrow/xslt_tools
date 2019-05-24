@@ -4,6 +4,7 @@ import files.FilesIO;
 import main.Main;
 import monitoring.MonitScreen;
 import repository.Docx;
+import repository.Git;
 import screenform.Functions;
 import testing.Test;
 import webstand.Stand;
@@ -40,6 +41,7 @@ public class Console {
             try {
                 caseStr = CasesFunctions.findCaseWithPath(FilesIO.path);
                 System.out.println("\nCurrent case: " + caseStr + ", " + CasesFunctions.getDoctor(caseStr));
+                System.out.println(Git.getLastCommitInCase(caseStr));
             } catch (Exception ignored) {
                 System.out.println("Can't get case name.");
             }
@@ -48,10 +50,6 @@ public class Console {
             switch (commands[0]) {
                 case "s": {
                     switch (commands[1]) {
-//                        case "-a": {
-//                            Functions.getScreenForm(true);
-//                            break;
-//                        }
                         case "-o": {
                             Functions.getScreenForm(false);
                             break;
@@ -75,7 +73,8 @@ public class Console {
                     break;
                 }
                 case "t": {
-                    Test.getHtmlText("/home/brarrow/Рабочий стол/html.html");
+                    String str = Test.getHtmlText("/home/brarrow/Documents/oxy.html");
+                    str.trim();
                     break;
                 }
                 case "c": {
@@ -121,7 +120,7 @@ public class Console {
 //                "l - Load actual xml from stand.\n" +
                 "d - Open documentation for current processing file.\n" +
 //                "t - Testing result html" +
-                "s -a -o - Get screen form. -a: for all files. -o: for one file. All paths in file paths.txt.\n" +
+                "s -o - Get screen form. -o: for one file. All paths in file paths.txt.\n" +
 //                "m - Check actuality of screen forms" +
                 "ug - Push updated to git and update stand. (using git changes)\n" +
                 "us - Check all stands cases with local files.\n" +

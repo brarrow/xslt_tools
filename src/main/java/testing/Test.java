@@ -12,11 +12,9 @@ public class Test {
                     .replaceAll("<strong>*</strong>", " ")
                     .replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ")
                     .replaceAll("\\{([^}]*)}", " ");
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
             System.out.println("TESTING: Error while reading html file.");
             return null;
         }
     }
-
-
 }

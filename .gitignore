@@ -1,2 +1,4 @@
 paths.txt
 cases.txt
+*.iml
+.idea

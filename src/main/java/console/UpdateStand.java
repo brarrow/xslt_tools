@@ -28,9 +28,9 @@ class UpdateStand {
                     System.out.println(showDiffCommand(caseName, session.getXsltString(), localXslt));
                     System.out.print("Update " + caseName + " (" + CasesFunctions.getDoctorAndCct(caseName) + ")? [y/n]: ");
                     if ((new Scanner(System.in)).next().equals("y")) {
+                        Git.commit(caseName);
                         Updater.updateXslt(session);
                         session.saveCase();
-                        Git.commit(caseName);
                         System.out.println("Updated!");
                     } else {
                         System.out.println("Canceled.");

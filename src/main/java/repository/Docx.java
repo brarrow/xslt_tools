@@ -18,7 +18,6 @@ public class Docx {
                 Desktop.getDesktop().open(file);
             }
         } catch (Exception ignored) {
-            ignored.printStackTrace();
         }
 
     }
@@ -47,6 +46,7 @@ public class Docx {
         final File folder = new File(path);
         return path + FilesIO.delim + FilesIO.listFilesForFolder(folder).stream()
                 .filter(el -> el.toLowerCase().endsWith(".docx"))
+                .filter(el -> !(el.toLowerCase().contains("~")))
                 .collect(Collectors.joining());
     }
 }

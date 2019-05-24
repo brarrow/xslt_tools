@@ -64,35 +64,43 @@ class JDOMProcessing {
         twentysix(out, "*:Жалобы/");
         twentyfive(out);
 
-
+        twentysix(out, "*:Жалобы_и_анамнез_заболевания/*:Тесты");
+        twentyfive(out);
 
         twentysix(out, "*:Подробности_истории_болезни");
+        twentyfive(out);
+
+        twentysix(out, "*:Местный_статус");
         twentyfive(out);
 
         twentysix(out, "*:score/*:Балл/");
         twentyfive(out);
 
         if (out.toLowerCase().contains("gynecologist")) {
-            twentysix(out, "*:Гинекологический_осмотр");     //All main headers in <tr> <td class=myml> Gynecologist
-            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
+            twentysix(out, "*:Гинекологический_осмотр");
+            twentyfive(out);    //Make gaping
+            twentysix(out, "*:Кольпоскопия/*:Кольпоскопия/*:data/*:Любое_событие_as_Point_Event/*:data/*:Подробности/*:Шейка_матки");
+            twentyfive(out);    //Make gaping
+            twentysix(out, "*:Жалобы_и_анамнез_заболевания/*:Менструальный_цикл");
+            twentyfive(out);    //Make gaping
         }
         if (out.toLowerCase().contains("otolaryngologist")) {
-            twentysix(out, "/*:Осмотр_оториноларинголога/*:Осмотр_носа_и_носоглотки/*:Общий_осмотр/*:Общий_осмотр/*:data/*:Любое_событие_as_Point_Event/*:data/*:Осмотр_носа/*:Форма/*:value/*:value");     //All main headers in <tr> <td class=myml> Gynecologist
-            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
-            twentysix(out, "*:Осмотр_ротоглотки__openBrkt_фарингоскопия_closeBrkt_");     //All main headers in <tr> <td class=myml> Gynecologist
-            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
-            twentysix(out, "*:Отоневрологический_осмотр");     //All main headers in <tr> <td class=myml> Gynecologist
-            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
+            twentysix(out, "/*:Осмотр_оториноларинголога/*:Осмотр_носа_и_носоглотки/*:Общий_осмотр/*:Общий_осмотр/*:data/*:Любое_событие_as_Point_Event/*:data/*:Осмотр_носа/*:Форма/*:value/*:value");
+            twentyfive(out);    //Make gaping
+            twentysix(out, "*:Осмотр_ротоглотки__openBrkt_фарингоскопия_closeBrkt_");
+            twentyfive(out);    //Make gaping
+            twentysix(out, "*:Отоневрологический_осмотр");
+            twentyfive(out);    //Make gaping
 
         }
 
         if (out.toLowerCase().contains("ophthalmologist")) {
-            twentysix(out, "*:Инструментальные_исследования_глаз");     //All main headers in <tr> <td class=myml> Gynecologist
-            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
-            twentysix(out, "*:Острота_зрения");     //All main headers in <tr> <td class=myml> Gynecologist
-            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
-            twentysix(out, "*:Рефрактометрия");     //All main headers in <tr> <td class=myml> Gynecologist
-            twentyfive(out);    //Make gaping before EVALUATION headers in Gynecologist
+            twentysix(out, "*:Инструментальные_исследования_глаз");
+            twentyfive(out);    //Make gaping
+            twentysix(out, "*:Острота_зрения");
+            twentyfive(out);    //Make gaping
+            twentysix(out, "*:Рефрактометрия");
+            twentyfive(out);    //Make gaping
 
         }
         deleteCostiliLeft(out); // delete costili from left attributes
@@ -1262,8 +1270,7 @@ class JDOMProcessing {
             forEachStrong(ob.getParentElement());
 
             saveXSLT(doc, filePath);
-        } catch (Exception e) {
-            Console.printMessage("Failed: make all subtitles from another line.", Console.ANSI_YELLOW);
+        } catch (Exception ignored) {
         }
     }
 
@@ -1453,7 +1460,7 @@ class JDOMProcessing {
             if (el.getName().contains("variable")) {
                 int res = 0;
                 String tmp = el.getAttributeValue("name").replace("content", "")
-                        .replace("Up", "").replace("v", "");
+                        .replace("Up", "").replace("v", "").replace("con", "");
                 if (!tmp.startsWith("_")) {
                     res++;
                 }

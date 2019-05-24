@@ -4,6 +4,9 @@ import console.Console;
 import files.FilesIO;
 import webstand.cases.CasesFunctions;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -23,7 +26,10 @@ public class Git {
             }
             if (line.contains("modified:")) {
                 result.add(CasesFunctions.findCaseWithPath(line.replaceAll("modified: {3}", "")
-                        .replaceAll("\t", "").replaceAll("\r", "").replace("/", "\\")));
+                        .replaceAll("\t", "").replaceAll("\r", "")));
+            }
+            if (result.get(result.size() - 1).equalsIgnoreCase("")) {
+                result.remove(result.size() - 1);
             }
         }
         return result;
@@ -39,10 +45,15 @@ public class Git {
         CasesFunctions.getDoctorAndCct(caseName);
         Console.executeCommand(new String[]{"git", "commit", "-m", generateCommitMsg(caseName)}, getRepositoryPath());
         Console.executeCommand(new String[]{"git", "push"}, getRepositoryPath());
+        String message = "";
+        message += ((caseName.endsWith("s") ? "ЛО доработан. " : "ПФ доработана. ") + "Готово к тестированию.\n");
+        message += ("Сохранено на стенде " + caseName + "\n");
+        message += ("Ревизия: " + getHashLastCommit().substring(0, 12) + "\n");
         System.out.println("Message to Jira: ");
-        System.out.println("Доработано. Готово к тестированию.");
-        System.out.println("Сохранено на стенде " + caseName);
-        System.out.println("Ревизия: " + getHashLastCommit().substring(0, 12));
+        System.out.println(message);
+        StringSelection stringSelection = new StringSelection(message);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
     }
 
     private static String getHashLastCommit() {
@@ -69,5 +80,12 @@ public class Git {
         String pathAll = FilesIO.getPathAll();
         int posSimi = pathAll.indexOf("SimiDocuments");
         return pathAll.substring(0, posSimi + 13);
+    }
+
+    public static String getLastCommitInCase(String caseName) {
+        String casePath = CasesFunctions.findPathWithCase(caseName);
+        String caseDir = casePath.substring(0, casePath.lastIndexOf(FilesIO.delim));
+        String caseFileName = casePath.substring(casePath.lastIndexOf(FilesIO.delim) + 1);
+        return Console.executeCommand(new String[]{"git", "log", "-n", "1", "--", caseFileName}, caseDir);
     }
 }

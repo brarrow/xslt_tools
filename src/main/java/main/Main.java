@@ -5,7 +5,7 @@ import files.FilesIO;
 import webstand.cases.CasesFunctions;
 
 public class Main {
-    public static final String version = "0.5.1";
+    public static final String version = "0.5.5";
     public static boolean windows = true;
 
 
@@ -14,7 +14,7 @@ public class Main {
             FilesIO.delim = "/";
             windows = false;
         } else {
-            FilesIO.delim = "\\\\";
+            FilesIO.delim = "\\";
         }
 
         FilesIO.readPathsFromTxt();
