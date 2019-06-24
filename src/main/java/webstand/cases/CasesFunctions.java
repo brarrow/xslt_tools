@@ -143,6 +143,16 @@ public class CasesFunctions {
         return "";
     }
 
+    public static String getXsdPath(String filePath) {
+        String res = filePath.substring(0, filePath.lastIndexOf(FilesIO.delim));
+        res = res.substring(0, res.lastIndexOf(FilesIO.delim));
+        res += FilesIO.delim + "xml" + FilesIO.delim + "tds";
+        String xsdName = FilesIO.listFilesForFolder(new File(res)).get(0);
+        res += FilesIO.delim + xsdName;
+        return res;
+    }
+
+
     private static String findCaseInXslt(String filePath) {
         File file = new File(filePath);
         try {

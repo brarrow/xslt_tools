@@ -103,6 +103,7 @@ class JDOMProcessing {
             twentyfive(out);    //Make gaping
 
         }
+        //twentyeight(out);
         deleteCostiliLeft(out); // delete costili from left attributes
     }
 
@@ -273,7 +274,7 @@ class JDOMProcessing {
                     "         font-size: 15px;\n" +
                     "         color: #757575;\n" +
                     "         font-weight: normal;\n" +
-                    "         padding-top: 20px\n" +
+                    "         padding-top: 20px;\n" +
                     "     }\n" +
                     "     ." + stN + " .lefttd{\n" +
                     "         line-height: 24px;\n" +
@@ -686,6 +687,36 @@ class JDOMProcessing {
             if (obsSost == null) {
                 obsSost = findElWithNameAndCont(root, "Состояние беременности", "strong");
             }
+//            Element var_el = new Element("variable", xsl);
+//            var_el.setAttribute("name", "left_attr");
+//            var_el.setContent(contentToMove);
+//
+//            Element with_param_el = new Element("with-param", xsl);
+//            with_param_el.setAttribute("name", "string");
+//            with_param_el.setAttribute("select", "$left_attr");
+//
+//
+//            Element call_tmpl_el = new Element("value-of", xsl);
+//            call_tmpl_el.setAttribute("select", "$left_attr");
+//
+//            Element attr_el = new Element("attribute", xsl);
+//            attr_el.addContent("myml");
+//            attr_el.setAttribute("name", "class");
+//
+//            Element if_el = new Element("if", xsl);
+//            if_el.setAttribute("test", "$left_attr != \'\'");
+//            if_el.addContent(attr_el);
+
+
+            Element td_el = new Element("td");
+//            td_el.addContent(var_el);
+//            td_el.addContent(if_el);
+//            td_el.addContent(call_tmpl_el);
+            td_el.addContent(contentToMove);
+
+            Element tr_el = new Element("tr");
+            tr_el.addContent(td_el);
+
             while (!obsSost.getName().equals("if")) {
                 obsSost = obsSost.getParentElement();
             }
@@ -700,10 +731,11 @@ class JDOMProcessing {
             } catch (Exception ignored) {
             }
 
-            obsSostParent.addContent(obsSostPos + 1, (new Element("tr")).setContent((new Element("td")).setContent(contentToMove)));
+            obsSostParent.addContent(obsSostPos + 1, tr_el);
 
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
+            ignored.printStackTrace();
             Console.printMessage("Failed: move parameters from left table to main table.", Console.ANSI_YELLOW);
         }
     }
@@ -800,7 +832,7 @@ class JDOMProcessing {
                             if (withParam != null) {
                                 if (withParam.getName().equals("with-param")) {
                                     String name = withParam.getAttributeValue("select").replace("$content", "")
-                                            .replace("Up", "").replace("$v", "").replaceAll("[0-9]", "");
+                                            .replace("Up", "").replace("con", "").replace("$v", "").replaceAll("[0-9]", "");
                                     int urovenVloz = 1;
                                     boolean needToChange = false;
                                     if (el.getParentElement().getName().equals("if")) {
@@ -1140,6 +1172,10 @@ class JDOMProcessing {
     private static void twentyfive(String filePath) {
         Document doc = useSAXParser(filePath);
         Element root = doc.getRootElement();
+        String xsd_path = CasesFunctions.getXsdPath(filePath);
+//        Document xsd_doc = useSAXParser(xsd_path);
+//        Element xsd_root = xsd_doc.getRootElement();
+
         while (true) {
             Element td = findElWithNameAndAttr(root, "class", "myml", "td");
             try {
@@ -1206,6 +1242,17 @@ class JDOMProcessing {
                     } else posResult = posSlash < posSpace ? posSlash : posSpace;
 
                     curPath = curPath.substring(0, posResult);
+                    String curPathNode = curPath.substring(curPath.lastIndexOf(":") + 1);
+//                    List<String> previousHeads = new ArrayList<>();
+//                    Element curNode = findElWithNameAndAttr(xsd_root, "name", curPathNode, "element");
+//                    for(Element iterNode : curNode.getParentElement().getChildren()) {
+//                        if(iterNode == curNode) {
+//                            break;
+//                        }
+//                        previousHeads.add(iterNode.getAttributeValue("name"));
+//                    }
+//                    previousHeads = previousHeads.stream().filter(el -> !el.equals("name")).collect(Collectors.toList());
+
                     Element elForEach = new Element("for-each", xsl);
                     elForEach.setAttribute("select", curPath + "[1]");
                     Element elIf = new Element("if", xsl);
@@ -1220,6 +1267,7 @@ class JDOMProcessing {
                     break;
                 }
             } catch (Exception ignored) {
+                ignored.printStackTrace();
             }
         }
         while (true) {
@@ -1345,6 +1393,18 @@ class JDOMProcessing {
         }
     }
 
+
+    private static void twentyeight(String filePath) {
+        Document doc = useSAXParser(filePath);
+        Element root = doc.getRootElement();
+        try {
+            addMymltoAllTd(root);
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
+        }
+        saveXSLT(doc, filePath);
+    }
+
     private static Element findElWithNameAndCont(Element root, String contains, String name) {
         for (Content el : root.getDescendants()) {
             try {
@@ -1385,6 +1445,36 @@ class JDOMProcessing {
             e.printStackTrace();
         }
 
+    }
+
+    private static void addMymltoAllTd(Element element) {
+        for (Element el : element.getChildren()) {
+            addMymltoAllTd(el);
+        }
+        if (element.getName().equals("td")) {
+            Element child = element.getChildren().get(0);
+            try {
+                if (element.getParentElement().getParentElement().getAttributeValue("test").contains("Общий_осмотр")) {
+                    return;
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                if (child.getChildren().get(0).getName().equalsIgnoreCase("thead")) {
+                    return;
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                if (child.getName().equalsIgnoreCase("variable")) {
+                    if (child.getAttributeValue("name").contains("left_attr")) {
+                        return;
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+            element.setAttribute("class", "myml");
+        }
     }
 
     //Delete all Attributes from all td elements
@@ -1482,9 +1572,7 @@ class JDOMProcessing {
                     Element tr = new Element("tr");
                     Element td = new Element("td");
 
-                    if (!destination.getValue().contains("Общее состояние")) {
-                        td.setAttribute("class", "myml");
-                    }
+                    td.setAttribute("class", "myml");
 
 
                     table.setContent(destination.removeContent());

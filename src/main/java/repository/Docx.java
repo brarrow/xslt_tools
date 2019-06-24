@@ -39,9 +39,9 @@ public class Docx {
 
     private static String getDocxPath(String caseName) {
         String path = CasesFunctions.findPathWithCase(caseName);
-        int dirPos = path.indexOf("/xslt");
+        int dirPos = path.indexOf(FilesIO.delim + "xslt");
         path = path.substring(0, dirPos);
-        path = path.concat("/doc");
+        path = path.concat(FilesIO.delim + "doc");
 
         final File folder = new File(path);
         return path + FilesIO.delim + FilesIO.listFilesForFolder(folder).stream()
