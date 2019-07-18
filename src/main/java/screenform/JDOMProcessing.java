@@ -4,11 +4,9 @@ import console.Console;
 import files.FilesIO;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.*;
-import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 import webstand.cases.CasesFunctions;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-class JDOMProcessing {
+public class JDOMProcessing {
     private static String in = FilesIO.input;
     private static String out = FilesIO.out.toString();
     private static Namespace xsl = Namespace.getNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
@@ -107,20 +105,9 @@ class JDOMProcessing {
         deleteCostiliLeft(out); // delete costili from left attributes
     }
 
-    private static org.jdom2.Document useSAXParser(String fileName) {
-        try {
-            SAXBuilder saxBuilder = new SAXBuilder();
-
-            return saxBuilder.build(new File(fileName));
-        } catch (Exception ignored) {
-            Console.printMessage("Error: while parsing xslt document.", Console.ANSI_RED);
-        }
-        return null;
-    }
-
     //add generation information
     private static void addMD5Comment(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
 
         try (InputStream is = Files.newInputStream(Paths.get(FilesIO.input))) {
@@ -138,10 +125,10 @@ class JDOMProcessing {
 
     //remove table in div with name talon
     private static void one(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element div = findElWithNameAndAttr(root, "class", "xslt", "div");
+            Element div = JDOMFunctions.findElWithNameAndAttr(root, "class", "xslt", "div");
             Element table = div.getChildren().get(0);
             if (table.getName().equals("table")) {
                 table.detach();
@@ -155,7 +142,7 @@ class JDOMProcessing {
 
     //Make weight, height, date in recommendation from cap char
     private static void two(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
             Element weight = new Element("buf");
@@ -189,7 +176,7 @@ class JDOMProcessing {
 
     //remove not needed td elements
     private static void three(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
 
         List<String> safePatterns = new ArrayList<>();
@@ -232,7 +219,7 @@ class JDOMProcessing {
 
     //add new style section
     private static void four(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
             Element styleEl = null;
@@ -327,10 +314,10 @@ class JDOMProcessing {
 
     //delete all attributed in tables exclude main table
     private static void five(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element div = findElWithNameAndAttr(root, "class", "xslt", "div");
+            Element div = JDOMFunctions.findElWithNameAndAttr(root, "class", "xslt", "div");
             Element table = div.getChildren().get(0);
             if (table.getName().equals("table")) {
                 List<Attribute> attributes = new ArrayList<>();
@@ -359,7 +346,7 @@ class JDOMProcessing {
 
     //move left headers to main table
     private static void six(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
             List<Element> forDelete = new ArrayList<>();
@@ -394,10 +381,10 @@ class JDOMProcessing {
 
     //remove tr/td container in left column attributes and add costili to it
     private static void seven(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element leftTd = findElWithNameAndAttr(root, "class", "lefttd", "td");
+            Element leftTd = JDOMFunctions.findElWithNameAndAttr(root, "class", "lefttd", "td");
             while (leftTd != null) {
                 List<Content> contentList = leftTd.removeContent();
                 for (Content content : contentList) {
@@ -412,7 +399,7 @@ class JDOMProcessing {
                 int trInd = parent.getContent().indexOf(tr);
                 parent.getContent().remove(trInd);
                 parent.addContent(trInd, contentList);
-                leftTd = findElWithNameAndAttr(root, "class", "lefttd", "td");
+                leftTd = JDOMFunctions.findElWithNameAndAttr(root, "class", "lefttd", "td");
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
@@ -422,17 +409,17 @@ class JDOMProcessing {
 
     //make bold in diagnosis
     private static void eight(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element element = findElWithNameAndAttr(root, "name", "strong", "element");
+            Element element = JDOMFunctions.findElWithNameAndAttr(root, "name", "strong", "element");
             while (element != null) {
                 element.setName("strong");
                 element.setNamespace(null);
                 List<Attribute> attributeList = new ArrayList<>();
                 attributeList.add(new Attribute("class", "part"));
                 element.setAttributes(attributeList);
-                element = findElWithNameAndAttr(root, "name", "strong", "element");
+                element = JDOMFunctions.findElWithNameAndAttr(root, "name", "strong", "element");
             }
             saveXSLT(doc, filePath);
         } catch (Exception ignored) {
@@ -442,10 +429,10 @@ class JDOMProcessing {
 
     //make relative paths from direct
     private static void nine(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element tmpl = findElWithNameAndAttr(root, "match", "*:", "template");
+            Element tmpl = JDOMFunctions.findElWithNameAndAttr(root, "match", "*:", "template");
 
             if (tmpl == null) {
                 Console.printMessage("Error: can't get template name!", Console.ANSI_RED);
@@ -515,24 +502,24 @@ class JDOMProcessing {
 
     //Move obsh diag and soput to begin
     private static void ten(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         forEachTd(root);
         deleteEmptyTr(root);
         try {
             Element sopDiag;
             try {
-                sopDiag = findElWithNameAndCont(root, "Сопутствующий диагноз", "if");
-                Element spanSopDiag = findElWithNameAndCont(sopDiag, "Сопутствующий диагноз", "span");
+                sopDiag = JDOMFunctions.findElWithNameAndCont(root, "Сопутствующий диагноз", "if");
+                Element spanSopDiag = JDOMFunctions.findElWithNameAndCont(sopDiag, "Сопутствующий диагноз", "span");
                 spanSopDiag.setAttribute("class", "myth");
                 spanSopDiag.setText("Сопутствующее заболевание");
             } catch (Exception ex) {
-                sopDiag = findElWithNameAndCont(root, "Сопутствующее заболевание", "if");
-                Element spanSopDiag = findElWithNameAndCont(sopDiag, "Сопутствующее заболевание", "span");
+                sopDiag = JDOMFunctions.findElWithNameAndCont(root, "Сопутствующее заболевание", "if");
+                Element spanSopDiag = JDOMFunctions.findElWithNameAndCont(sopDiag, "Сопутствующее заболевание", "span");
                 spanSopDiag.setAttribute("class", "myth");
             }
             Comment sopDiagComment = null;
-            Element sopDiagDest = findElWithNameAndCont(root, "Сопутствующее заболевание", "tbody");
+            Element sopDiagDest = JDOMFunctions.findElWithNameAndCont(root, "Сопутствующее заболевание", "tbody");
 
             int sopDiagIndex = sopDiag.getParent().getContent().indexOf(sopDiag);
             if (sopDiag.getParent().getContent().get(sopDiagIndex - 2) instanceof Comment) {
@@ -547,11 +534,11 @@ class JDOMProcessing {
             }
 
 
-            Element osnDiag = findElWithNameAndCont(root, "Основной диагноз", "if");
-            Element spanOsnDiag = findElWithNameAndCont(osnDiag, "Основной диагноз", "span");
+            Element osnDiag = JDOMFunctions.findElWithNameAndCont(root, "Основной диагноз", "if");
+            Element spanOsnDiag = JDOMFunctions.findElWithNameAndCont(osnDiag, "Основной диагноз", "span");
             spanOsnDiag.setAttribute("class", "myth");
             Comment osnDiagComment = null;
-            Element osnDiagDest = findElWithNameAndCont(root, "Основной диагноз", "tbody");
+            Element osnDiagDest = JDOMFunctions.findElWithNameAndCont(root, "Основной диагноз", "tbody");
             try {
                 List<Element> osnDiagEls = osnDiag.getChild("tr").getChild("td").getChildren("if", xsl);
                 for (Element element : osnDiagEls) {
@@ -585,7 +572,7 @@ class JDOMProcessing {
 
     //all main headers in <tr> <td class=myml>
     private static void eleven(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
             forEachTd(root);
@@ -606,7 +593,7 @@ class JDOMProcessing {
                 ob = (Element) obsOsm.getChild("tr").getChild("td").getContent(3);
             } else {
                 if (filePath.contains("22954")) {
-                    ob = findElWithNameAndAttr(root, "test", "*:Жалобы_и_анамнез_заболевания//*:Жалобы_и_анамнез_заболевания//*:Подробности_истории_болезни", "if");
+                    ob = JDOMFunctions.findElWithNameAndAttr(root, "test", "*:Жалобы_и_анамнез_заболевания//*:Жалобы_и_анамнез_заболевания//*:Подробности_истории_болезни", "if");
                 } else {
                     ob = obsOsm.getChild("tr");
                 }
@@ -631,12 +618,12 @@ class JDOMProcessing {
 
     //Move parameters from left table to main table
     private static void twelve(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
             deleteEmptyTr(root);
 
-            Element obsOsm = findElWithNameAndCont(root, "Общий осмотр", "span");
+            Element obsOsm = JDOMFunctions.findElWithNameAndCont(root, "Общий осмотр", "span");
             if (obsOsm == null) {
                 return;
             }
@@ -682,10 +669,10 @@ class JDOMProcessing {
                 obsOsm.detach();
             }
 
-            Element obsSost = findElWithNameAndCont(root, "Общее", "strong");
+            Element obsSost = JDOMFunctions.findElWithNameAndCont(root, "Общее", "strong");
 
             if (obsSost == null) {
-                obsSost = findElWithNameAndCont(root, "Состояние беременности", "strong");
+                obsSost = JDOMFunctions.findElWithNameAndCont(root, "Состояние беременности", "strong");
             }
 //            Element var_el = new Element("variable", xsl);
 //            var_el.setAttribute("name", "left_attr");
@@ -725,7 +712,7 @@ class JDOMProcessing {
             try {
                 Element nextEl = obsSostParent.getChildren().get(obsSostParent.getChildren().indexOf(obsSost) + 1);
                 if (nextEl.getAttributeValue("test").contains("Соотношение_между")) {
-                    Element variable = findElWithNameAndAttr(obsSost, "name", "_", "variable");
+                    Element variable = JDOMFunctions.findElWithNameAndAttr(obsSost, "name", "_", "variable");
                     variable.addContent(nextEl.detach());
                 }
             } catch (Exception ignored) {
@@ -742,13 +729,13 @@ class JDOMProcessing {
 
     //Next visit recommendations to good and nice condition
     private static void thirteen(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
             deleteEmptyTr(root);
             Element recomNextStrongEl;
             Element recomNextEl;
-            Content recomNextText = findElWithNameAndCont(root, "Повторный курс/явка", "Text");
+            Content recomNextText = JDOMFunctions.findElWithNameAndCont(root, "Повторный курс/явка", "Text");
             if (recomNextText != null) {
                 recomNextStrongEl = (new Element("strong"));
                 recomNextStrongEl.setText("Повторный курс/явка");
@@ -756,11 +743,11 @@ class JDOMProcessing {
                 recomNextEl.addContent(0, recomNextStrongEl);
             } else {
 
-                Element recomNextSpanEl = findElWithNameAndCont(root, "Рекомендации по последующему приему", "span");
+                Element recomNextSpanEl = JDOMFunctions.findElWithNameAndCont(root, "Рекомендации по последующему приему", "span");
                 if (recomNextSpanEl != null) {
                     recomNextSpanEl.setName("strong");
                 }
-                recomNextStrongEl = findElWithNameAndCont(root, "Рекомендации по последующему приему", "strong");
+                recomNextStrongEl = JDOMFunctions.findElWithNameAndCont(root, "Рекомендации по последующему приему", "strong");
                 recomNextEl = recomNextStrongEl.getParentElement();
             }
             int recomNextStrongPos = recomNextEl.getChildren().indexOf(recomNextStrongEl);
@@ -821,7 +808,7 @@ class JDOMProcessing {
 
     //all main headers from capital trim
     private static void fourteen(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
             for (Content el : root.getDescendants()) {
@@ -912,16 +899,16 @@ class JDOMProcessing {
 
     //to get good and nice Arterial pressure
     private static void fifteen(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element artDavl = findElWithNameAndAttr(root, "test",
+            Element artDavl = JDOMFunctions.findElWithNameAndAttr(root, "test",
                     "*:Общий_осмотр/*:Артериальное_давление/*:data/*:Любое_событие_as_Point_Event/*:data/*:Комментарий/*:value/rm:value != ''", "if");
             if (artDavl == null) {
                 return;
             }
             artDavl = artDavl.getChild("tr").getChild("td");
-            artDavl = findElWithNameAndAttr(artDavl, "select", "*:Общий_осмотр/*:Артериальное_давление", "for-each");
+            artDavl = JDOMFunctions.findElWithNameAndAttr(artDavl, "select", "*:Общий_осмотр/*:Артериальное_давление", "for-each");
             Element forDelete = artDavl.getChildren().get(0).getChildren().get(0);
             if (!forDelete.getAttributeValue("test").toLowerCase().contains("место_измерения")) {
                 forDelete.detach();
@@ -942,10 +929,10 @@ class JDOMProcessing {
 
     //to get good and nice local status
     private static void sixteen(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element mestStat = findElWithNameAndAttr(root, "test", "*:Местный_статус/*:Местный_статус/*:data/*:", "if");
+            Element mestStat = JDOMFunctions.findElWithNameAndAttr(root, "test", "*:Местный_статус/*:Местный_статус/*:data/*:", "if");
             if (mestStat == null) {
                 return;
             }
@@ -965,20 +952,20 @@ class JDOMProcessing {
 
     //Researches from capital char
     private static void seventeen(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element templIssl = findElWithNameAndAttr(root, "name", "ResearchesFormat", "template");
+            Element templIssl = JDOMFunctions.findElWithNameAndAttr(root, "name", "ResearchesFormat", "template");
             if (templIssl == null) {
                 return;
             }
-            Element neededForEach = findElWithNameAndAttr(templIssl, "select",
+            Element neededForEach = JDOMFunctions.findElWithNameAndAttr(templIssl, "select",
                     "*:Сведения_об_исследовании/*:data/*:Любое_событие_as_Point_Event/*", "for-each");
-            Element neededIfPos = findElWithNameAndAttr(neededForEach, "test", "position", "if");
+            Element neededIfPos = JDOMFunctions.findElWithNameAndAttr(neededForEach, "test", "position", "if");
             neededIfPos.removeContent();
             neededIfPos.addContent(new Element("br"));
 
-            Element neededValueOf = findElWithNameAndAttr(neededForEach, "select", ".", "value-of");
+            Element neededValueOf = JDOMFunctions.findElWithNameAndAttr(neededForEach, "select", ".", "value-of");
             neededValueOf.detach();
             Element newCallTemplate = new Element("call-template");
             newCallTemplate.setNamespace(xsl);
@@ -997,10 +984,10 @@ class JDOMProcessing {
 
     //Wrap header of general inspection in tr/td
     private static void eighteen(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element tempGenInsp = findElWithNameAndCont(root, "Общий осмотр", "thead");
+            Element tempGenInsp = JDOMFunctions.findElWithNameAndCont(root, "Общий осмотр", "thead");
             tempGenInsp = tempGenInsp.getParentElement();
             Element placeToInsert = tempGenInsp.getParentElement();
             Element tr = new Element("tr");
@@ -1016,12 +1003,12 @@ class JDOMProcessing {
 
     //Change Complication and Concomitant disease headers from part to myth
     private static void nineteen(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element temp = findElWithNameAndCont(root, "сложнение", "span");
+            Element temp = JDOMFunctions.findElWithNameAndCont(root, "сложнение", "span");
             if (temp == null) {
-                temp = findElWithNameAndCont(root, "сложнение", "strong");
+                temp = JDOMFunctions.findElWithNameAndCont(root, "сложнение", "strong");
             }
             temp.setText("Осложнение");
             temp.setAttribute("class", "myth");
@@ -1030,7 +1017,7 @@ class JDOMProcessing {
             Console.printMessage("Failed: change Осложнение from part to myth.", Console.ANSI_YELLOW);
         }
         try {
-            Element temp = findElWithNameAndCont(root, "Дополнительный диагноз", "span");
+            Element temp = JDOMFunctions.findElWithNameAndCont(root, "Дополнительный диагноз", "span");
             if (temp == null) {
                 Console.printMessage("Дополнительный диагноз not found!", Console.ANSI_CYAN);
 
@@ -1045,10 +1032,10 @@ class JDOMProcessing {
 
     //Replace whitespaces in "In Period" value
     private static void twenty(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element temp = findElWithNameAndAttr(root, "select", "Болеет_в_течение", "with-param");
+            Element temp = JDOMFunctions.findElWithNameAndAttr(root, "select", "Болеет_в_течение", "with-param");
             temp = temp.getParentElement();
 
             Element parent = temp.getParentElement();
@@ -1073,10 +1060,10 @@ class JDOMProcessing {
 
     //Delete br in Interpretation
     private static void twentyone(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element element = findElWithNameAndAttr(root, "test", "Интерпретация_результатов_обследования", "if");
+            Element element = JDOMFunctions.findElWithNameAndAttr(root, "test", "Интерпретация_результатов_обследования", "if");
             if (element.getChildren().get(0).getName().equals("br")) {
                 element.getChildren().remove(0);
             }
@@ -1088,18 +1075,18 @@ class JDOMProcessing {
 
     //Make in the moment compl from low case
     private static void twentytwo(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element buf = findElWithNameAndAttr(root, "select", "На_момент_осмотра_жалобы", "with-param");
+            Element buf = JDOMFunctions.findElWithNameAndAttr(root, "select", "На_момент_осмотра_жалобы", "with-param");
             if (buf == null) {
-                buf = findElWithNameAndAttr(root, "select", "На_момент_осмотра_жалобы", "value-of");
+                buf = JDOMFunctions.findElWithNameAndAttr(root, "select", "На_момент_осмотра_жалобы", "value-of");
             }
             while (!buf.getName().contains("variable")) {
                 buf = buf.getParentElement();
             }
             String nameOfVariable = buf.getAttributeValue("name");
-            buf = findElWithNameAndAttr(root, "select", nameOfVariable, "with-param");
+            buf = JDOMFunctions.findElWithNameAndAttr(root, "select", nameOfVariable, "with-param");
             buf.getParentElement().setAttribute("name", "string-ltrim");
             saveXSLT(doc, filePath);
         } catch (Exception ex) {
@@ -1109,10 +1096,10 @@ class JDOMProcessing {
 
     //Remove br from at the next reception
     private static void twentythree(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
-            Element buf = findElWithNameAndCont(root, "по последующему", "strong");
+            Element buf = JDOMFunctions.findElWithNameAndCont(root, "по последующему", "strong");
             buf = buf.getParentElement().getChildren().get(0);
             if (buf.getName().contains("if")) {
                 if (buf.getChildren().size() == 1
@@ -1129,14 +1116,14 @@ class JDOMProcessing {
 
     //delete extra whitespace before edizm
     private static void twentyfour(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         boolean deleted;
         do {
             try {
                 boolean found = false;
                 deleted = false;
-                Element edizm = findElWithNameAndAttr(root, "test", "$val", "when")
+                Element edizm = JDOMFunctions.findElWithNameAndAttr(root, "test", "$val", "when")
                         .getParentElement().getParentElement();
                 List<Element> elIf = edizm.getChildren();
                 if (elIf.get(1).getName().equalsIgnoreCase("if")) {
@@ -1170,14 +1157,14 @@ class JDOMProcessing {
 
     //make gaping before EVALUATION headers
     private static void twentyfive(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         String xsd_path = CasesFunctions.getXsdPath(filePath);
 //        Document xsd_doc = useSAXParser(xsd_path);
 //        Element xsd_root = xsd_doc.getRootElement();
 
         while (true) {
-            Element td = findElWithNameAndAttr(root, "class", "myml", "td");
+            Element td = JDOMFunctions.findElWithNameAndAttr(root, "class", "myml", "td");
             try {
                 if (td != null) {
                     boolean partTd = false;
@@ -1271,7 +1258,7 @@ class JDOMProcessing {
             }
         }
         while (true) {
-            Element td = findElWithNameAndAttr(root, "class", "mltmp", "td");
+            Element td = JDOMFunctions.findElWithNameAndAttr(root, "class", "mltmp", "td");
             try {
                 if (td != null) {
                     td.setAttribute("class", "myml");
@@ -1288,7 +1275,7 @@ class JDOMProcessing {
 
     //all main headers in <tr> <td class=myml>
     private static void twentysix(String filePath, String pattern) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
             forEachTd(root);
@@ -1361,7 +1348,7 @@ class JDOMProcessing {
 
     //remove <br/> in anamnesis
     private static void twentyseven(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
             Element brToRemove = null;
@@ -1393,9 +1380,8 @@ class JDOMProcessing {
         }
     }
 
-
     private static void twentyeight(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
         try {
             addMymltoAllTd(root);
@@ -1403,37 +1389,6 @@ class JDOMProcessing {
             ignored.printStackTrace();
         }
         saveXSLT(doc, filePath);
-    }
-
-    private static Element findElWithNameAndCont(Element root, String contains, String name) {
-        for (Content el : root.getDescendants()) {
-            try {
-                if (el instanceof Text) {
-                    if (((Text) el).getText().contains(contains) & name.contentEquals("Text")) {
-                        return el.getParentElement();
-                    }
-                } else if (el instanceof Element) {
-                    if (el.getValue().contains(contains) & (((Element) el).getName().contains(name))) {
-                        return (Element) el;
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    private static Element findElWithNameAndAttr(Element root, String attributeName, String attributeValue, String name) {
-        for (Content el : root.getDescendants()) {
-            try {
-                if (((Element) el).getAttribute(attributeName).getValue().contains(attributeValue) & (((Element) el).getName().contains(name))) {
-                    return (Element) el;
-                }
-            } catch (Exception ignored) {
-            }
-        }
-        return null;
     }
 
     private static void saveXSLT(Document doc, String path) {
@@ -1606,11 +1561,11 @@ class JDOMProcessing {
 
     // delete costili from left attributes
     private static void deleteCostiliLeft(String filePath) {
-        Document doc = useSAXParser(filePath);
+        Document doc = JDOMFunctions.useSAXParser(filePath);
         Element root = doc.getRootElement();
 
         while (true) {
-            Element strongLeftCostil = findElWithNameAndCont(root, "left", "strong");
+            Element strongLeftCostil = JDOMFunctions.findElWithNameAndCont(root, "left", "strong");
             if (strongLeftCostil == null) {
                 break;
             } else {
@@ -1670,3 +1625,4 @@ class JDOMProcessing {
         }
     }
 }
+

@@ -73,8 +73,19 @@ public class Console {
                     break;
                 }
                 case "t": {
-                    String str = Test.getHtmlText("/home/brarrow/Documents/oxy.html");
-                    str.trim();
+                    switch (commands[1]) {
+                        case "-a": {
+                            Test.testAllXslt();
+                            break;
+                        }
+                        case "-o": {
+                            Test.testXslt(caseStr);
+                            break;
+                        }
+                        default: {
+                            printIncorr();
+                        }
+                    }
                     break;
                 }
                 case "c": {
@@ -105,6 +116,13 @@ public class Console {
 
     public static void printMessage(String message, String color) {
         System.out.println(color + message + ANSI_RESET);
+    }
+
+    public static void printMessage(String message, String color, boolean needNewLine) {
+        if (needNewLine)
+            System.out.println(color + message + ANSI_RESET);
+        else
+            System.out.print(color + message + ANSI_RESET);
     }
 
     private static void printIncorr() {

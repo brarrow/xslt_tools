@@ -152,7 +152,6 @@ public class CasesFunctions {
         return res;
     }
 
-
     private static String findCaseInXslt(String filePath) {
         File file = new File(filePath);
         try {
